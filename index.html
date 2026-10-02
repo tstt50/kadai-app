@@ -1,0 +1,3894 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
+<title>課題管理</title>
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json">
+
+<meta name="theme-color" content="#ffffff">
+
+<!-- iPhone -->
+<link rel="apple-touch-icon" href="./icon-192.png">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+>
+
+<meta
+    name="apple-mobile-web-app-title"
+    content="課題管理"
+>
+
+
+<style>
+
+/* =========================
+   基本
+========================= */
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    background: #f4f5f7;
+}
+
+body {
+    margin: 0;
+
+    background: #f4f5f7;
+    color: #1d1d1f;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Hiragino Sans",
+        sans-serif;
+
+    padding-bottom:
+        calc(100px + env(safe-area-inset-bottom));
+}
+
+
+/* =========================
+   ヘッダー
+========================= */
+
+header {
+
+    background:
+        rgba(255,255,255,.96);
+
+    border-bottom:
+        1px solid #e5e5e5;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 10;
+
+    padding-top:
+        env(safe-area-inset-top);
+
+    backdrop-filter:
+        blur(12px);
+}
+
+
+.header-inner {
+
+    max-width: 900px;
+
+    margin: auto;
+
+    padding: 18px;
+
+}
+
+
+h1 {
+
+    margin: 0;
+
+    font-size: 25px;
+
+}
+
+
+#nowText {
+
+    margin-top: 5px;
+
+    color: #777;
+
+    font-size: 13px;
+
+}
+
+
+/* =========================
+   メイン
+========================= */
+
+.container {
+
+    max-width: 900px;
+
+    margin: auto;
+
+    padding: 18px;
+
+}
+
+
+/* =========================
+   TODAY / TOMORROW
+========================= */
+
+.main-days {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 15px;
+
+}
+
+
+.day-card {
+
+    background: white;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 15px
+        rgba(0,0,0,.05);
+
+}
+
+
+.today {
+
+    border:
+        2px solid #007aff;
+
+}
+
+
+.tomorrow {
+
+    border:
+        2px solid #ddd;
+
+}
+
+
+.day-header {
+
+    padding: 18px;
+
+    cursor: pointer;
+
+    user-select: none;
+
+}
+
+
+.day-header:active {
+
+    background: #f4f4f6;
+
+}
+
+
+.day-top {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+}
+
+
+.day-label {
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    color: #888;
+
+}
+
+
+.today .day-label {
+
+    color: #007aff;
+
+}
+
+
+.day-arrow {
+
+    color: #999;
+
+    font-size: 22px;
+
+    transition:
+        transform .2s;
+
+}
+
+
+.day-arrow.open {
+
+    transform:
+        rotate(90deg);
+
+}
+
+
+.day-date {
+
+    font-size: 21px;
+
+    font-weight: 750;
+
+    margin-top: 4px;
+
+}
+
+
+.day-subjects {
+
+    margin-top: 9px;
+
+    color: #555;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+.day-summary {
+
+    color: #777;
+
+    font-size: 13px;
+
+    margin-top: 7px;
+
+}
+
+
+.day-content {
+
+    display: none;
+
+    padding:
+        0 18px 18px;
+
+}
+
+
+.day-content.open {
+
+    display: block;
+
+}
+
+
+/* =========================
+   課題
+========================= */
+
+.task {
+
+    background: #f6f7f9;
+
+    border-radius: 14px;
+
+    padding: 12px;
+
+    margin-top: 9px;
+
+    cursor: pointer;
+
+}
+
+
+.task:active {
+
+    background: #e9eaed;
+
+}
+
+
+.task.completed {
+
+    opacity: .55;
+
+}
+
+
+.task.completed .task-name {
+
+    text-decoration:
+        line-through;
+
+}
+
+
+.task-name {
+
+    font-weight: 750;
+
+    font-size: 15px;
+
+}
+
+
+.task-subject {
+
+    color: #777;
+
+    font-size: 12px;
+
+    margin-top: 4px;
+
+}
+
+
+.task-time {
+
+    color: #e5484d;
+
+    font-size: 12px;
+
+    font-weight: 650;
+
+    margin-top: 7px;
+
+}
+
+
+.remaining {
+
+    color: #007aff;
+
+    font-size: 12px;
+
+    font-weight: 650;
+
+    margin-top: 3px;
+
+}
+
+
+.remaining.done {
+
+    color: #24913d;
+
+}
+
+
+.remaining.overdue {
+
+    color: #d70015;
+
+}
+
+
+.empty {
+
+    color: #999;
+
+    font-size: 14px;
+
+    padding: 10px 0;
+
+}
+
+
+/* =========================
+   見出し
+========================= */
+
+.section-title {
+
+    font-size: 18px;
+
+    margin:
+        30px 2px 12px;
+
+}
+
+
+.future-list,
+.all-list {
+
+    background: white;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 15px
+        rgba(0,0,0,.04);
+
+}
+
+
+/* =========================
+   未来
+========================= */
+
+.future-wrapper {
+
+    border-bottom:
+        1px solid #eee;
+
+}
+
+
+.future-wrapper:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.future-row {
+
+    display: grid;
+
+    grid-template-columns:
+        90px 1fr auto;
+
+    gap: 10px;
+
+    align-items: center;
+
+    padding: 15px;
+
+    cursor: pointer;
+
+}
+
+
+.future-row:active {
+
+    background: #f4f4f6;
+
+}
+
+
+.future-date {
+
+    font-weight: 700;
+
+    font-size: 14px;
+
+}
+
+
+.future-weekday {
+
+    color: #888;
+
+    font-weight: 400;
+
+}
+
+
+.future-preview {
+
+    font-size: 13px;
+
+    color: #444;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.future-subjects {
+
+    color: #777;
+
+    font-size: 11px;
+
+    margin-top: 4px;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.future-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+.badge {
+
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+    border-radius: 20px;
+
+    padding: 4px 8px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+.badge.zero {
+
+    background: #eee;
+
+    color: #999;
+
+}
+
+
+.arrow {
+
+    display: inline-block;
+
+    color: #999;
+
+    font-size: 20px;
+
+    transition:
+        transform .2s;
+
+}
+
+
+.arrow.open {
+
+    transform:
+        rotate(90deg);
+
+}
+
+
+.future-detail {
+
+    display: none;
+
+    background: #fafafa;
+
+}
+
+
+.future-detail.open {
+
+    display: block;
+
+}
+
+
+.future-task {
+
+    padding:
+        14px 18px;
+
+    border-top:
+        1px solid #eee;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================
+   全課題
+========================= */
+
+.all-task {
+
+    padding:
+        14px 16px;
+
+    border-bottom:
+        1px solid #eee;
+
+    cursor: pointer;
+
+}
+
+
+.all-task:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.all-task:active {
+
+    background: #eee;
+
+}
+
+
+.all-date {
+
+    color: #777;
+
+    font-size: 12px;
+
+    margin-top: 5px;
+
+}
+
+
+/* =========================
+   ＋ボタン
+========================= */
+
+.add-button {
+
+    position: fixed;
+
+    right: 24px;
+
+    bottom:
+        calc(
+            26px
+            +
+            env(safe-area-inset-bottom)
+        );
+
+    width: 62px;
+
+    height: 62px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #1d1d1f;
+
+    color: white;
+
+    font-size: 32px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 7px 25px
+        rgba(0,0,0,.25);
+
+    z-index: 20;
+
+}
+
+
+/* =========================
+   ダイアログ
+========================= */
+
+dialog {
+
+    border: none;
+
+    border-radius: 22px;
+
+    padding: 0;
+
+    width:
+        min(92%,440px);
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.3);
+
+}
+
+
+dialog::backdrop {
+
+    background:
+        rgba(0,0,0,.45);
+
+}
+
+
+.dialog-content {
+
+    padding: 24px;
+
+}
+
+
+.dialog-content h2 {
+
+    margin:
+        0 0 22px;
+
+    font-size: 20px;
+
+}
+
+
+.field {
+
+    margin-bottom: 17px;
+
+}
+
+
+label {
+
+    display: block;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    margin-bottom: 6px;
+
+}
+
+
+input,
+select,
+textarea {
+
+    display: block;
+
+    width: 100%;
+
+    min-height: 48px;
+
+    border:
+        1px solid #ccc;
+
+    border-radius: 11px;
+
+    background: white;
+
+    color: #111;
+
+    padding:
+        12px 13px;
+
+    font-family: inherit;
+
+    font-size: 16px;
+
+    outline: none;
+
+}
+
+
+input:focus,
+select:focus,
+textarea:focus {
+
+    border-color: #007aff;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0,122,255,.12);
+
+}
+
+
+textarea {
+
+    min-height: 80px;
+
+    resize: vertical;
+
+}
+
+
+input[readonly] {
+
+    background: #f2f2f4;
+
+    color: #555;
+
+}
+
+
+.deadline-info {
+
+    padding: 11px;
+
+    border-radius: 11px;
+
+    background: #eef6ff;
+
+    color: #0066cc;
+
+    font-size: 13px;
+
+    font-weight: 650;
+
+    margin-top: 7px;
+
+}
+
+
+.subject-info {
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: #f3f3f5;
+
+    color: #666;
+
+    font-size: 12px;
+
+    margin-top: 7px;
+
+}
+
+
+/* =========================
+   ボタン
+========================= */
+
+.dialog-buttons {
+
+    display: flex;
+
+    gap: 9px;
+
+    margin-top: 22px;
+
+}
+
+
+.dialog-buttons button {
+
+    flex: 1;
+
+    padding: 13px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+}
+
+
+.cancel {
+
+    background: #e9e9eb;
+
+}
+
+
+.save {
+
+    background: #007aff;
+
+    color: white;
+
+    font-weight: 700;
+
+}
+
+
+.complete-button {
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: #e6f7e9;
+
+    color: #19702e;
+
+    font-weight: 700;
+
+}
+
+
+.delete-button {
+
+    width: 100%;
+
+    margin-top: 9px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: #fee2e2;
+
+    color: #d70015;
+
+    font-weight: 700;
+
+}
+
+
+.delete-button.confirming {
+
+    background: #d70015;
+
+    color: white;
+
+}
+
+
+.delete-message {
+
+    display: none;
+
+    margin-top: 8px;
+
+    color: #d70015;
+
+    font-size: 12px;
+
+    text-align: center;
+
+    font-weight: 650;
+
+}
+
+
+/* =========================
+   スマホ
+========================= */
+
+@media(max-width:650px) {
+
+    .container {
+
+        padding: 12px;
+
+    }
+
+
+    .main-days {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .future-row {
+
+        grid-template-columns:
+            76px 1fr auto;
+
+        padding:
+            14px 12px;
+
+    }
+
+
+    h1 {
+
+        font-size: 23px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="header-inner">
+
+<h1>📚 課題管理</h1>
+
+<div id="nowText"></div>
+
+</div>
+
+</header>
+
+
+<main class="container">
+
+
+<div class="main-days">
+
+
+<!-- TODAY -->
+
+<section class="day-card today">
+
+<div
+    class="day-header"
+    id="todayHeader"
+>
+
+<div class="day-top">
+
+<div class="day-label">
+TODAY
+</div>
+
+<div
+    class="day-arrow"
+    id="todayArrow"
+>
+›
+</div>
+
+</div>
+
+<div
+    class="day-date"
+    id="todayTitle"
+></div>
+
+<div
+    class="day-subjects"
+    id="todaySubjects"
+></div>
+
+<div
+    class="day-summary"
+    id="todaySummary"
+></div>
+
+</div>
+
+
+<div
+    class="day-content"
+    id="todayContent"
+>
+
+<div id="todayTasks"></div>
+
+</div>
+
+</section>
+
+
+<!-- TOMORROW -->
+
+<section class="day-card tomorrow">
+
+<div
+    class="day-header"
+    id="tomorrowHeader"
+>
+
+<div class="day-top">
+
+<div class="day-label">
+TOMORROW
+</div>
+
+<div
+    class="day-arrow"
+    id="tomorrowArrow"
+>
+›
+</div>
+
+</div>
+
+<div
+    class="day-date"
+    id="tomorrowTitle"
+></div>
+
+<div
+    class="day-subjects"
+    id="tomorrowSubjects"
+></div>
+
+<div
+    class="day-summary"
+    id="tomorrowSummary"
+></div>
+
+</div>
+
+
+<div
+    class="day-content"
+    id="tomorrowContent"
+>
+
+<div id="tomorrowTasks"></div>
+
+</div>
+
+</section>
+
+
+</div>
+
+
+<h2 class="section-title">
+その先1週間
+</h2>
+
+
+<div
+    class="future-list"
+    id="futureList"
+></div>
+
+
+<h2 class="section-title">
+すべての課題
+</h2>
+
+
+<div
+    class="all-list"
+    id="allTasks"
+></div>
+
+
+</main>
+
+
+<button
+    class="add-button"
+    id="addButton"
+    type="button"
+>
+＋
+</button>
+
+
+
+<!-- =========================
+     追加・編集
+========================= -->
+
+<dialog id="taskDialog">
+
+
+<div class="dialog-content">
+
+
+<h2 id="dialogTitle">
+課題を追加
+</h2>
+
+
+<form id="taskForm">
+
+
+<div class="field">
+
+<label for="classDate">
+授業日時
+</label>
+
+<input
+    id="classDate"
+    type="datetime-local"
+    required
+>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="subject">
+科目
+</label>
+
+<select
+    id="subject"
+    required
+>
+
+<option value="">
+先に授業日時を選択してください
+</option>
+
+</select>
+
+
+<div
+    class="subject-info"
+    id="subjectInfo"
+>
+
+授業日時を選ぶと、その曜日の科目だけ表示します。
+
+</div>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="taskName">
+レポート・課題名
+</label>
+
+<input
+    id="taskName"
+    type="text"
+    placeholder="例：第3回レポート"
+    autocomplete="off"
+    required
+>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="deadline">
+提出期限
+</label>
+
+<input
+    id="deadline"
+    type="datetime-local"
+    readonly
+>
+
+
+<div
+    class="deadline-info"
+    id="deadlineInfo"
+>
+
+授業日時を入力すると、
+7日後の同時刻を自動設定します。
+
+</div>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="memo">
+メモ（任意）
+</label>
+
+<textarea
+    id="memo"
+    placeholder="提出場所、内容など"
+></textarea>
+
+</div>
+
+
+
+<div class="dialog-buttons">
+
+<button
+    type="button"
+    class="cancel"
+    id="cancelButton"
+>
+キャンセル
+</button>
+
+
+<button
+    type="submit"
+    class="save"
+>
+保存
+</button>
+
+</div>
+
+
+</form>
+
+
+<div id="editActions"></div>
+
+
+</div>
+
+</dialog>
+
+
+
+<script>
+
+/* ========================================
+   保存
+======================================== */
+
+var STORAGE_KEY =
+    "university_assignment_manager_v6";
+
+
+/* ========================================
+   曜日
+======================================== */
+
+var weekdays = [
+    "日",
+    "月",
+    "火",
+    "水",
+    "木",
+    "金",
+    "土"
+];
+
+
+/* ========================================
+   時間割
+======================================== */
+
+var timetable = {
+
+    /* 日 */
+    0: [
+        "その他"
+    ],
+
+
+    /* 月 */
+    1: [
+        "基礎物理学B",
+        "実践基礎A"
+    ],
+
+
+    /* 火 */
+    2: [
+        "材料力学A",
+        "哲学A",
+        "線形代数",
+        "基礎製図"
+    ],
+
+
+    /* 水 */
+    3: [
+        "数理・データサイエンス・AI入門",
+        "微分積分学A",
+        "日本国憲法"
+    ],
+
+
+    /* 木 */
+    4: [
+        "微分積分学A",
+        "ETC B"
+    ],
+
+
+    /* 金 */
+    5: [
+        "熱力学"
+    ],
+
+
+    /* 土 */
+    6: [
+        "その他"
+    ]
+
+};
+
+
+/* ========================================
+   変数
+======================================== */
+
+var tasks = [];
+
+var editingId = null;
+
+var deleteConfirmMode = false;
+
+var todayOpen = true;
+
+var tomorrowOpen = true;
+
+
+/* ========================================
+   DOM
+======================================== */
+
+var taskDialog =
+    document.getElementById(
+        "taskDialog"
+    );
+
+
+var taskForm =
+    document.getElementById(
+        "taskForm"
+    );
+
+
+var subjectInput =
+    document.getElementById(
+        "subject"
+    );
+
+
+var subjectInfo =
+    document.getElementById(
+        "subjectInfo"
+    );
+
+
+var taskNameInput =
+    document.getElementById(
+        "taskName"
+    );
+
+
+var classDateInput =
+    document.getElementById(
+        "classDate"
+    );
+
+
+var deadlineInput =
+    document.getElementById(
+        "deadline"
+    );
+
+
+var memoInput =
+    document.getElementById(
+        "memo"
+    );
+
+
+var deadlineInfo =
+    document.getElementById(
+        "deadlineInfo"
+    );
+
+
+/* ========================================
+   localStorage読み込み
+======================================== */
+
+function loadTasks() {
+
+    try {
+
+        var saved =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+
+        if (!saved) {
+
+            tasks = [];
+
+            return;
+
+        }
+
+
+        var parsed =
+            JSON.parse(saved);
+
+
+        if (
+            Array.isArray(parsed)
+        ) {
+
+            tasks = parsed;
+
+        } else {
+
+            tasks = [];
+
+        }
+
+    }
+
+    catch(error) {
+
+        console.log(error);
+
+        tasks = [];
+
+    }
+
+}
+
+
+/* ========================================
+   保存
+======================================== */
+
+function saveTasks() {
+
+    try {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(tasks)
+        );
+
+        return true;
+
+    }
+
+    catch(error) {
+
+        console.log(error);
+
+        alert(
+            "保存できませんでした。"
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* ========================================
+   現在時刻
+======================================== */
+
+function getJapanNow() {
+
+    var text =
+        new Date().toLocaleString(
+            "en-US",
+            {
+                timeZone:
+                    "Asia/Tokyo"
+            }
+        );
+
+
+    return new Date(text);
+
+}
+
+
+/* ========================================
+   日付関数
+======================================== */
+
+function pad(number) {
+
+    if (
+        number < 10
+    ) {
+
+        return "0" + number;
+
+    }
+
+
+    return String(number);
+
+}
+
+
+
+function startOfDay(date) {
+
+    var copy =
+        new Date(
+            date.getTime()
+        );
+
+
+    copy.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    return copy;
+
+}
+
+
+
+function addDays(
+    date,
+    days
+) {
+
+    var copy =
+        new Date(
+            date.getTime()
+        );
+
+
+    copy.setDate(
+        copy.getDate()
+        +
+        days
+    );
+
+
+    return copy;
+
+}
+
+
+
+function dateKey(date) {
+
+    return (
+        date.getFullYear()
+        +
+        "-"
+        +
+        pad(
+            date.getMonth()
+            +
+            1
+        )
+        +
+        "-"
+        +
+        pad(
+            date.getDate()
+        )
+    );
+
+}
+
+
+
+function toDateTimeLocal(date) {
+
+    return (
+        dateKey(date)
+        +
+        "T"
+        +
+        pad(
+            date.getHours()
+        )
+        +
+        ":"
+        +
+        pad(
+            date.getMinutes()
+        )
+    );
+
+}
+
+
+
+function displayDate(date) {
+
+    return (
+        (
+            date.getMonth()
+            +
+            1
+        )
+        +
+        "月"
+        +
+        date.getDate()
+        +
+        "日（"
+        +
+        weekdays[
+            date.getDay()
+        ]
+        +
+        "）"
+    );
+
+}
+
+
+
+function displayDateTime(value) {
+
+    var date =
+        new Date(value);
+
+
+    return (
+        (
+            date.getMonth()
+            +
+            1
+        )
+        +
+        "/"
+        +
+        date.getDate()
+        +
+        "（"
+        +
+        weekdays[
+            date.getDay()
+        ]
+        +
+        "） "
+        +
+        pad(
+            date.getHours()
+        )
+        +
+        ":"
+        +
+        pad(
+            date.getMinutes()
+        )
+    );
+
+}
+
+
+/* ========================================
+   その曜日の科目
+======================================== */
+
+function subjectsForDate(date) {
+
+    var day =
+        date.getDay();
+
+
+    if (
+        !timetable[day]
+    ) {
+
+        return [];
+
+    }
+
+
+    return timetable[day];
+
+}
+
+
+/* ========================================
+   科目表示
+======================================== */
+
+function subjectTextForDate(date) {
+
+    var subjects =
+        subjectsForDate(date);
+
+
+    if (
+        subjects.length === 0
+    ) {
+
+        return "授業なし";
+
+    }
+
+
+    if (
+        subjects.length === 1
+        &&
+        subjects[0] ===
+        "その他"
+    ) {
+
+        return "授業なし";
+
+    }
+
+
+    return (
+        "授業："
+        +
+        subjects.join("・")
+    );
+
+}
+
+
+/* ========================================
+   選択できる科目を曜日で変更
+======================================== */
+
+function updateSubjects(
+    selectedSubject
+) {
+
+    subjectInput.innerHTML =
+        "";
+
+
+    if (
+        classDateInput.value
+        ===
+        ""
+    ) {
+
+        var emptyOption =
+            document.createElement(
+                "option"
+            );
+
+
+        emptyOption.value =
+            "";
+
+
+        emptyOption.textContent =
+            "先に授業日時を選択してください";
+
+
+        subjectInput.appendChild(
+            emptyOption
+        );
+
+
+        subjectInfo.textContent =
+            "授業日時を選ぶと、その曜日の科目だけ表示します。";
+
+
+        return;
+
+    }
+
+
+    var date =
+        new Date(
+            classDateInput.value
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    var day =
+        date.getDay();
+
+
+    var subjects =
+        timetable[day]
+        ?
+        timetable[day].slice()
+        :
+        ["その他"];
+
+
+    /*
+       古い課題の科目も
+       編集できるようにする
+    */
+
+    if (
+        selectedSubject
+        &&
+        subjects.indexOf(
+            selectedSubject
+        )
+        ===
+        -1
+    ) {
+
+        subjects.push(
+            selectedSubject
+        );
+
+    }
+
+
+    for (
+        var i = 0;
+        i < subjects.length;
+        i++
+    ) {
+
+        var option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            subjects[i];
+
+
+        option.textContent =
+            subjects[i];
+
+
+        if (
+            selectedSubject
+            ===
+            subjects[i]
+        ) {
+
+            option.selected =
+                true;
+
+        }
+
+
+        subjectInput.appendChild(
+            option
+        );
+
+    }
+
+
+    subjectInfo.textContent =
+        weekdays[day]
+        +
+        "曜日の授業のみ表示しています";
+
+
+    if (
+        subjects.length
+        ===
+        1
+    ) {
+
+        subjectInput.selectedIndex =
+            0;
+
+    }
+
+}
+
+
+/* ========================================
+   締切
+======================================== */
+
+function calculateDeadline() {
+
+    if (
+        classDateInput.value
+        ===
+        ""
+    ) {
+
+        deadlineInput.value =
+            "";
+
+
+        deadlineInfo.textContent =
+            "授業日時を入力すると、7日後の同時刻を自動設定します。";
+
+
+        return;
+
+    }
+
+
+    var date =
+        new Date(
+            classDateInput.value
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    date.setDate(
+        date.getDate()
+        +
+        7
+    );
+
+
+    deadlineInput.value =
+        toDateTimeLocal(date);
+
+
+    deadlineInfo.textContent =
+        "→ 提出期限："
+        +
+        displayDateTime(
+            deadlineInput.value
+        );
+
+}
+
+
+/* ========================================
+   HTML安全化
+======================================== */
+
+function escapeHTML(text) {
+
+    var div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        String(text);
+
+
+    return div.innerHTML;
+
+}
+
+
+/* ========================================
+   日付別課題
+======================================== */
+
+function tasksForDate(date) {
+
+    var target =
+        dateKey(date);
+
+
+    var result = [];
+
+
+    for (
+        var i = 0;
+        i < tasks.length;
+        i++
+    ) {
+
+        if (
+            tasks[i].deadline
+            &&
+            tasks[i].deadline.substring(
+                0,
+                10
+            )
+            ===
+            target
+        ) {
+
+            result.push(
+                tasks[i]
+            );
+
+        }
+
+    }
+
+
+    result.sort(
+        function(a,b) {
+
+            return (
+                new Date(
+                    a.deadline
+                )
+                -
+                new Date(
+                    b.deadline
+                )
+            );
+
+        }
+    );
+
+
+    return result;
+
+}
+
+
+/* ========================================
+   残り時間
+======================================== */
+
+function remainingText(task) {
+
+    if (
+        task.completed
+    ) {
+
+        return {
+
+            text:
+                "✓ 提出済み",
+
+            className:
+                "done"
+
+        };
+
+    }
+
+
+    var difference =
+        new Date(
+            task.deadline
+        ).getTime()
+        -
+        getJapanNow()
+        .getTime();
+
+
+    if (
+        difference <= 0
+    ) {
+
+        return {
+
+            text:
+                "⚠ 締切超過",
+
+            className:
+                "overdue"
+
+        };
+
+    }
+
+
+    var totalMinutes =
+        Math.floor(
+            difference
+            /
+            60000
+        );
+
+
+    var days =
+        Math.floor(
+            totalMinutes
+            /
+            1440
+        );
+
+
+    var hours =
+        Math.floor(
+            (
+                totalMinutes
+                %
+                1440
+            )
+            /
+            60
+        );
+
+
+    var minutes =
+        totalMinutes
+        %
+        60;
+
+
+    if (
+        days > 0
+    ) {
+
+        return {
+
+            text:
+                "あと "
+                +
+                days
+                +
+                "日"
+                +
+                hours
+                +
+                "時間",
+
+            className:
+                ""
+
+        };
+
+    }
+
+
+    return {
+
+        text:
+            "あと "
+            +
+            hours
+            +
+            "時間"
+            +
+            minutes
+            +
+            "分",
+
+        className:
+            ""
+
+    };
+
+}
+
+
+/* ========================================
+   課題カード
+======================================== */
+
+function createTaskCard(task) {
+
+    var card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "task";
+
+
+    if (
+        task.completed
+    ) {
+
+        card.className +=
+            " completed";
+
+    }
+
+
+    var remaining =
+        remainingText(task);
+
+
+    card.innerHTML =
+
+        '<div class="task-name">'
+        +
+        (
+            task.completed
+            ?
+            "✓ "
+            :
+            ""
+        )
+        +
+        escapeHTML(
+            task.name
+        )
+        +
+        "</div>"
+
+        +
+
+        '<div class="task-subject">'
+        +
+        escapeHTML(
+            task.subject
+        )
+        +
+        "</div>"
+
+        +
+
+        '<div class="task-time">⏰ '
+        +
+        displayDateTime(
+            task.deadline
+        )
+        +
+        "</div>"
+
+        +
+
+        '<div class="remaining '
+        +
+        remaining.className
+        +
+        '">'
+        +
+        remaining.text
+        +
+        "</div>";
+
+
+    card.onclick =
+        function(event) {
+
+            event.stopPropagation();
+
+            editTask(
+                task.id
+            );
+
+        };
+
+
+    return card;
+
+}
+
+
+/* ========================================
+   TODAY / TOMORROW
+======================================== */
+
+function renderDay(
+    date,
+    taskContainerId,
+    summaryId,
+    subjectsId
+) {
+
+    var container =
+        document.getElementById(
+            taskContainerId
+        );
+
+
+    var summary =
+        document.getElementById(
+            summaryId
+        );
+
+
+    var subjectsElement =
+        document.getElementById(
+            subjectsId
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    subjectsElement.textContent =
+        subjectTextForDate(
+            date
+        );
+
+
+    var dayTasks =
+        tasksForDate(
+            date
+        );
+
+
+    if (
+        dayTasks.length
+        ===
+        0
+    ) {
+
+        summary.textContent =
+            "締切なし";
+
+
+        container.innerHTML =
+            '<div class="empty">✓ この日の締切なし</div>';
+
+
+        return;
+
+    }
+
+
+    summary.textContent =
+        dayTasks.length
+        +
+        "件の課題";
+
+
+    for (
+        var i = 0;
+        i < dayTasks.length;
+        i++
+    ) {
+
+        container.appendChild(
+            createTaskCard(
+                dayTasks[i]
+            )
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   開閉
+======================================== */
+
+function updateDayOpenState() {
+
+    var todayContent =
+        document.getElementById(
+            "todayContent"
+        );
+
+
+    var todayArrow =
+        document.getElementById(
+            "todayArrow"
+        );
+
+
+    var tomorrowContent =
+        document.getElementById(
+            "tomorrowContent"
+        );
+
+
+    var tomorrowArrow =
+        document.getElementById(
+            "tomorrowArrow"
+        );
+
+
+    if (
+        todayOpen
+    ) {
+
+        todayContent.className =
+            "day-content open";
+
+
+        todayArrow.className =
+            "day-arrow open";
+
+    }
+
+    else {
+
+        todayContent.className =
+            "day-content";
+
+
+        todayArrow.className =
+            "day-arrow";
+
+    }
+
+
+    if (
+        tomorrowOpen
+    ) {
+
+        tomorrowContent.className =
+            "day-content open";
+
+
+        tomorrowArrow.className =
+            "day-arrow open";
+
+    }
+
+    else {
+
+        tomorrowContent.className =
+            "day-content";
+
+
+        tomorrowArrow.className =
+            "day-arrow";
+
+    }
+
+}
+
+
+/* ========================================
+   未来1週間
+======================================== */
+
+function renderFuture(today) {
+
+    var container =
+        document.getElementById(
+            "futureList"
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    for (
+        var i = 2;
+        i <= 8;
+        i++
+    ) {
+
+        var date =
+            addDays(
+                today,
+                i
+            );
+
+
+        var dayTasks =
+            tasksForDate(
+                date
+            );
+
+
+        createFutureRow(
+            container,
+            date,
+            dayTasks
+        );
+
+    }
+
+}
+
+
+
+function createFutureRow(
+    container,
+    date,
+    dayTasks
+) {
+
+    var wrapper =
+        document.createElement(
+            "div"
+        );
+
+
+    wrapper.className =
+        "future-wrapper";
+
+
+    var row =
+        document.createElement(
+            "div"
+        );
+
+
+    row.className =
+        "future-row";
+
+
+    var preview =
+        "課題なし";
+
+
+    if (
+        dayTasks.length > 0
+    ) {
+
+        preview =
+            dayTasks[0].subject
+            +
+            "："
+            +
+            dayTasks[0].name;
+
+
+        if (
+            dayTasks.length > 1
+        ) {
+
+            preview +=
+                " ほか"
+                +
+                (
+                    dayTasks.length
+                    -
+                    1
+                )
+                +
+                "件";
+
+        }
+
+    }
+
+
+    var subjectText =
+        subjectTextForDate(
+            date
+        );
+
+
+    row.innerHTML =
+
+        '<div class="future-date">'
+        +
+        (
+            date.getMonth()
+            +
+            1
+        )
+        +
+        "/"
+        +
+        date.getDate()
+        +
+        '<span class="future-weekday">（'
+        +
+        weekdays[
+            date.getDay()
+        ]
+        +
+        "）</span>"
+        +
+        "</div>"
+
+        +
+
+        "<div>"
+
+        +
+
+        '<div class="future-preview">'
+        +
+        escapeHTML(
+            preview
+        )
+        +
+        "</div>"
+
+        +
+
+        '<div class="future-subjects">'
+        +
+        escapeHTML(
+            subjectText
+        )
+        +
+        "</div>"
+
+        +
+
+        "</div>"
+
+        +
+
+        '<div class="future-right">'
+
+        +
+
+        '<span class="badge '
+        +
+        (
+            dayTasks.length
+            ===
+            0
+            ?
+            "zero"
+            :
+            ""
+        )
+        +
+        '">'
+        +
+        (
+            dayTasks.length
+            ===
+            0
+            ?
+            "0"
+            :
+            dayTasks.length
+            +
+            "件"
+        )
+        +
+        "</span>"
+
+        +
+
+        '<span class="arrow">›</span>'
+
+        +
+
+        "</div>";
+
+
+    var detail =
+        document.createElement(
+            "div"
+        );
+
+
+    detail.className =
+        "future-detail";
+
+
+    if (
+        dayTasks.length
+        ===
+        0
+    ) {
+
+        detail.innerHTML =
+            '<div style="padding:15px 18px;color:#999;font-size:13px;">この日に提出する課題はありません</div>';
+
+    }
+
+    else {
+
+        for (
+            var j = 0;
+            j < dayTasks.length;
+            j++
+        ) {
+
+            addFutureTask(
+                detail,
+                dayTasks[j]
+            );
+
+        }
+
+    }
+
+
+    row.onclick =
+        function() {
+
+            var arrow =
+                row.querySelector(
+                    ".arrow"
+                );
+
+
+            if (
+                detail.className.indexOf(
+                    "open"
+                )
+                !==
+                -1
+            ) {
+
+                detail.className =
+                    "future-detail";
+
+
+                arrow.className =
+                    "arrow";
+
+            }
+
+            else {
+
+                detail.className =
+                    "future-detail open";
+
+
+                arrow.className =
+                    "arrow open";
+
+            }
+
+        };
+
+
+    wrapper.appendChild(
+        row
+    );
+
+
+    wrapper.appendChild(
+        detail
+    );
+
+
+    container.appendChild(
+        wrapper
+    );
+
+}
+
+
+
+function addFutureTask(
+    container,
+    task
+) {
+
+    var item =
+        document.createElement(
+            "div"
+        );
+
+
+    item.className =
+        "future-task";
+
+
+    var remaining =
+        remainingText(
+            task
+        );
+
+
+    item.innerHTML =
+
+        '<div class="task-name">'
+        +
+        (
+            task.completed
+            ?
+            "✓ "
+            :
+            ""
+        )
+        +
+        escapeHTML(
+            task.name
+        )
+        +
+        "</div>"
+
+        +
+
+        '<div class="task-subject">'
+        +
+        escapeHTML(
+            task.subject
+        )
+        +
+        "</div>"
+
+        +
+
+        '<div class="task-time">⏰ '
+        +
+        displayDateTime(
+            task.deadline
+        )
+        +
+        "</div>"
+
+        +
+
+        '<div class="remaining '
+        +
+        remaining.className
+        +
+        '">'
+        +
+        remaining.text
+        +
+        "</div>";
+
+
+    item.onclick =
+        function(event) {
+
+            event.stopPropagation();
+
+
+            editTask(
+                task.id
+            );
+
+        };
+
+
+    container.appendChild(
+        item
+    );
+
+}
+
+
+/* ========================================
+   全課題
+======================================== */
+
+function renderAllTasks() {
+
+    var container =
+        document.getElementById(
+            "allTasks"
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        tasks.length
+        ===
+        0
+    ) {
+
+        container.innerHTML =
+            '<div class="all-task" style="color:#999;">まだ課題が登録されていません</div>';
+
+
+        return;
+
+    }
+
+
+    var sorted =
+        tasks.slice();
+
+
+    sorted.sort(
+        function(a,b) {
+
+            return (
+                new Date(
+                    a.deadline
+                )
+                -
+                new Date(
+                    b.deadline
+                )
+            );
+
+        }
+    );
+
+
+    for (
+        var i = 0;
+        i < sorted.length;
+        i++
+    ) {
+
+        addAllTask(
+            container,
+            sorted[i]
+        );
+
+    }
+
+}
+
+
+
+function addAllTask(
+    container,
+    task
+) {
+
+    var item =
+        document.createElement(
+            "div"
+        );
+
+
+    item.className =
+        "all-task";
+
+
+    item.innerHTML =
+
+        '<div class="task-name">'
+        +
+        (
+            task.completed
+            ?
+            "✓ "
+            :
+            ""
+        )
+        +
+        escapeHTML(
+            task.name
+        )
+        +
+        "</div>"
+
+        +
+
+        '<div class="task-subject">'
+        +
+        escapeHTML(
+            task.subject
+        )
+        +
+        "</div>"
+
+        +
+
+        '<div class="all-date">提出期限：'
+        +
+        displayDateTime(
+            task.deadline
+        )
+        +
+        "</div>";
+
+
+    item.onclick =
+        function() {
+
+            editTask(
+                task.id
+            );
+
+        };
+
+
+    container.appendChild(
+        item
+    );
+
+}
+
+
+/* ========================================
+   新規
+======================================== */
+
+function openAddDialog() {
+
+    editingId =
+        null;
+
+
+    deleteConfirmMode =
+        false;
+
+
+    taskForm.reset();
+
+
+    deadlineInput.value =
+        "";
+
+
+    updateSubjects();
+
+
+    document.getElementById(
+        "dialogTitle"
+    ).textContent =
+        "課題を追加";
+
+
+    deadlineInfo.textContent =
+        "授業日時を入力すると、7日後の同時刻を自動設定します。";
+
+
+    document.getElementById(
+        "editActions"
+    ).innerHTML =
+        "";
+
+
+    taskDialog.showModal();
+
+}
+
+
+/* ========================================
+   編集
+======================================== */
+
+function editTask(id) {
+
+    var task =
+        null;
+
+
+    for (
+        var i = 0;
+        i < tasks.length;
+        i++
+    ) {
+
+        if (
+            String(
+                tasks[i].id
+            )
+            ===
+            String(id)
+        ) {
+
+            task =
+                tasks[i];
+
+
+            break;
+
+        }
+
+    }
+
+
+    if (
+        !task
+    ) {
+
+        return;
+
+    }
+
+
+    editingId =
+        task.id;
+
+
+    deleteConfirmMode =
+        false;
+
+
+    document.getElementById(
+        "dialogTitle"
+    ).textContent =
+        "課題を編集";
+
+
+    classDateInput.value =
+        task.classDate;
+
+
+    updateSubjects(
+        task.subject
+    );
+
+
+    subjectInput.value =
+        task.subject;
+
+
+    taskNameInput.value =
+        task.name;
+
+
+    deadlineInput.value =
+        task.deadline;
+
+
+    memoInput.value =
+        task.memo
+        ||
+        "";
+
+
+    deadlineInfo.textContent =
+        "→ 提出期限："
+        +
+        displayDateTime(
+            task.deadline
+        );
+
+
+    var editActions =
+        document.getElementById(
+            "editActions"
+        );
+
+
+    editActions.innerHTML =
+
+        '<button type="button" class="complete-button" id="completeButton">'
+        +
+        (
+            task.completed
+            ?
+            "↩ 未提出に戻す"
+            :
+            "✓ 提出済みにする"
+        )
+        +
+        "</button>"
+
+        +
+
+        '<button type="button" class="delete-button" id="deleteButton">この課題を削除</button>'
+
+        +
+
+        '<div class="delete-message" id="deleteMessage">もう一度押すと完全に削除します</div>';
+
+
+    var completeButton =
+        document.getElementById(
+            "completeButton"
+        );
+
+
+    var deleteButton =
+        document.getElementById(
+            "deleteButton"
+        );
+
+
+    var deleteMessage =
+        document.getElementById(
+            "deleteMessage"
+        );
+
+
+    completeButton.onclick =
+        function() {
+
+            task.completed =
+                !task.completed;
+
+
+            if (
+                saveTasks()
+            ) {
+
+                editingId =
+                    null;
+
+
+                taskDialog.close();
+
+
+                render();
+
+            }
+
+        };
+
+
+    deleteButton.onclick =
+        function(event) {
+
+            event.preventDefault();
+
+
+            event.stopPropagation();
+
+
+            if (
+                deleteConfirmMode
+                ===
+                false
+            ) {
+
+                deleteConfirmMode =
+                    true;
+
+
+                deleteButton.textContent =
+                    "⚠ 本当に削除する";
+
+
+                deleteButton.className =
+                    "delete-button confirming";
+
+
+                deleteMessage.style.display =
+                    "block";
+
+
+                return;
+
+            }
+
+
+            deleteTaskNow();
+
+        };
+
+
+    taskDialog.showModal();
+
+}
+
+
+/* ========================================
+   削除
+======================================== */
+
+function deleteTaskNow() {
+
+    if (
+        editingId
+        ===
+        null
+    ) {
+
+        return;
+
+    }
+
+
+    var deleteId =
+        String(
+            editingId
+        );
+
+
+    var oldTasks =
+        tasks.slice();
+
+
+    var newTasks =
+        [];
+
+
+    for (
+        var i = 0;
+        i < tasks.length;
+        i++
+    ) {
+
+        if (
+            String(
+                tasks[i].id
+            )
+            !==
+            deleteId
+        ) {
+
+            newTasks.push(
+                tasks[i]
+            );
+
+        }
+
+    }
+
+
+    tasks =
+        newTasks;
+
+
+    if (
+        !saveTasks()
+    ) {
+
+        tasks =
+            oldTasks;
+
+
+        return;
+
+    }
+
+
+    editingId =
+        null;
+
+
+    deleteConfirmMode =
+        false;
+
+
+    taskDialog.close();
+
+
+    render();
+
+}
+
+
+/* ========================================
+   保存処理
+======================================== */
+
+function handleSubmit(event) {
+
+    event.preventDefault();
+
+
+    var name =
+        taskNameInput.value.trim();
+
+
+    if (
+        classDateInput.value
+        ===
+        ""
+    ) {
+
+        alert(
+            "授業日時を入力してください。"
+        );
+
+
+        return;
+
+    }
+
+
+    if (
+        subjectInput.value
+        ===
+        ""
+    ) {
+
+        alert(
+            "科目を選択してください。"
+        );
+
+
+        return;
+
+    }
+
+
+    if (
+        name
+        ===
+        ""
+    ) {
+
+        alert(
+            "課題名を入力してください。"
+        );
+
+
+        return;
+
+    }
+
+
+    calculateDeadline();
+
+
+    var data = {
+
+        subject:
+            subjectInput.value,
+
+        name:
+            name,
+
+        classDate:
+            classDateInput.value,
+
+        deadline:
+            deadlineInput.value,
+
+        memo:
+            memoInput.value.trim()
+
+    };
+
+
+    if (
+        editingId
+        ===
+        null
+    ) {
+
+        tasks.push({
+
+            id:
+                new Date()
+                .getTime(),
+
+            subject:
+                data.subject,
+
+            name:
+                data.name,
+
+            classDate:
+                data.classDate,
+
+            deadline:
+                data.deadline,
+
+            memo:
+                data.memo,
+
+            completed:
+                false
+
+        });
+
+    }
+
+    else {
+
+        for (
+            var i = 0;
+            i < tasks.length;
+            i++
+        ) {
+
+            if (
+                String(
+                    tasks[i].id
+                )
+                ===
+                String(
+                    editingId
+                )
+            ) {
+
+                tasks[i].subject =
+                    data.subject;
+
+
+                tasks[i].name =
+                    data.name;
+
+
+                tasks[i].classDate =
+                    data.classDate;
+
+
+                tasks[i].deadline =
+                    data.deadline;
+
+
+                tasks[i].memo =
+                    data.memo;
+
+
+                break;
+
+            }
+
+        }
+
+    }
+
+
+    if (
+        saveTasks()
+    ) {
+
+        editingId =
+            null;
+
+
+        deleteConfirmMode =
+            false;
+
+
+        taskDialog.close();
+
+
+        render();
+
+    }
+
+}
+
+
+/* ========================================
+   描画
+======================================== */
+
+function render() {
+
+    var now =
+        getJapanNow();
+
+
+    var today =
+        startOfDay(
+            now
+        );
+
+
+    var tomorrow =
+        addDays(
+            today,
+            1
+        );
+
+
+    document.getElementById(
+        "nowText"
+    ).textContent =
+
+        "日本時間　"
+        +
+        displayDate(
+            now
+        )
+        +
+        " "
+        +
+        pad(
+            now.getHours()
+        )
+        +
+        ":"
+        +
+        pad(
+            now.getMinutes()
+        );
+
+
+    document.getElementById(
+        "todayTitle"
+    ).textContent =
+        displayDate(
+            today
+        );
+
+
+    document.getElementById(
+        "tomorrowTitle"
+    ).textContent =
+        displayDate(
+            tomorrow
+        );
+
+
+    renderDay(
+        today,
+        "todayTasks",
+        "todaySummary",
+        "todaySubjects"
+    );
+
+
+    renderDay(
+        tomorrow,
+        "tomorrowTasks",
+        "tomorrowSummary",
+        "tomorrowSubjects"
+    );
+
+
+    updateDayOpenState();
+
+
+    renderFuture(
+        today
+    );
+
+
+    renderAllTasks();
+
+}
+
+
+/* ========================================
+   クリック処理
+======================================== */
+
+document.getElementById(
+    "todayHeader"
+).onclick =
+    function() {
+
+        todayOpen =
+            !todayOpen;
+
+
+        updateDayOpenState();
+
+    };
+
+
+document.getElementById(
+    "tomorrowHeader"
+).onclick =
+    function() {
+
+        tomorrowOpen =
+            !tomorrowOpen;
+
+
+        updateDayOpenState();
+
+    };
+
+
+document.getElementById(
+    "addButton"
+).onclick =
+    function() {
+
+        openAddDialog();
+
+    };
+
+
+document.getElementById(
+    "cancelButton"
+).onclick =
+    function() {
+
+        editingId =
+            null;
+
+
+        deleteConfirmMode =
+            false;
+
+
+        taskDialog.close();
+
+    };
+
+
+classDateInput.oninput =
+    function() {
+
+        updateSubjects();
+
+
+        calculateDeadline();
+
+    };
+
+
+classDateInput.onchange =
+    function() {
+
+        updateSubjects();
+
+
+        calculateDeadline();
+
+    };
+
+
+taskForm.onsubmit =
+    function(event) {
+
+        handleSubmit(
+            event
+        );
+
+    };
+
+
+/* ========================================
+   起動
+======================================== */
+
+loadTasks();
+
+render();
+
+
+setInterval(
+    function() {
+
+        render();
+
+    },
+    60000
+);
+
+
+/* ========================================
+   PWA Service Worker
+======================================== */
+
+if (
+    "serviceWorker"
+    in
+    navigator
+) {
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            navigator
+            .serviceWorker
+            .register(
+                "./sw.js"
+            )
+            .then(
+                function() {
+
+                    console.log(
+                        "Service Worker 登録成功"
+                    );
+
+                }
+            )
+            .catch(
+                function(error) {
+
+                    console.log(
+                        "Service Worker 登録失敗",
+                        error
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>
