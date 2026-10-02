@@ -3887,7 +3887,209 @@ if (
 }
 
 </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+  import {
+    getFirestore
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC_BkCO1tibXxv1c-GfaQECNYfk7Ru34iM",
+    authDomain: "track-the-progress.firebaseapp.com",
+    projectId: "track-the-progress",
+    storageBucket: "track-the-progress.firebasestorage.app",
+    messagingSenderId: "1093369809597",
+    appId: "1:1093369809597:web:a0e50b4bc5a82a35a185d4"
+  };
+
+
+  const firebaseApp = initializeApp(firebaseConfig);
+
+  const auth = getAuth(firebaseApp);
+
+  const db = getFirestore(firebaseApp);
+
+  const provider = new GoogleAuthProvider();
+
+
+  const loginArea =
+    document.createElement("div");
+
+
+  loginArea.id =
+    "loginArea";
+
+
+  loginArea.style.cssText = `
+    position: fixed;
+    top: calc(12px + env(safe-area-inset-top));
+    right: 15px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  `;
+
+
+  document.body.appendChild(
+    loginArea
+  );
+
+
+  async function loginWithGoogle() {
+
+    try {
+
+      await signInWithPopup(
+        auth,
+        provider
+      );
+
+    }
+
+    catch(error) {
+
+      console.error(
+        "Googleログインエラー",
+        error
+      );
+
+
+      alert(
+        "Googleログインに失敗しました。\n\n"
+        +
+        error.message
+      );
+
+    }
+
+  }
+
+
+  async function logout() {
+
+    try {
+
+      await signOut(
+        auth
+      );
+
+    }
+
+    catch(error) {
+
+      console.error(
+        "ログアウトエラー",
+        error
+      );
+
+    }
+
+  }
+
+
+  onAuthStateChanged(
+    auth,
+    function(user) {
+
+      if (user) {
+
+        loginArea.innerHTML = `
+          <div
+            style="
+              background:white;
+              border:1px solid #ddd;
+              border-radius:20px;
+              padding:7px 11px;
+              font-size:12px;
+              box-shadow:0 2px 8px rgba(0,0,0,.08);
+              max-width:150px;
+              overflow:hidden;
+              white-space:nowrap;
+              text-overflow:ellipsis;
+            "
+          >
+            ${user.displayName || user.email || "ログイン中"}
+          </div>
+
+          <button
+            id="logoutButton"
+            type="button"
+            style="
+              border:none;
+              border-radius:18px;
+              padding:8px 11px;
+              background:#e9e9eb;
+              color:#333;
+              font-weight:650;
+              cursor:pointer;
+            "
+          >
+            ログアウト
+          </button>
+        `;
+
+
+        document
+          .getElementById(
+            "logoutButton"
+          )
+          .onclick =
+            logout;
+
+
+        console.log(
+          "ログイン成功",
+          user.uid
+        );
+
+      }
+
+      else {
+
+        loginArea.innerHTML = `
+          <button
+            id="googleLoginButton"
+            type="button"
+            style="
+              border:1px solid #ddd;
+              border-radius:20px;
+              padding:9px 14px;
+              background:white;
+              color:#1d1d1f;
+              font-weight:700;
+              cursor:pointer;
+              box-shadow:0 2px 8px rgba(0,0,0,.08);
+            "
+          >
+            Googleでログイン
+          </button>
+        `;
+
+
+        document
+          .getElementById(
+            "googleLoginButton"
+          )
+          .onclick =
+            loginWithGoogle;
+
+      }
+
+    }
+  );
+
+</script>
 
 </body>
 
