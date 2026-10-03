@@ -1591,7 +1591,9 @@ function saveTasks() {
             STORAGE_KEY,
             JSON.stringify(tasks)
         );
-
+        if (window.saveTasksToCloud) {
+            window.saveTasksToCloud();
+        }
         return true;
 
     }
@@ -1609,7 +1611,19 @@ function saveTasks() {
     }
 
 }
+window.getLocalTasks = function() {
+    return tasks;
+};
 
+window.setLocalTasks = function(newTasks) {
+    tasks = newTasks;
+    saveTasks();
+    render();
+};
+
+window.getTasksForCloud = function() {
+    return tasks;
+};
 
 /* ========================================
    現在時刻
@@ -3898,10 +3912,13 @@ if (
     onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
-  import {
-    getFirestore
-  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC_BkCO1tibXxv1c-GfaQECNYfk7Ru34iM",
@@ -3920,7 +3937,51 @@ if (
   const db = getFirestore(firebaseApp);
 
   const provider = new GoogleAuthProvider();
+// 課題が変更されたときにFirestoreへ保存する
+window.saveTasksToCloud = async function() {
 
+    const user = auth.currentUser;
+
+    // ログインしていない場合はクラウド保存しない
+    if (!user) {
+        return;
+    }
+
+    try {
+
+        const userDataRef = doc(
+            db,
+            "users",
+            user.uid,
+            "data",
+            "app"
+        );
+
+        const currentTasks =
+            window.getTasksForCloud();
+
+        await setDoc(
+            userDataRef,
+            {
+                tasks: currentTasks,
+                updatedAt: Date.now()
+            }
+        );
+
+        console.log(
+            "課題をFirestoreへ保存しました"
+        );
+
+    } catch(error) {
+
+        console.error(
+            "Firestore保存エラー",
+            error
+        );
+
+    }
+
+};
 
   const loginArea =
     document.createElement("div");
@@ -4000,8 +4061,7 @@ if (
 
   onAuthStateChanged(
     auth,
-    function(user) {
-
+    async function(user) {
       if (user) {
 
         loginArea.innerHTML = `
@@ -4053,6 +4113,170 @@ if (
           user.uid
         );
 
+                // ===== Firestore クラウド同期 =====
+
+        const userDataRef = doc(
+          db,
+          "users",
+          user.uid,
+          "data",
+          "app"
+        );
+
+       try {
+
+    // クラウドにデータがあるか確認
+    const cloudSnapshot =
+        await getDoc(userDataRef);
+
+    if (cloudSnapshot.exists()) {
+
+        const cloudData =
+            cloudSnapshot.data();
+
+        const cloudTasks =
+            Array.isArray(cloudData.tasks)
+            ? cloudData.tasks
+            : [];
+
+        const localTasks =
+            window.getLocalTasks();
+
+        // 端末とクラウドの課題を合体
+        // 同じIDならクラウド側を優先
+        const taskMap =
+            new Map();
+
+        localTasks.forEach(
+            function(task) {
+
+                taskMap.set(
+                    String(task.id),
+                    task
+                );
+
+            }
+        );
+
+        cloudTasks.forEach(
+            function(task) {
+
+                taskMap.set(
+                    String(task.id),
+                    task
+                );
+
+            }
+        );
+
+        const mergedTasks =
+            Array.from(
+                taskMap.values()
+            );
+
+        // 合体した課題をこの端末にも反映
+        window.setLocalTasks(
+            mergedTasks
+        );
+
+        // 合体した課題をFirestoreにも保存
+        await setDoc(
+            userDataRef,
+            {
+                tasks: mergedTasks,
+                updatedAt: Date.now()
+            }
+        );
+
+        console.log(
+            "端末とクラウドの課題を統合しました"
+        );
+
+    }
+
+    else {
+
+        // Firestoreにまだデータがない場合
+        // この端末にある課題をそのまま保存
+        const localTasks =
+            window.getLocalTasks();
+
+        await setDoc(
+            userDataRef,
+            {
+                tasks: localTasks,
+                updatedAt: Date.now()
+            }
+        );
+
+        console.log(
+            "既存の課題をFirestoreへ移行しました"
+        );
+
+    }
+
+
+    // Firestoreの変更をリアルタイム監視
+    onSnapshot(
+        userDataRef,
+        function(snapshot) {
+
+            if (!snapshot.exists()) {
+                return;
+            }
+
+            const data =
+                snapshot.data();
+
+            if (
+                !Array.isArray(
+                    data.tasks
+                )
+            ) {
+                return;
+            }
+
+            const currentTasks =
+                window.getLocalTasks();
+
+            if (
+                JSON.stringify(currentTasks)
+                !==
+                JSON.stringify(data.tasks)
+            ) {
+
+                window.setLocalTasks(
+                    data.tasks
+                );
+
+                console.log(
+                    "クラウドの課題を同期しました"
+                );
+
+            }
+
+        },
+
+        function(error) {
+
+            console.error(
+                "Firestore同期エラー",
+                error
+            );
+
+        }
+    );
+
+}
+
+catch(error) {
+
+    console.error(
+        "Firestore読み込みエラー",
+        error
+    );
+
+}
       }
 
       else {
