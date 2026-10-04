@@ -969,8 +969,11 @@ input[readonly] {
             1fr 1fr;
 
         gap: 8px;
+    
 
-    }
+        align-items: stretch;
+        }
+    
 
 
     .day-card {
@@ -979,6 +982,9 @@ input[readonly] {
 
         border-radius: 16px;
 
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
 
 
@@ -986,6 +992,7 @@ input[readonly] {
 
         padding: 13px 11px;
 
+        flex: 1;
     }
 
 
@@ -1026,6 +1033,8 @@ input[readonly] {
 
         overflow-wrap: anywhere;
 
+        min-height: 48px;
+
     }
 
 
@@ -1034,6 +1043,8 @@ input[readonly] {
         font-size: 11px;
 
         margin-top: 6px;
+
+        min-height: 22px;
 
     }
 
