@@ -1037,6 +1037,24 @@ input[readonly] {
 Googleでログイン
 </button>
 
+<button
+    class="google-login-button"
+    id="microsoftLoginButton"
+    type="button"
+    style="margin-top:10px;"
+>
+Microsoftでログイン
+</button>
+
+<p style="
+    margin-top:14px;
+    font-size:11px;
+    color:#888;
+">
+既にアカウントを使っている場合は、
+先にいつもの方法でログインしてから
+設定 → アカウント情報 で別のログイン方法を連携してください。
+</p>
 </div>
 
 </section>
@@ -1053,13 +1071,6 @@ Googleでログイン
 
 <div class="account-row">
 
-<div>
-
-<div
-    class="user-name"
-    id="userName"
-></div>
-
 <div
     class="sync-status syncing"
     id="syncStatus"
@@ -1073,54 +1084,16 @@ Googleでログイン
 
 </div>
 
-</div>
-
 
 <button
     type="button"
     class="logout-button"
-    id="logoutButton"
+    id="settingsButton"
 >
-ログアウト
+⚙️ 設定
 </button>
 
 </div>
-
-
-<div class="tool-buttons">
-
-<button
-    type="button"
-    class="tool-button"
-    id="retryButton"
->
-↻ 同期を再試行
-</button>
-
-<button
-    type="button"
-    class="tool-button"
-    id="backupButton"
->
-↓ バックアップ
-</button>
-
-<button
-    type="button"
-    class="tool-button"
-    id="restoreButton"
->
-↑ 復元
-</button>
-
-</div>
-
-<input
-    type="file"
-    id="restoreFileInput"
-    accept=".json,application/json"
-    hidden
->
 
 </section>
 
@@ -1401,6 +1374,280 @@ TOMORROW
 
 </dialog>
 
+<!-- =========================
+     設定
+========================= -->
+
+<dialog id="settingsDialog">
+
+<div class="dialog-content">
+
+<h2>
+⚙️ 設定
+</h2>
+
+
+<div
+    class="user-name"
+    id="userName"
+    style="
+        margin-bottom:18px;
+        color:#666;
+    "
+></div>
+
+
+<button
+    type="button"
+    class="complete-button"
+    id="accountInfoButton"
+>
+👤 アカウント情報
+</button>
+
+
+<button
+    type="button"
+    class="complete-button"
+    id="retryButton"
+>
+↻ 同期を再試行
+</button>
+
+
+<button
+    type="button"
+    class="complete-button"
+    id="backupButton"
+>
+↓ バックアップ
+</button>
+
+
+<button
+    type="button"
+    class="complete-button"
+    id="restoreButton"
+>
+↑ 復元
+</button>
+
+
+<button
+    type="button"
+    class="delete-button"
+    id="logoutButton"
+>
+ログアウト
+</button>
+
+
+<button
+    type="button"
+    class="cancel"
+    id="settingsCloseButton"
+    style="
+        width:100%;
+        margin-top:15px;
+        padding:14px;
+        border:none;
+        border-radius:11px;
+        font-weight:700;
+    "
+>
+閉じる
+</button>
+
+</div>
+
+</dialog>
+
+
+<!-- =========================
+     アカウント情報
+========================= -->
+
+<dialog id="accountInfoDialog">
+
+<div class="dialog-content">
+
+<h2>
+👤 アカウント情報
+</h2>
+
+
+<div
+    style="
+        background:#f5f5f7;
+        padding:14px;
+        border-radius:14px;
+        margin-bottom:12px;
+    "
+>
+
+<div
+    style="
+        color:#777;
+        font-size:12px;
+        margin-bottom:5px;
+    "
+>
+メールアドレス
+</div>
+
+
+<div
+    id="accountEmail"
+    style="
+        font-size:15px;
+        font-weight:700;
+        word-break:break-all;
+    "
+>
+----
+</div>
+
+
+<button
+    type="button"
+    id="revealEmailButton"
+    style="
+        margin-top:10px;
+        border:none;
+        border-radius:10px;
+        padding:9px 12px;
+        background:#e7f0ff;
+        color:#0066cc;
+        font-weight:700;
+    "
+>
+🔒 Face ID / 端末認証で表示
+</button>
+
+</div>
+
+
+<div
+    style="
+        background:#f5f5f7;
+        padding:14px;
+        border-radius:14px;
+        margin-bottom:12px;
+    "
+>
+
+<div
+    style="
+        color:#777;
+        font-size:12px;
+    "
+>
+パスワード
+</div>
+
+<div
+    style="
+        margin-top:5px;
+        font-size:14px;
+        font-weight:650;
+    "
+>
+Google / Microsoftアカウント側で管理
+</div>
+
+<div
+    style="
+        margin-top:5px;
+        font-size:11px;
+        color:#888;
+        line-height:1.5;
+    "
+>
+課題管理アプリはログイン用パスワードを取得・保存しません。
+</div>
+
+</div>
+
+
+<div
+    style="
+        background:#f5f5f7;
+        padding:14px;
+        border-radius:14px;
+        margin-bottom:12px;
+    "
+>
+
+<div
+    style="
+        color:#777;
+        font-size:12px;
+        margin-bottom:10px;
+    "
+>
+ログイン方法
+</div>
+
+
+<div
+    id="googleProviderStatus"
+    style="margin-bottom:8px;"
+></div>
+
+<button
+    type="button"
+    class="complete-button"
+    id="linkGoogleButton"
+>
+Googleを連携
+</button>
+
+
+<div
+    id="microsoftProviderStatus"
+    style="
+        margin-top:15px;
+        margin-bottom:8px;
+    "
+></div>
+
+<button
+    type="button"
+    class="complete-button"
+    id="linkMicrosoftButton"
+>
+Microsoftを連携
+</button>
+
+</div>
+
+
+<button
+    type="button"
+    class="cancel"
+    id="accountInfoCloseButton"
+    style="
+        width:100%;
+        padding:14px;
+        border:none;
+        border-radius:11px;
+        font-weight:700;
+    "
+>
+閉じる
+</button>
+
+</div>
+
+</dialog>
+
+
+<input
+    type="file"
+    id="restoreFileInput"
+    accept=".json,application/json"
+    hidden
+>
 
 <script type="module">
 
@@ -1414,9 +1661,11 @@ from
 import {
     getAuth,
     GoogleAuthProvider,
+    OAuthProvider,
     signInWithPopup,
     signOut,
-    onAuthStateChanged
+    onAuthStateChanged,
+    linkWithPopup
 }
 from
 "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
@@ -1602,6 +1851,82 @@ const userName =
         "userName"
     );
 
+    const microsoftLoginButton =
+    document.getElementById(
+        "microsoftLoginButton"
+    );
+
+
+const settingsButton =
+    document.getElementById(
+        "settingsButton"
+    );
+
+
+const settingsDialog =
+    document.getElementById(
+        "settingsDialog"
+    );
+
+
+const settingsCloseButton =
+    document.getElementById(
+        "settingsCloseButton"
+    );
+
+
+const accountInfoButton =
+    document.getElementById(
+        "accountInfoButton"
+    );
+
+
+const accountInfoDialog =
+    document.getElementById(
+        "accountInfoDialog"
+    );
+
+
+const accountInfoCloseButton =
+    document.getElementById(
+        "accountInfoCloseButton"
+    );
+
+
+const accountEmail =
+    document.getElementById(
+        "accountEmail"
+    );
+
+
+const revealEmailButton =
+    document.getElementById(
+        "revealEmailButton"
+    );
+
+
+const googleProviderStatus =
+    document.getElementById(
+        "googleProviderStatus"
+    );
+
+
+const microsoftProviderStatus =
+    document.getElementById(
+        "microsoftProviderStatus"
+    );
+
+
+const linkGoogleButton =
+    document.getElementById(
+        "linkGoogleButton"
+    );
+
+
+const linkMicrosoftButton =
+    document.getElementById(
+        "linkMicrosoftButton"
+    );
 
 const syncStatus =
     document.getElementById(
@@ -2585,25 +2910,49 @@ async function deleteTaskFromCloud(
    Googleログイン
 ======================================== */
 
+function createGoogleProvider() {
+
+    const provider =
+        new GoogleAuthProvider();
+
+
+    provider.setCustomParameters({
+        prompt:
+            "select_account"
+    });
+
+
+    return provider;
+
+}
+
+
+function createMicrosoftProvider() {
+
+    const provider =
+        new OAuthProvider(
+            "microsoft.com"
+        );
+
+
+    provider.setCustomParameters({
+        prompt:
+            "select_account"
+    });
+
+
+    return provider;
+
+}
+
+
 async function loginWithGoogle() {
 
     try {
 
-        const provider =
-            new GoogleAuthProvider();
-
-
-        provider.setCustomParameters({
-
-            prompt:
-                "select_account"
-
-        });
-
-
         await signInWithPopup(
             auth,
-            provider
+            createGoogleProvider()
         );
 
     }
@@ -2616,24 +2965,18 @@ async function loginWithGoogle() {
         );
 
 
-        const message =
-            String(
-                error.message
-                ||
-                ""
-            );
-
-
         if (
-            message
-            .toLowerCase()
-            .includes(
-                "missing initial state"
-            )
+            error.code
+            ===
+            "auth/account-exists-with-different-credential"
         ) {
 
             alert(
-                "iPhoneのホーム画面版ではGoogleログインに失敗することがあります。\n\nSafariでこのサイトを直接開いてログインしてください。"
+                "このメールアドレスは別のログイン方法で登録済みです。\n\n"
+                +
+                "先にその方法でログインして、"
+                +
+                "設定 → アカウント情報からGoogleを連携してください。"
             );
 
             return;
@@ -2644,13 +2987,675 @@ async function loginWithGoogle() {
         alert(
             "Googleログインに失敗しました。\n\n"
             +
-            message
+            (
+                error.message
+                ||
+                error.code
+            )
         );
 
     }
 
 }
 
+
+async function loginWithMicrosoft() {
+
+    try {
+
+        await signInWithPopup(
+            auth,
+            createMicrosoftProvider()
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Microsoftログインエラー",
+            error
+        );
+
+
+        if (
+            error.code
+            ===
+            "auth/account-exists-with-different-credential"
+        ) {
+
+            alert(
+                "このメールアドレスは既に別のログイン方法で登録されています。\n\n"
+                +
+                "Googleでログインして、"
+                +
+                "設定 → アカウント情報 → Microsoftを連携してください。"
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "Microsoftログインに失敗しました。\n\n"
+            +
+            (
+                error.message
+                ||
+                error.code
+            )
+        );
+
+    }
+
+}
+
+/* ========================================
+   アカウント情報
+======================================== */
+
+function maskEmail(email) {
+
+    if (!email) {
+
+        return "----";
+
+    }
+
+
+    const firstFour =
+        email.substring(
+            0,
+            4
+        );
+
+
+    return (
+        firstFour
+        +
+        "••••••••"
+    );
+
+}
+
+
+function updateAccountInfo() {
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
+    accountEmail.textContent =
+        maskEmail(
+            currentUser.email
+            ||
+            ""
+        );
+
+
+    const providers =
+        currentUser
+        .providerData
+        .map(
+            function(data) {
+
+                return data.providerId;
+
+            }
+        );
+
+
+    const googleLinked =
+        providers.includes(
+            "google.com"
+        );
+
+
+    const microsoftLinked =
+        providers.includes(
+            "microsoft.com"
+        );
+
+
+    googleProviderStatus.textContent =
+        googleLinked
+        ?
+        "✅ Google　連携済み"
+        :
+        "○ Google　未連携";
+
+
+    microsoftProviderStatus.textContent =
+        microsoftLinked
+        ?
+        "✅ Microsoft　連携済み"
+        :
+        "○ Microsoft　未連携";
+
+
+    linkGoogleButton.hidden =
+        googleLinked;
+
+
+    linkMicrosoftButton.hidden =
+        microsoftLinked;
+
+}
+
+/* ========================================
+   ログイン方法の連携
+======================================== */
+
+async function linkLoginProvider(type) {
+
+    if (
+        !auth.currentUser
+    ) {
+
+        return;
+
+    }
+
+
+    let provider;
+
+
+    if (
+        type
+        ===
+        "google"
+    ) {
+
+        provider =
+            createGoogleProvider();
+
+    }
+
+    else {
+
+        provider =
+            createMicrosoftProvider();
+
+    }
+
+
+    try {
+
+        const result =
+            await linkWithPopup(
+                auth.currentUser,
+                provider
+            );
+
+
+        currentUser =
+            result.user;
+
+
+        updateAccountInfo();
+
+
+        alert(
+            type
+            ===
+            "google"
+            ?
+            "Googleを連携しました。\n今後はGoogleでも同じ課題を開けます。"
+            :
+            "Microsoftを連携しました。\n今後はMicrosoftでも同じ課題を開けます。"
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "アカウント連携エラー",
+            error
+        );
+
+
+        if (
+            error.code
+            ===
+            "auth/credential-already-in-use"
+        ) {
+
+            alert(
+                "このログインアカウントは、すでに別の課題管理アカウントに使われています。\n\n"
+                +
+                "データを勝手に統合すると危険なので、自動では連携しません。"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            error.code
+            ===
+            "auth/provider-already-linked"
+        ) {
+
+            updateAccountInfo();
+
+            return;
+
+        }
+
+
+        alert(
+            "ログイン方法を連携できませんでした。\n\n"
+            +
+            (
+                error.message
+                ||
+                error.code
+            )
+        );
+
+    }
+
+}
+
+/* ========================================
+   メールアドレス本人確認
+======================================== */
+
+function bytesToBase64Url(bytes) {
+
+    let binary = "";
+
+    for (
+        let i = 0;
+        i < bytes.length;
+        i++
+    ) {
+
+        binary +=
+            String.fromCharCode(
+                bytes[i]
+            );
+
+    }
+
+
+    return btoa(binary)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/g, "");
+
+}
+
+
+function base64UrlToBytes(value) {
+
+    value =
+        value
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+
+    while (
+        value.length % 4
+    ) {
+
+        value += "=";
+
+    }
+
+
+    const binary =
+        atob(value);
+
+
+    const bytes =
+        new Uint8Array(
+            binary.length
+        );
+
+
+    for (
+        let i = 0;
+        i < binary.length;
+        i++
+    ) {
+
+        bytes[i] =
+            binary.charCodeAt(i);
+
+    }
+
+
+    return bytes;
+
+}
+
+
+function randomBytes(length) {
+
+    const bytes =
+        new Uint8Array(length);
+
+
+    crypto.getRandomValues(
+        bytes
+    );
+
+
+    return bytes;
+
+}
+
+
+function biometricCredentialKey() {
+
+    return (
+        "kadai_biometric_credential_"
+        +
+        currentUser.uid
+    );
+
+}
+
+
+function biometricUserKey() {
+
+    return (
+        "kadai_biometric_user_"
+        +
+        currentUser.uid
+    );
+
+}
+
+
+async function revealEmailWithDeviceAuth() {
+
+    if (
+        !currentUser
+        ||
+        !currentUser.email
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !window.PublicKeyCredential
+        ||
+        !navigator.credentials
+    ) {
+
+        alert(
+            "この端末ではFace ID / Touch ID / 端末認証を利用できません。"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const available =
+            await PublicKeyCredential
+            .isUserVerifyingPlatformAuthenticatorAvailable();
+
+
+        if (
+            !available
+        ) {
+
+            alert(
+                "この端末ではFace ID / Touch IDなどの端末認証を利用できません。"
+            );
+
+            return;
+
+        }
+
+
+        const savedCredentialId =
+            localStorage.getItem(
+                biometricCredentialKey()
+            );
+
+
+        /* =========================
+           2回目以降：本人確認
+        ========================= */
+
+        if (
+            savedCredentialId
+        ) {
+
+            await navigator.credentials.get({
+
+                publicKey: {
+
+                    challenge:
+                        randomBytes(32),
+
+                    allowCredentials: [
+
+                        {
+                            id:
+                                base64UrlToBytes(
+                                    savedCredentialId
+                                ),
+
+                            type:
+                                "public-key",
+
+                            transports: [
+                                "internal"
+                            ]
+                        }
+
+                    ],
+
+                    userVerification:
+                        "required",
+
+                    timeout:
+                        60000
+
+                }
+
+            });
+
+        }
+
+
+        /* =========================
+           初回：この端末を登録
+        ========================= */
+
+        else {
+
+            let savedUserId =
+                localStorage.getItem(
+                    biometricUserKey()
+                );
+
+
+            let userId;
+
+
+            if (
+                savedUserId
+            ) {
+
+                userId =
+                    base64UrlToBytes(
+                        savedUserId
+                    );
+
+            }
+
+            else {
+
+                userId =
+                    randomBytes(32);
+
+
+                localStorage.setItem(
+                    biometricUserKey(),
+                    bytesToBase64Url(
+                        userId
+                    )
+                );
+
+            }
+
+
+            const credential =
+                await navigator.credentials.create({
+
+                    publicKey: {
+
+                        challenge:
+                            randomBytes(32),
+
+                        rp: {
+
+                            name:
+                                "課題管理"
+
+                        },
+
+                        user: {
+
+                            id:
+                                userId,
+
+                            name:
+                                currentUser.email,
+
+                            displayName:
+                                currentUser.displayName
+                                ||
+                                currentUser.email
+
+                        },
+
+                        pubKeyCredParams: [
+
+                            {
+                                type:
+                                    "public-key",
+
+                                alg:
+                                    -7
+                            },
+
+                            {
+                                type:
+                                    "public-key",
+
+                                alg:
+                                    -257
+                            }
+
+                        ],
+
+                        authenticatorSelection: {
+
+                            authenticatorAttachment:
+                                "platform",
+
+                            userVerification:
+                                "required"
+
+                        },
+
+                        timeout:
+                            60000,
+
+                        attestation:
+                            "none"
+
+                    }
+
+                });
+
+
+            if (
+                !credential
+            ) {
+
+                return;
+
+            }
+
+
+            localStorage.setItem(
+                biometricCredentialKey(),
+                bytesToBase64Url(
+                    new Uint8Array(
+                        credential.rawId
+                    )
+                )
+            );
+
+        }
+
+
+        /* =========================
+           認証成功
+        ========================= */
+
+        accountEmail.textContent =
+            currentUser.email;
+
+
+        revealEmailButton.textContent =
+            "✓ 本人確認済み";
+
+
+        revealEmailButton.disabled =
+            true;
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "端末認証エラー",
+            error
+        );
+
+
+        if (
+            error.name
+            ===
+            "NotAllowedError"
+        ) {
+
+            alert(
+                "本人確認がキャンセルされました。"
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "Face ID / Touch ID / 端末認証を利用できませんでした。"
+        );
+
+    }
+
+}
 
 /* ========================================
    ログアウト
@@ -5235,6 +6240,7 @@ onAuthStateChanged(
             ||
             "ログイン中";
 
+        updateAccountInfo();
 
         loadUserCache();
 
@@ -5247,7 +6253,6 @@ onAuthStateChanged(
 
 );
 
-
 /* ========================================
    イベント
 ======================================== */
@@ -5256,14 +6261,116 @@ googleLoginButton.onclick =
     loginWithGoogle;
 
 
+microsoftLoginButton.onclick =
+    loginWithMicrosoft;
+
+
+/* 設定を開く */
+settingsButton.onclick =
+    function() {
+
+        settingsDialog.showModal();
+
+    };
+
+
+/* 設定を閉じる */
+settingsCloseButton.onclick =
+    function() {
+
+        settingsDialog.close();
+
+    };
+
+
+/* アカウント情報を開く */
+accountInfoButton.onclick =
+    function() {
+
+        updateAccountInfo();
+
+
+        revealEmailButton.textContent =
+            "🔒 Face ID / 端末認証で表示";
+
+
+        revealEmailButton.disabled =
+            false;
+
+
+        settingsDialog.close();
+
+
+        accountInfoDialog.showModal();
+
+    };
+
+
+/* アカウント情報を閉じる */
+accountInfoCloseButton.onclick =
+    function() {
+
+        accountEmail.textContent =
+            maskEmail(
+                currentUser
+                ?
+                currentUser.email
+                :
+                ""
+            );
+
+
+        revealEmailButton.textContent =
+            "🔒 Face ID / 端末認証で表示";
+
+
+        revealEmailButton.disabled =
+            false;
+
+
+        accountInfoDialog.close();
+
+    };
+
+
+/* メールアドレスを本人確認後に表示 */
+revealEmailButton.onclick =
+    revealEmailWithDeviceAuth;
+
+
+/* Googleを現在のアカウントへ連携 */
+linkGoogleButton.onclick =
+    function() {
+
+        linkLoginProvider(
+            "google"
+        );
+
+    };
+
+
+/* Microsoftを現在のアカウントへ連携 */
+linkMicrosoftButton.onclick =
+    function() {
+
+        linkLoginProvider(
+            "microsoft"
+        );
+
+    };
+
+
+/* ログアウト */
 logoutButton.onclick =
     logout;
 
 
+/* 課題追加 */
 addButton.onclick =
     openAddDialog;
 
 
+/* 同期再試行 */
 retryButton.onclick =
     async function() {
 
@@ -5281,10 +6388,12 @@ retryButton.onclick =
     };
 
 
+/* バックアップ */
 backupButton.onclick =
     downloadBackup;
 
 
+/* 復元 */
 restoreButton.onclick =
     function() {
 
@@ -5307,6 +6416,7 @@ restoreFileInput.onchange =
     };
 
 
+/* 課題編集画面を閉じる */
 document.getElementById(
     "cancelButton"
 )
@@ -5326,6 +6436,7 @@ document.getElementById(
     };
 
 
+/* TODAY 開閉 */
 document.getElementById(
     "todayHeader"
 )
@@ -5341,6 +6452,7 @@ document.getElementById(
     };
 
 
+/* TOMORROW 開閉 */
 document.getElementById(
     "tomorrowHeader"
 )
@@ -5356,6 +6468,7 @@ document.getElementById(
     };
 
 
+/* 授業日時変更 */
 classDateInput.oninput =
     function() {
 
@@ -5376,10 +6489,12 @@ classDateInput.onchange =
     };
 
 
+/* 課題保存 */
 taskForm.onsubmit =
     handleSubmit;
 
 
+/* オフライン */
 window.addEventListener(
     "offline",
     function() {
@@ -5396,6 +6511,7 @@ window.addEventListener(
 );
 
 
+/* オンライン復帰 */
 window.addEventListener(
     "online",
     function() {
@@ -5410,7 +6526,6 @@ window.addEventListener(
 
     }
 );
-
 
 /* ========================================
    時計
