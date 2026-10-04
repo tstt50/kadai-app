@@ -957,34 +957,135 @@ input[readonly] {
 @media(max-width:650px) {
 
     .container {
+
         padding: 12px;
+
     }
+
 
     .main-days {
+
         grid-template-columns:
-            1fr;
+            1fr 1fr;
+
+        gap: 8px;
+
     }
 
+
+    .day-card {
+
+        min-width: 0;
+
+        border-radius: 16px;
+
+    }
+
+
+    .day-header {
+
+        padding: 13px 11px;
+
+    }
+
+
+    .day-label {
+
+        font-size: 10px;
+
+        letter-spacing: .8px;
+
+    }
+
+
+    .day-arrow {
+
+        font-size: 18px;
+
+    }
+
+
+    .day-date {
+
+        font-size: 18px;
+
+        line-height: 1.3;
+
+        white-space: nowrap;
+
+    }
+
+
+    .day-subjects {
+
+        margin-top: 7px;
+
+        font-size: 11px;
+
+        line-height: 1.5;
+
+        overflow-wrap: anywhere;
+
+    }
+
+
+    .day-summary {
+
+        font-size: 11px;
+
+        margin-top: 6px;
+
+    }
+
+
+    .day-content {
+
+        padding:
+            0 10px 12px;
+
+    }
+
+
+    .task {
+
+        padding: 9px;
+
+        border-radius: 11px;
+
+    }
+
+
+    .task-name {
+
+        font-size: 13px;
+
+    }
+
+
+    .task-subject,
+    .task-time,
+    .remaining {
+
+        font-size: 10px;
+
+    }
+
+
     .future-row {
+
         grid-template-columns:
             76px 1fr auto;
 
         padding:
             14px 12px;
+
     }
+
 
     h1 {
+
         font-size: 23px;
-    }
 
-    .account-row {
-        align-items:
-            flex-start;
-    }
-
-    .tool-buttons {
-        grid-template-columns:
-            1fr;
     }
 
 }
