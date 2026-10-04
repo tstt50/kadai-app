@@ -11,36 +11,29 @@
 
 <title>課題管理</title>
 
-<!-- PWA -->
 <link rel="manifest" href="./manifest.json">
-
-<meta name="theme-color" content="#ffffff">
-
-<!-- iPhone -->
 <link rel="apple-touch-icon" href="./icon-192.png">
 
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
-
 <meta
     name="apple-mobile-web-app-status-bar-style"
     content="default"
 >
-
 <meta
     name="apple-mobile-web-app-title"
     content="課題管理"
 >
 
-
 <style>
-
-/* =========================
-   基本
-========================= */
 
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
+}
+
+[hidden] {
+    display: none !important;
 }
 
 html {
@@ -49,7 +42,6 @@ html {
 
 body {
     margin: 0;
-
     background: #f4f5f7;
     color: #1d1d1f;
 
@@ -64,21 +56,23 @@ body {
         calc(100px + env(safe-area-inset-bottom));
 }
 
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
 
 /* =========================
    ヘッダー
 ========================= */
 
 header {
-
-    background:
-        rgba(255,255,255,.96);
-
-    border-bottom:
-        1px solid #e5e5e5;
+    background: rgba(255,255,255,.96);
+    border-bottom: 1px solid #e5e5e5;
 
     position: sticky;
-
     top: 0;
 
     z-index: 10;
@@ -90,35 +84,79 @@ header {
         blur(12px);
 }
 
-
 .header-inner {
-
     max-width: 900px;
-
     margin: auto;
-
     padding: 18px;
-
 }
-
 
 h1 {
-
     margin: 0;
-
     font-size: 25px;
+}
 
+#nowText {
+    margin-top: 5px;
+    color: #777;
+    font-size: 13px;
 }
 
 
-#nowText {
+/* =========================
+   ログイン画面
+========================= */
 
-    margin-top: 5px;
+.auth-gate {
+    max-width: 520px;
+    margin: 70px auto;
+    padding: 20px;
+}
 
-    color: #777;
+.auth-card {
+    background: white;
+    border-radius: 22px;
+    padding: 30px 22px;
+    text-align: center;
 
-    font-size: 13px;
+    box-shadow:
+        0 5px 25px
+        rgba(0,0,0,.07);
+}
 
+.auth-icon {
+    font-size: 45px;
+}
+
+.auth-card h2 {
+    margin:
+        14px 0 8px;
+}
+
+.auth-card p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.google-login-button {
+    width: 100%;
+
+    margin-top: 18px;
+    padding: 14px;
+
+    border:
+        1px solid #ddd;
+
+    border-radius: 13px;
+
+    background: white;
+
+    color: #1d1d1f;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
 }
 
 
@@ -127,13 +165,134 @@ h1 {
 ========================= */
 
 .container {
-
     max-width: 900px;
-
     margin: auto;
-
     padding: 18px;
+}
 
+
+/* =========================
+   アカウント / 同期
+========================= */
+
+.control-panel {
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 14px;
+
+    margin-bottom: 18px;
+
+    box-shadow:
+        0 3px 15px
+        rgba(0,0,0,.04);
+}
+
+.account-row {
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 700;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sync-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 6px;
+
+    font-size: 12px;
+
+    color: #666;
+}
+
+.sync-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #999;
+}
+
+.sync-status.syncing .sync-dot {
+    background: #f59e0b;
+}
+
+.sync-status.synced .sync-dot {
+    background: #22a447;
+}
+
+.sync-status.offline .sync-dot {
+    background: #888;
+}
+
+.sync-status.error .sync-dot {
+    background: #d70015;
+}
+
+.logout-button {
+    flex-shrink: 0;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: #e9e9eb;
+
+    padding: 9px 12px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+}
+
+.tool-buttons {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 8px;
+
+    margin-top: 13px;
+}
+
+.tool-button {
+    border: none;
+
+    border-radius: 11px;
+
+    padding: 10px 8px;
+
+    background: #f1f1f3;
+
+    font-size: 12px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+}
+
+.tool-button:active {
+    background: #ddd;
 }
 
 
@@ -142,19 +301,15 @@ h1 {
 ========================= */
 
 .main-days {
-
     display: grid;
 
     grid-template-columns:
         1fr 1fr;
 
     gap: 15px;
-
 }
 
-
 .day-card {
-
     background: white;
 
     border-radius: 20px;
@@ -164,58 +319,40 @@ h1 {
     box-shadow:
         0 3px 15px
         rgba(0,0,0,.05);
-
 }
-
 
 .today {
-
     border:
         2px solid #007aff;
-
 }
-
 
 .tomorrow {
-
     border:
         2px solid #ddd;
-
 }
 
-
 .day-header {
-
     padding: 18px;
 
     cursor: pointer;
 
     user-select: none;
-
 }
-
 
 .day-header:active {
-
     background: #f4f4f6;
-
 }
 
-
 .day-top {
-
     display: flex;
 
     justify-content:
         space-between;
 
     align-items: center;
-
 }
 
-
 .day-label {
-
     font-size: 12px;
 
     font-weight: 800;
@@ -223,50 +360,35 @@ h1 {
     letter-spacing: 1px;
 
     color: #888;
-
 }
-
 
 .today .day-label {
-
     color: #007aff;
-
 }
 
-
 .day-arrow {
-
     color: #999;
 
     font-size: 22px;
 
     transition:
         transform .2s;
-
 }
-
 
 .day-arrow.open {
-
     transform:
         rotate(90deg);
-
 }
 
-
 .day-date {
-
     font-size: 21px;
 
     font-weight: 750;
 
     margin-top: 4px;
-
 }
 
-
 .day-subjects {
-
     margin-top: 9px;
 
     color: #555;
@@ -274,35 +396,25 @@ h1 {
     font-size: 13px;
 
     line-height: 1.6;
-
 }
 
-
 .day-summary {
-
     color: #777;
 
     font-size: 13px;
 
     margin-top: 7px;
-
 }
 
-
 .day-content {
-
     display: none;
 
     padding:
         0 18px 18px;
-
 }
 
-
 .day-content.open {
-
     display: block;
-
 }
 
 
@@ -311,7 +423,6 @@ h1 {
 ========================= */
 
 .task {
-
     background: #f6f7f9;
 
     border-radius: 14px;
@@ -321,54 +432,36 @@ h1 {
     margin-top: 9px;
 
     cursor: pointer;
-
 }
-
 
 .task:active {
-
     background: #e9eaed;
-
 }
-
 
 .task.completed {
-
     opacity: .55;
-
 }
-
 
 .task.completed .task-name {
-
     text-decoration:
         line-through;
-
 }
 
-
 .task-name {
-
     font-weight: 750;
 
     font-size: 15px;
-
 }
 
-
 .task-subject {
-
     color: #777;
 
     font-size: 12px;
 
     margin-top: 4px;
-
 }
 
-
 .task-time {
-
     color: #e5484d;
 
     font-size: 12px;
@@ -376,12 +469,9 @@ h1 {
     font-weight: 650;
 
     margin-top: 7px;
-
 }
 
-
 .remaining {
-
     color: #007aff;
 
     font-size: 12px;
@@ -389,32 +479,22 @@ h1 {
     font-weight: 650;
 
     margin-top: 3px;
-
 }
-
 
 .remaining.done {
-
     color: #24913d;
-
 }
-
 
 .remaining.overdue {
-
     color: #d70015;
-
 }
 
-
 .empty {
-
     color: #999;
 
     font-size: 14px;
 
     padding: 10px 0;
-
 }
 
 
@@ -423,18 +503,14 @@ h1 {
 ========================= */
 
 .section-title {
-
     font-size: 18px;
 
     margin:
         30px 2px 12px;
-
 }
-
 
 .future-list,
 .all-list {
-
     background: white;
 
     border-radius: 20px;
@@ -444,7 +520,6 @@ h1 {
     box-shadow:
         0 3px 15px
         rgba(0,0,0,.04);
-
 }
 
 
@@ -453,22 +528,15 @@ h1 {
 ========================= */
 
 .future-wrapper {
-
     border-bottom:
         1px solid #eee;
-
 }
-
 
 .future-wrapper:last-child {
-
     border-bottom: none;
-
 }
 
-
 .future-row {
-
     display: grid;
 
     grid-template-columns:
@@ -481,37 +549,25 @@ h1 {
     padding: 15px;
 
     cursor: pointer;
-
 }
-
 
 .future-row:active {
-
     background: #f4f4f6;
-
 }
 
-
 .future-date {
-
     font-weight: 700;
 
     font-size: 14px;
-
 }
 
-
 .future-weekday {
-
     color: #888;
 
     font-weight: 400;
-
 }
 
-
 .future-preview {
-
     font-size: 13px;
 
     color: #444;
@@ -521,12 +577,9 @@ h1 {
     white-space: nowrap;
 
     text-overflow: ellipsis;
-
 }
 
-
 .future-subjects {
-
     color: #777;
 
     font-size: 11px;
@@ -538,23 +591,17 @@ h1 {
     white-space: nowrap;
 
     text-overflow: ellipsis;
-
 }
 
-
 .future-right {
-
     display: flex;
 
     align-items: center;
 
     gap: 8px;
-
 }
 
-
 .badge {
-
     background: #fee2e2;
 
     color: #b91c1c;
@@ -566,21 +613,15 @@ h1 {
     font-size: 11px;
 
     font-weight: 700;
-
 }
 
-
 .badge.zero {
-
     background: #eee;
 
     color: #999;
-
 }
 
-
 .arrow {
-
     display: inline-block;
 
     color: #999;
@@ -589,36 +630,24 @@ h1 {
 
     transition:
         transform .2s;
-
 }
-
 
 .arrow.open {
-
     transform:
         rotate(90deg);
-
 }
 
-
 .future-detail {
-
     display: none;
 
     background: #fafafa;
-
 }
-
 
 .future-detail.open {
-
     display: block;
-
 }
 
-
 .future-task {
-
     padding:
         14px 18px;
 
@@ -626,7 +655,6 @@ h1 {
         1px solid #eee;
 
     cursor: pointer;
-
 }
 
 
@@ -635,7 +663,6 @@ h1 {
 ========================= */
 
 .all-task {
-
     padding:
         14px 16px;
 
@@ -643,32 +670,22 @@ h1 {
         1px solid #eee;
 
     cursor: pointer;
-
 }
-
 
 .all-task:last-child {
-
     border-bottom: none;
-
 }
-
 
 .all-task:active {
-
     background: #eee;
-
 }
 
-
 .all-date {
-
     color: #777;
 
     font-size: 12px;
 
     margin-top: 5px;
-
 }
 
 
@@ -677,7 +694,6 @@ h1 {
 ========================= */
 
 .add-button {
-
     position: fixed;
 
     right: 24px;
@@ -690,7 +706,6 @@ h1 {
         );
 
     width: 62px;
-
     height: 62px;
 
     border: none;
@@ -710,7 +725,6 @@ h1 {
         rgba(0,0,0,.25);
 
     z-index: 20;
-
 }
 
 
@@ -719,7 +733,6 @@ h1 {
 ========================= */
 
 dialog {
-
     border: none;
 
     border-radius: 22px;
@@ -736,44 +749,29 @@ dialog {
     box-shadow:
         0 20px 60px
         rgba(0,0,0,.3);
-
 }
-
 
 dialog::backdrop {
-
     background:
         rgba(0,0,0,.45);
-
 }
-
 
 .dialog-content {
-
     padding: 24px;
-
 }
 
-
 .dialog-content h2 {
-
     margin:
         0 0 22px;
 
     font-size: 20px;
-
 }
-
 
 .field {
-
     margin-bottom: 17px;
-
 }
 
-
 label {
-
     display: block;
 
     font-size: 13px;
@@ -781,14 +779,11 @@ label {
     font-weight: 700;
 
     margin-bottom: 6px;
-
 }
-
 
 input,
 select,
 textarea {
-
     display: block;
 
     width: 100%;
@@ -807,48 +802,34 @@ textarea {
     padding:
         12px 13px;
 
-    font-family: inherit;
-
     font-size: 16px;
 
     outline: none;
-
 }
-
 
 input:focus,
 select:focus,
 textarea:focus {
-
     border-color: #007aff;
 
     box-shadow:
         0 0 0 3px
         rgba(0,122,255,.12);
-
 }
 
-
 textarea {
-
     min-height: 80px;
 
     resize: vertical;
-
 }
 
-
 input[readonly] {
-
     background: #f2f2f4;
 
     color: #555;
-
 }
 
-
 .deadline-info {
-
     padding: 11px;
 
     border-radius: 11px;
@@ -862,12 +843,9 @@ input[readonly] {
     font-weight: 650;
 
     margin-top: 7px;
-
 }
 
-
 .subject-info {
-
     padding: 10px;
 
     border-radius: 10px;
@@ -879,27 +857,17 @@ input[readonly] {
     font-size: 12px;
 
     margin-top: 7px;
-
 }
 
-
-/* =========================
-   ボタン
-========================= */
-
 .dialog-buttons {
-
     display: flex;
 
     gap: 9px;
 
     margin-top: 22px;
-
 }
 
-
 .dialog-buttons button {
-
     flex: 1;
 
     padding: 13px;
@@ -911,30 +879,21 @@ input[readonly] {
     font-size: 15px;
 
     cursor: pointer;
-
 }
-
 
 .cancel {
-
     background: #e9e9eb;
-
 }
 
-
 .save {
-
     background: #007aff;
 
     color: white;
 
     font-weight: 700;
-
 }
 
-
 .complete-button {
-
     width: 100%;
 
     margin-top: 12px;
@@ -950,12 +909,9 @@ input[readonly] {
     color: #19702e;
 
     font-weight: 700;
-
 }
 
-
 .delete-button {
-
     width: 100%;
 
     margin-top: 9px;
@@ -971,21 +927,15 @@ input[readonly] {
     color: #d70015;
 
     font-weight: 700;
-
 }
 
-
 .delete-button.confirming {
-
     background: #d70015;
 
     color: white;
-
 }
 
-
 .delete-message {
-
     display: none;
 
     margin-top: 8px;
@@ -997,7 +947,6 @@ input[readonly] {
     text-align: center;
 
     font-weight: 650;
-
 }
 
 
@@ -1008,41 +957,39 @@ input[readonly] {
 @media(max-width:650px) {
 
     .container {
-
         padding: 12px;
-
     }
-
 
     .main-days {
-
         grid-template-columns:
             1fr;
-
     }
 
-
     .future-row {
-
         grid-template-columns:
             76px 1fr auto;
 
         padding:
             14px 12px;
-
     }
 
-
     h1 {
-
         font-size: 23px;
+    }
 
+    .account-row {
+        align-items:
+            flex-start;
+    }
+
+    .tool-buttons {
+        grid-template-columns:
+            1fr;
     }
 
 }
 
 </style>
-
 </head>
 
 
@@ -1062,13 +1009,124 @@ input[readonly] {
 </header>
 
 
-<main class="container">
+<section
+    class="auth-gate"
+    id="authGate"
+>
+
+<div class="auth-card">
+
+<div class="auth-icon">
+📚
+</div>
+
+<h2>
+課題管理
+</h2>
+
+<p>
+課題を見るにはGoogleアカウントでログインしてください。<br>
+課題はアカウントごとに保存されます。
+</p>
+
+<button
+    class="google-login-button"
+    id="googleLoginButton"
+    type="button"
+>
+Googleでログイン
+</button>
+
+</div>
+
+</section>
+
+
+<main
+    class="container"
+    id="appContent"
+    hidden
+>
+
+
+<section class="control-panel">
+
+<div class="account-row">
+
+<div>
+
+<div
+    class="user-name"
+    id="userName"
+></div>
+
+<div
+    class="sync-status syncing"
+    id="syncStatus"
+>
+
+<span class="sync-dot"></span>
+
+<span id="syncStatusText">
+同期中...
+</span>
+
+</div>
+
+</div>
+
+
+<button
+    type="button"
+    class="logout-button"
+    id="logoutButton"
+>
+ログアウト
+</button>
+
+</div>
+
+
+<div class="tool-buttons">
+
+<button
+    type="button"
+    class="tool-button"
+    id="retryButton"
+>
+↻ 同期を再試行
+</button>
+
+<button
+    type="button"
+    class="tool-button"
+    id="backupButton"
+>
+↓ バックアップ
+</button>
+
+<button
+    type="button"
+    class="tool-button"
+    id="restoreButton"
+>
+↑ 復元
+</button>
+
+</div>
+
+<input
+    type="file"
+    id="restoreFileInput"
+    accept=".json,application/json"
+    hidden
+>
+
+</section>
 
 
 <div class="main-days">
 
-
-<!-- TODAY -->
 
 <section class="day-card today">
 
@@ -1122,8 +1180,6 @@ TODAY
 </section>
 
 
-<!-- TOMORROW -->
-
 <section class="day-card tomorrow">
 
 <div
@@ -1175,14 +1231,12 @@ TOMORROW
 
 </section>
 
-
 </div>
 
 
 <h2 class="section-title">
 その先1週間
 </h2>
-
 
 <div
     class="future-list"
@@ -1194,12 +1248,10 @@ TOMORROW
 すべての課題
 </h2>
 
-
 <div
     class="all-list"
     id="allTasks"
 ></div>
-
 
 </main>
 
@@ -1208,21 +1260,15 @@ TOMORROW
     class="add-button"
     id="addButton"
     type="button"
+    hidden
 >
 ＋
 </button>
 
 
-
-<!-- =========================
-     追加・編集
-========================= -->
-
 <dialog id="taskDialog">
 
-
 <div class="dialog-content">
-
 
 <h2 id="dialogTitle">
 課題を追加
@@ -1247,7 +1293,6 @@ TOMORROW
 </div>
 
 
-
 <div class="field">
 
 <label for="subject">
@@ -1265,18 +1310,14 @@ TOMORROW
 
 </select>
 
-
 <div
     class="subject-info"
     id="subjectInfo"
 >
-
 授業日時を選ぶと、その曜日の科目だけ表示します。
-
 </div>
 
 </div>
-
 
 
 <div class="field">
@@ -1296,7 +1337,6 @@ TOMORROW
 </div>
 
 
-
 <div class="field">
 
 <label for="deadline">
@@ -1309,19 +1349,14 @@ TOMORROW
     readonly
 >
 
-
 <div
     class="deadline-info"
     id="deadlineInfo"
 >
-
-授業日時を入力すると、
-7日後の同時刻を自動設定します。
-
+授業日時を入力すると、6日後の23:59を提出期限に設定します。
 </div>
 
 </div>
-
 
 
 <div class="field">
@@ -1338,7 +1373,6 @@ TOMORROW
 </div>
 
 
-
 <div class="dialog-buttons">
 
 <button
@@ -1349,7 +1383,6 @@ TOMORROW
 キャンセル
 </button>
 
-
 <button
     type="submit"
     class="save"
@@ -1359,34 +1392,108 @@ TOMORROW
 
 </div>
 
-
 </form>
 
 
 <div id="editActions"></div>
-
 
 </div>
 
 </dialog>
 
 
+<script type="module">
 
-<script>
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+}
+from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+
+import {
+    getFirestore,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    setDoc,
+    onSnapshot,
+    runTransaction
+}
+from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
 
 /* ========================================
-   保存
+   Firebase
 ======================================== */
 
-var STORAGE_KEY =
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyC_BkCO1tibXxv1c-GfaQECNYfk7Ru34iM",
+
+    authDomain:
+        "track-the-progress.firebaseapp.com",
+
+    projectId:
+        "track-the-progress",
+
+    storageBucket:
+        "track-the-progress.firebasestorage.app",
+
+    messagingSenderId:
+        "1093369809597",
+
+    appId:
+        "1:1093369809597:web:a0e50b4bc5a82a35a185d4"
+
+};
+
+
+const firebaseApp =
+    initializeApp(
+        firebaseConfig
+    );
+
+
+const auth =
+    getAuth(
+        firebaseApp
+    );
+
+
+const db =
+    getFirestore(
+        firebaseApp
+    );
+
+
+/* ========================================
+   基本データ
+======================================== */
+
+const LEGACY_STORAGE_KEY =
     "university_assignment_manager_v6";
 
 
-/* ========================================
-   曜日
-======================================== */
+const CACHE_PREFIX =
+    "university_assignment_manager_v7_";
 
-var weekdays = [
+
+const weekdays = [
     "日",
     "月",
     "火",
@@ -1397,26 +1504,17 @@ var weekdays = [
 ];
 
 
-/* ========================================
-   時間割
-======================================== */
+const timetable = {
 
-var timetable = {
-
-    /* 日 */
     0: [
         "その他"
     ],
 
-
-    /* 月 */
     1: [
         "基礎物理学B",
         "実践基礎A"
     ],
 
-
-    /* 火 */
     2: [
         "材料力学A",
         "哲学A",
@@ -1424,29 +1522,21 @@ var timetable = {
         "基礎製図"
     ],
 
-
-    /* 水 */
     3: [
         "数理・データサイエンス・AI入門",
         "微分積分学A",
         "日本国憲法"
     ],
 
-
-    /* 木 */
     4: [
         "微分積分学A",
         "ETC B"
     ],
 
-
-    /* 金 */
     5: [
         "熱力学"
     ],
 
-
-    /* 土 */
     6: [
         "その他"
     ]
@@ -1455,93 +1545,275 @@ var timetable = {
 
 
 /* ========================================
-   変数
+   状態
 ======================================== */
 
-var tasks = [];
+let tasks = [];
 
-var editingId = null;
+let currentUser = null;
 
-var deleteConfirmMode = false;
+let editingId = null;
 
-var todayOpen = true;
+let deleteConfirmMode = false;
 
-var tomorrowOpen = true;
+let todayOpen = true;
+
+let tomorrowOpen = true;
+
+let unsubscribeTasks = null;
 
 
 /* ========================================
    DOM
 ======================================== */
 
-var taskDialog =
+const authGate =
+    document.getElementById(
+        "authGate"
+    );
+
+
+const appContent =
+    document.getElementById(
+        "appContent"
+    );
+
+
+const googleLoginButton =
+    document.getElementById(
+        "googleLoginButton"
+    );
+
+
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
+
+
+const addButton =
+    document.getElementById(
+        "addButton"
+    );
+
+
+const userName =
+    document.getElementById(
+        "userName"
+    );
+
+
+const syncStatus =
+    document.getElementById(
+        "syncStatus"
+    );
+
+
+const syncStatusText =
+    document.getElementById(
+        "syncStatusText"
+    );
+
+
+const retryButton =
+    document.getElementById(
+        "retryButton"
+    );
+
+
+const backupButton =
+    document.getElementById(
+        "backupButton"
+    );
+
+
+const restoreButton =
+    document.getElementById(
+        "restoreButton"
+    );
+
+
+const restoreFileInput =
+    document.getElementById(
+        "restoreFileInput"
+    );
+
+
+const taskDialog =
     document.getElementById(
         "taskDialog"
     );
 
 
-var taskForm =
+const taskForm =
     document.getElementById(
         "taskForm"
     );
 
 
-var subjectInput =
-    document.getElementById(
-        "subject"
-    );
-
-
-var subjectInfo =
-    document.getElementById(
-        "subjectInfo"
-    );
-
-
-var taskNameInput =
-    document.getElementById(
-        "taskName"
-    );
-
-
-var classDateInput =
+const classDateInput =
     document.getElementById(
         "classDate"
     );
 
 
-var deadlineInput =
+const subjectInput =
+    document.getElementById(
+        "subject"
+    );
+
+
+const subjectInfo =
+    document.getElementById(
+        "subjectInfo"
+    );
+
+
+const taskNameInput =
+    document.getElementById(
+        "taskName"
+    );
+
+
+const deadlineInput =
     document.getElementById(
         "deadline"
     );
 
 
-var memoInput =
-    document.getElementById(
-        "memo"
-    );
-
-
-var deadlineInfo =
+const deadlineInfo =
     document.getElementById(
         "deadlineInfo"
     );
 
 
+const memoInput =
+    document.getElementById(
+        "memo"
+    );
+
+
 /* ========================================
-   localStorage読み込み
+   Firestore参照
 ======================================== */
 
-function loadTasks() {
+function userTasksCollection() {
+
+    return collection(
+        db,
+        "users",
+        currentUser.uid,
+        "tasks"
+    );
+
+}
+
+
+function userMetaReference() {
+
+    return doc(
+        db,
+        "users",
+        currentUser.uid,
+        "meta",
+        "app"
+    );
+
+}
+
+
+function legacyCloudReference() {
+
+    return doc(
+        db,
+        "users",
+        currentUser.uid,
+        "data",
+        "app"
+    );
+
+}
+
+
+/* ========================================
+   ID
+======================================== */
+
+function createId() {
+
+    if (
+        window.crypto
+        &&
+        typeof window.crypto.randomUUID
+        ===
+        "function"
+    ) {
+
+        return window.crypto.randomUUID();
+
+    }
+
+
+    return (
+        String(
+            Date.now()
+        )
+        +
+        "-"
+        +
+        String(
+            Math.random()
+        )
+        .substring(
+            2
+        )
+    );
+
+}
+
+
+/* ========================================
+   キャッシュ
+======================================== */
+
+function cacheKey() {
+
+    if (!currentUser) {
+
+        return null;
+
+    }
+
+
+    return (
+        CACHE_PREFIX
+        +
+        currentUser.uid
+    );
+
+}
+
+
+function loadUserCache() {
+
+    if (!currentUser) {
+
+        tasks = [];
+
+        return;
+
+    }
+
 
     try {
 
-        var saved =
+        const value =
             localStorage.getItem(
-                STORAGE_KEY
+                cacheKey()
             );
 
 
-        if (!saved) {
+        if (!value) {
 
             tasks = [];
 
@@ -1550,27 +1822,29 @@ function loadTasks() {
         }
 
 
-        var parsed =
-            JSON.parse(saved);
+        const parsed =
+            JSON.parse(
+                value
+            );
 
 
-        if (
-            Array.isArray(parsed)
-        ) {
-
-            tasks = parsed;
-
-        } else {
-
-            tasks = [];
-
-        }
+        tasks =
+            Array.isArray(
+                parsed
+            )
+            ?
+            parsed
+            :
+            [];
 
     }
 
     catch(error) {
 
-        console.log(error);
+        console.error(
+            "キャッシュ読み込みエラー",
+            error
+        );
 
         tasks = [];
 
@@ -1579,60 +1853,1211 @@ function loadTasks() {
 }
 
 
-/* ========================================
-   保存
-======================================== */
+function saveUserCache() {
 
-function saveTasks() {
+    if (!currentUser) {
+
+        return;
+
+    }
+
 
     try {
 
         localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(tasks)
+            cacheKey(),
+            JSON.stringify(
+                tasks
+            )
         );
-        if (window.saveTasksToCloud) {
-            window.saveTasksToCloud();
-        }
-        return true;
 
     }
 
     catch(error) {
 
-        console.log(error);
+        console.error(
+            "キャッシュ保存エラー",
+            error
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   同期表示
+======================================== */
+
+function setSyncStatus(
+    type,
+    text
+) {
+
+    syncStatus.className =
+        "sync-status "
+        +
+        type;
+
+
+    syncStatusText.textContent =
+        text;
+
+}
+
+
+function showOfflineStatus() {
+
+    setSyncStatus(
+        "offline",
+        "オフライン"
+    );
+
+}
+
+
+/* ========================================
+   タスク正規化
+======================================== */
+
+function normalizeTask(task) {
+
+    return {
+
+        id:
+            String(
+                task.id
+                ||
+                createId()
+            ),
+
+        subject:
+            String(
+                task.subject
+                ||
+                "その他"
+            ),
+
+        name:
+            String(
+                task.name
+                ||
+                ""
+            ),
+
+        classDate:
+            String(
+                task.classDate
+                ||
+                ""
+            ),
+
+        deadline:
+            String(
+                task.deadline
+                ||
+                ""
+            ),
+
+        memo:
+            String(
+                task.memo
+                ||
+                ""
+            ),
+
+        completed:
+            Boolean(
+                task.completed
+            ),
+
+        updatedAt:
+            Number(
+                task.updatedAt
+                ||
+                Date.now()
+            )
+
+    };
+
+}
+
+
+/* ========================================
+   旧データ移行
+======================================== */
+
+function readLegacyLocalTasks() {
+
+    try {
+
+        const value =
+            localStorage.getItem(
+                LEGACY_STORAGE_KEY
+            );
+
+
+        if (!value) {
+
+            return [];
+
+        }
+
+
+        const parsed =
+            JSON.parse(
+                value
+            );
+
+
+        if (
+            !Array.isArray(
+                parsed
+            )
+        ) {
+
+            return [];
+
+        }
+
+
+        return parsed.map(
+            normalizeTask
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "旧データ読み込みエラー",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+async function ensureNewDatabase() {
+
+    const metaRef =
+        userMetaReference();
+
+
+    const metaSnapshot =
+        await getDoc(
+            metaRef
+        );
+
+
+    if (
+        metaSnapshot.exists()
+        &&
+        Number(
+            metaSnapshot.data()
+            .schemaVersion
+        )
+        >=
+        2
+    ) {
+
+        return;
+
+    }
+
+
+    const newCollectionSnapshot =
+        await getDocs(
+            userTasksCollection()
+        );
+
+
+    if (
+        !newCollectionSnapshot.empty
+    ) {
+
+        await setDoc(
+            metaRef,
+            {
+                schemaVersion: 2,
+                migratedAt:
+                    Date.now()
+            },
+            {
+                merge: true
+            }
+        );
+
+        return;
+
+    }
+
+
+    let sourceTasks = [];
+
+
+    const oldCloudSnapshot =
+        await getDoc(
+            legacyCloudReference()
+        );
+
+
+    if (
+        oldCloudSnapshot.exists()
+        &&
+        Array.isArray(
+            oldCloudSnapshot
+            .data()
+            .tasks
+        )
+    ) {
+
+        sourceTasks =
+            oldCloudSnapshot
+            .data()
+            .tasks
+            .map(
+                normalizeTask
+            );
+
+    }
+
+else {
+
+    // 別アカウントへ端末の旧データをコピーしない
+    sourceTasks = [];
+
+}
+
+
+    for (
+        const task
+        of
+        sourceTasks
+    ) {
+
+        await setDoc(
+
+            doc(
+                userTasksCollection(),
+                String(
+                    task.id
+                )
+            ),
+
+            {
+                ...task,
+                deleted: false,
+                deletedAt: null
+            }
+
+        );
+
+    }
+
+
+    await setDoc(
+        metaRef,
+        {
+            schemaVersion: 2,
+            migratedAt:
+                Date.now(),
+            migratedTaskCount:
+                sourceTasks.length
+        },
+        {
+            merge: true
+        }
+    );
+
+}
+
+
+/* ========================================
+   リアルタイム同期
+======================================== */
+
+function applyCloudSnapshot(
+    snapshot
+) {
+
+    const nextTasks = [];
+
+
+    snapshot.forEach(
+        function(documentSnapshot) {
+
+            const data =
+                documentSnapshot.data();
+
+
+            if (
+                data.deleted
+                ===
+                true
+            ) {
+
+                return;
+
+            }
+
+
+            nextTasks.push(
+                normalizeTask(
+                    data
+                )
+            );
+
+        }
+    );
+
+
+    tasks =
+        nextTasks;
+
+
+    saveUserCache();
+
+    render();
+
+
+    if (
+        !navigator.onLine
+        ||
+        snapshot.metadata.fromCache
+    ) {
+
+        setSyncStatus(
+            "offline",
+            "オフライン・端末データを表示"
+        );
+
+    }
+
+    else {
+
+        setSyncStatus(
+            "synced",
+            "✓ 同期済み"
+        );
+
+    }
+
+}
+
+
+async function startRealtimeSync() {
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
+    if (
+        unsubscribeTasks
+    ) {
+
+        unsubscribeTasks();
+
+        unsubscribeTasks =
+            null;
+
+    }
+
+
+    if (
+        !navigator.onLine
+    ) {
+
+        showOfflineStatus();
+
+    }
+
+    else {
+
+        setSyncStatus(
+            "syncing",
+            "同期中..."
+        );
+
+    }
+
+
+    try {
+
+        await ensureNewDatabase();
+
+
+        unsubscribeTasks =
+            onSnapshot(
+
+                userTasksCollection(),
+
+                {
+                    includeMetadataChanges:
+                        true
+                },
+
+                function(snapshot) {
+
+                    applyCloudSnapshot(
+                        snapshot
+                    );
+
+                },
+
+                function(error) {
+
+                    console.error(
+                        "同期エラー",
+                        error
+                    );
+
+
+                    setSyncStatus(
+                        "error",
+                        "同期エラー"
+                    );
+
+                }
+
+            );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "同期開始エラー",
+            error
+        );
+
+
+        setSyncStatus(
+            "error",
+            "同期エラー・再試行してください"
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   課題保存
+======================================== */
+
+async function saveTaskToCloud(
+    task
+) {
+
+    if (!currentUser) {
 
         alert(
-            "保存できませんでした。"
+            "ログインしてください。"
         );
 
         return false;
 
     }
 
+
+    setSyncStatus(
+        "syncing",
+        "同期中..."
+    );
+
+
+    const taskRef =
+        doc(
+            userTasksCollection(),
+            String(
+                task.id
+            )
+        );
+
+
+    let deletedAlready =
+        false;
+
+
+    try {
+
+        await runTransaction(
+
+            db,
+
+            async function(transaction) {
+
+                const snapshot =
+                    await transaction.get(
+                        taskRef
+                    );
+
+
+                if (
+                    snapshot.exists()
+                    &&
+                    snapshot.data()
+                    .deleted
+                    ===
+                    true
+                ) {
+
+                    deletedAlready =
+                        true;
+
+                    return;
+
+                }
+
+
+                transaction.set(
+                    taskRef,
+                    {
+                        ...task,
+                        deleted: false,
+                        deletedAt: null
+                    }
+                );
+
+            }
+
+        );
+
+
+        if (
+            deletedAlready
+        ) {
+
+            tasks =
+                tasks.filter(
+                    function(item) {
+
+                        return (
+                            String(
+                                item.id
+                            )
+                            !==
+                            String(
+                                task.id
+                            )
+                        );
+
+                    }
+                );
+
+
+            saveUserCache();
+
+            render();
+
+
+            alert(
+                "この課題は別の端末ですでに削除されています。"
+            );
+
+
+            return false;
+
+        }
+
+
+        setSyncStatus(
+            "synced",
+            "✓ 同期済み"
+        );
+
+
+        return true;
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "課題保存エラー",
+            error
+        );
+
+
+        setSyncStatus(
+            "error",
+            "保存エラー・再試行してください"
+        );
+
+
+        return false;
+
+    }
+
 }
-window.getLocalTasks = function() {
-    return tasks;
-};
 
-window.setLocalTasks = function(newTasks) {
-    tasks = newTasks;
-    saveTasks();
-    render();
-};
-
-window.getTasksForCloud = function() {
-    return tasks;
-};
 
 /* ========================================
-   現在時刻
+   課題削除
 ======================================== */
+
+async function deleteTaskFromCloud(
+    id
+) {
+
+    if (!currentUser) {
+
+        return false;
+
+    }
+
+
+    setSyncStatus(
+        "syncing",
+        "同期中..."
+    );
+
+
+    const now =
+        Date.now();
+
+
+    try {
+
+        await setDoc(
+
+            doc(
+                userTasksCollection(),
+                String(id)
+            ),
+
+            {
+                id:
+                    String(id),
+
+                deleted:
+                    true,
+
+                deletedAt:
+                    now,
+
+                updatedAt:
+                    now
+            }
+
+        );
+
+
+        setSyncStatus(
+            "synced",
+            "✓ 同期済み"
+        );
+
+
+        return true;
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "削除エラー",
+            error
+        );
+
+
+        setSyncStatus(
+            "error",
+            "削除の同期に失敗しました"
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+/* ========================================
+   Googleログイン
+======================================== */
+
+async function loginWithGoogle() {
+
+    try {
+
+        const provider =
+            new GoogleAuthProvider();
+
+
+        provider.setCustomParameters({
+
+            prompt:
+                "select_account"
+
+        });
+
+
+        await signInWithPopup(
+            auth,
+            provider
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Googleログインエラー",
+            error
+        );
+
+
+        const message =
+            String(
+                error.message
+                ||
+                ""
+            );
+
+
+        if (
+            message
+            .toLowerCase()
+            .includes(
+                "missing initial state"
+            )
+        ) {
+
+            alert(
+                "iPhoneのホーム画面版ではGoogleログインに失敗することがあります。\n\nSafariでこのサイトを直接開いてログインしてください。"
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "Googleログインに失敗しました。\n\n"
+            +
+            message
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   ログアウト
+======================================== */
+
+async function logout() {
+
+    try {
+
+        if (
+            unsubscribeTasks
+        ) {
+
+            unsubscribeTasks();
+
+            unsubscribeTasks =
+                null;
+
+        }
+
+
+        await signOut(
+            auth
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "ログアウトエラー",
+            error
+        );
+
+
+        alert(
+            "ログアウトに失敗しました。"
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   バックアップ
+======================================== */
+
+function downloadBackup() {
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
+    const backup = {
+
+        version: 2,
+
+        exportedAt:
+            new Date()
+            .toISOString(),
+
+        account:
+            currentUser.email
+            ||
+            "",
+
+        tasks:
+            tasks
+
+    };
+
+
+    const blob =
+        new Blob(
+
+            [
+                JSON.stringify(
+                    backup,
+                    null,
+                    2
+                )
+            ],
+
+            {
+                type:
+                    "application/json"
+            }
+
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    const date =
+        new Date();
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        "kadai-backup-"
+        +
+        date.getFullYear()
+        +
+        "-"
+        +
+        String(
+            date.getMonth()
+            +
+            1
+        )
+        .padStart(
+            2,
+            "0"
+        )
+        +
+        "-"
+        +
+        String(
+            date.getDate()
+        )
+        .padStart(
+            2,
+            "0"
+        )
+        +
+        ".json";
+
+
+    document.body
+    .appendChild(
+        link
+    );
+
+
+    link.click();
+
+    link.remove();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+/* ========================================
+   復元
+======================================== */
+
+async function restoreBackup(
+    file
+) {
+
+    if (
+        !file
+        ||
+        !currentUser
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const text =
+            await file.text();
+
+
+        const parsed =
+            JSON.parse(
+                text
+            );
+
+
+        const importedTasks =
+            Array.isArray(
+                parsed
+            )
+            ?
+            parsed
+            :
+            parsed.tasks;
+
+
+        if (
+            !Array.isArray(
+                importedTasks
+            )
+        ) {
+
+            throw new Error(
+                "課題データが見つかりません。"
+            );
+
+        }
+
+
+        const normalized =
+            importedTasks
+            .map(
+                normalizeTask
+            )
+            .filter(
+                function(task) {
+
+                    return (
+                        task.name
+                        &&
+                        task.deadline
+                    );
+
+                }
+            );
+
+
+        const confirmed =
+            confirm(
+                "現在の課題をバックアップ内容で置き換えます。\n\n復元する課題："
+                +
+                normalized.length
+                +
+                "件\n\n続けますか？"
+            );
+
+
+        if (
+            !confirmed
+        ) {
+
+            return;
+
+        }
+
+
+        setSyncStatus(
+            "syncing",
+            "バックアップを復元中..."
+        );
+
+
+        const cloudSnapshot =
+            await getDocs(
+                userTasksCollection()
+            );
+
+
+        const restoreTime =
+            Date.now();
+
+
+        for (
+            const documentSnapshot
+            of
+            cloudSnapshot.docs
+        ) {
+
+            await setDoc(
+
+                documentSnapshot.ref,
+
+                {
+                    id:
+                        documentSnapshot.id,
+
+                    deleted:
+                        true,
+
+                    deletedAt:
+                        restoreTime,
+
+                    updatedAt:
+                        restoreTime
+                }
+
+            );
+
+        }
+
+
+        for (
+            let i = 0;
+            i < normalized.length;
+            i++
+        ) {
+
+            const task =
+                normalized[i];
+
+
+            task.updatedAt =
+                restoreTime
+                +
+                1
+                +
+                i;
+
+
+            await setDoc(
+
+                doc(
+                    userTasksCollection(),
+                    String(
+                        task.id
+                    )
+                ),
+
+                {
+                    ...task,
+                    deleted:
+                        false,
+                    deletedAt:
+                        null
+                }
+
+            );
+
+        }
+
+
+        setSyncStatus(
+            "synced",
+            "✓ 復元完了"
+        );
+
+
+        alert(
+            "バックアップを復元しました。"
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "復元エラー",
+            error
+        );
+
+
+        setSyncStatus(
+            "error",
+            "復元エラー"
+        );
+
+
+        alert(
+            "バックアップを復元できませんでした。\n\n"
+            +
+            error.message
+        );
+
+    }
+
+    finally {
+
+        restoreFileInput.value =
+            "";
+
+    }
+
+}
+
+
+/* ========================================
+   日付
+======================================== */
+
+function pad(
+    number
+) {
+
+    return String(
+        number
+    )
+    .padStart(
+        2,
+        "0"
+    );
+
+}
+
 
 function getJapanNow() {
 
-    var text =
-        new Date().toLocaleString(
+    const text =
+        new Date()
+        .toLocaleString(
             "en-US",
             {
                 timeZone:
@@ -1641,35 +3066,18 @@ function getJapanNow() {
         );
 
 
-    return new Date(text);
+    return new Date(
+        text
+    );
 
 }
 
 
-/* ========================================
-   日付関数
-======================================== */
+function startOfDay(
+    date
+) {
 
-function pad(number) {
-
-    if (
-        number < 10
-    ) {
-
-        return "0" + number;
-
-    }
-
-
-    return String(number);
-
-}
-
-
-
-function startOfDay(date) {
-
-    var copy =
+    const copy =
         new Date(
             date.getTime()
         );
@@ -1688,13 +3096,12 @@ function startOfDay(date) {
 }
 
 
-
 function addDays(
     date,
     days
 ) {
 
-    var copy =
+    const copy =
         new Date(
             date.getTime()
         );
@@ -1712,8 +3119,9 @@ function addDays(
 }
 
 
-
-function dateKey(date) {
+function dateKey(
+    date
+) {
 
     return (
         date.getFullYear()
@@ -1736,11 +3144,14 @@ function dateKey(date) {
 }
 
 
-
-function toDateTimeLocal(date) {
+function toDateTimeLocal(
+    date
+) {
 
     return (
-        dateKey(date)
+        dateKey(
+            date
+        )
         +
         "T"
         +
@@ -1758,8 +3169,9 @@ function toDateTimeLocal(date) {
 }
 
 
-
-function displayDate(date) {
+function displayDate(
+    date
+) {
 
     return (
         (
@@ -1784,11 +3196,25 @@ function displayDate(date) {
 }
 
 
+function displayDateTime(
+    value
+) {
 
-function displayDateTime(value) {
+    const date =
+        new Date(
+            value
+        );
 
-    var date =
-        new Date(value);
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "-";
+
+    }
 
 
     return (
@@ -1825,53 +3251,48 @@ function displayDateTime(value) {
 
 
 /* ========================================
-   その曜日の科目
+   科目
 ======================================== */
 
-function subjectsForDate(date) {
+function subjectsForDate(
+    date
+) {
 
-    var day =
-        date.getDay();
-
-
-    if (
-        !timetable[day]
-    ) {
-
-        return [];
-
-    }
-
-
-    return timetable[day];
+    return (
+        timetable[
+            date.getDay()
+        ]
+        ||
+        []
+    );
 
 }
 
 
-/* ========================================
-   科目表示
-======================================== */
+function subjectTextForDate(
+    date
+) {
 
-function subjectTextForDate(date) {
-
-    var subjects =
-        subjectsForDate(date);
-
-
-    if (
-        subjects.length === 0
-    ) {
-
-        return "授業なし";
-
-    }
+    const subjects =
+        subjectsForDate(
+            date
+        );
 
 
     if (
-        subjects.length === 1
-        &&
-        subjects[0] ===
-        "その他"
+        subjects.length
+        ===
+        0
+        ||
+        (
+            subjects.length
+            ===
+            1
+            &&
+            subjects[0]
+            ===
+            "その他"
+        )
     ) {
 
         return "授業なし";
@@ -1882,15 +3303,13 @@ function subjectTextForDate(date) {
     return (
         "授業："
         +
-        subjects.join("・")
+        subjects.join(
+            "・"
+        )
     );
 
 }
 
-
-/* ========================================
-   選択できる科目を曜日で変更
-======================================== */
 
 function updateSubjects(
     selectedSubject
@@ -1901,27 +3320,26 @@ function updateSubjects(
 
 
     if (
-        classDateInput.value
-        ===
-        ""
+        !classDateInput.value
     ) {
 
-        var emptyOption =
+        const option =
             document.createElement(
                 "option"
             );
 
 
-        emptyOption.value =
+        option.value =
             "";
 
 
-        emptyOption.textContent =
+        option.textContent =
             "先に授業日時を選択してください";
 
 
-        subjectInput.appendChild(
-            emptyOption
+        subjectInput
+        .appendChild(
+            option
         );
 
 
@@ -1934,7 +3352,7 @@ function updateSubjects(
     }
 
 
-    var date =
+    const date =
         new Date(
             classDateInput.value
         );
@@ -1951,31 +3369,26 @@ function updateSubjects(
     }
 
 
-    var day =
+    const day =
         date.getDay();
 
 
-    var subjects =
+    const subjects =
         timetable[day]
         ?
         timetable[day].slice()
         :
-        ["その他"];
+        [
+            "その他"
+        ];
 
-
-    /*
-       古い課題の科目も
-       編集できるようにする
-    */
 
     if (
         selectedSubject
         &&
-        subjects.indexOf(
+        !subjects.includes(
             selectedSubject
         )
-        ===
-        -1
     ) {
 
         subjects.push(
@@ -1985,43 +3398,42 @@ function updateSubjects(
     }
 
 
-    for (
-        var i = 0;
-        i < subjects.length;
-        i++
-    ) {
+    subjects.forEach(
+        function(subject) {
 
-        var option =
-            document.createElement(
-                "option"
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                subject;
+
+
+            option.textContent =
+                subject;
+
+
+            if (
+                selectedSubject
+                ===
+                subject
+            ) {
+
+                option.selected =
+                    true;
+
+            }
+
+
+            subjectInput
+            .appendChild(
+                option
             );
 
-
-        option.value =
-            subjects[i];
-
-
-        option.textContent =
-            subjects[i];
-
-
-        if (
-            selectedSubject
-            ===
-            subjects[i]
-        ) {
-
-            option.selected =
-                true;
-
         }
-
-
-        subjectInput.appendChild(
-            option
-        );
-
-    }
+    );
 
 
     subjectInfo.textContent =
@@ -2029,31 +3441,17 @@ function updateSubjects(
         +
         "曜日の授業のみ表示しています";
 
-
-    if (
-        subjects.length
-        ===
-        1
-    ) {
-
-        subjectInput.selectedIndex =
-            0;
-
-    }
-
 }
 
 
 /* ========================================
-   締切
+   提出期限
 ======================================== */
 
 function calculateDeadline() {
 
     if (
-        classDateInput.value
-        ===
-        ""
+        !classDateInput.value
     ) {
 
         deadlineInput.value =
@@ -2061,7 +3459,7 @@ function calculateDeadline() {
 
 
         deadlineInfo.textContent =
-            "授業日時を入力すると、7日後の同時刻を自動設定します。";
+            "授業日時を入力すると、6日後の23:59を提出期限に設定します。";
 
 
         return;
@@ -2069,7 +3467,7 @@ function calculateDeadline() {
     }
 
 
-    var date =
+    const date =
         new Date(
             classDateInput.value
         );
@@ -2089,12 +3487,22 @@ function calculateDeadline() {
     date.setDate(
         date.getDate()
         +
-        7
+        6
+    );
+
+
+    date.setHours(
+        23,
+        59,
+        0,
+        0
     );
 
 
     deadlineInput.value =
-        toDateTimeLocal(date);
+        toDateTimeLocal(
+            date
+        );
 
 
     deadlineInfo.textContent =
@@ -2108,19 +3516,23 @@ function calculateDeadline() {
 
 
 /* ========================================
-   HTML安全化
+   表示補助
 ======================================== */
 
-function escapeHTML(text) {
+function escapeHTML(
+    text
+) {
 
-    var div =
+    const div =
         document.createElement(
             "div"
         );
 
 
     div.textContent =
-        String(text);
+        String(
+            text
+        );
 
 
     return div.innerHTML;
@@ -2128,46 +3540,35 @@ function escapeHTML(text) {
 }
 
 
-/* ========================================
-   日付別課題
-======================================== */
+function tasksForDate(
+    date
+) {
 
-function tasksForDate(date) {
-
-    var target =
-        dateKey(date);
-
-
-    var result = [];
+    const key =
+        dateKey(
+            date
+        );
 
 
-    for (
-        var i = 0;
-        i < tasks.length;
-        i++
-    ) {
+    return tasks
+    .filter(
+        function(task) {
 
-        if (
-            tasks[i].deadline
-            &&
-            tasks[i].deadline.substring(
-                0,
-                10
-            )
-            ===
-            target
-        ) {
-
-            result.push(
-                tasks[i]
+            return (
+                task.deadline
+                &&
+                task.deadline
+                .substring(
+                    0,
+                    10
+                )
+                ===
+                key
             );
 
         }
-
-    }
-
-
-    result.sort(
+    )
+    .sort(
         function(a,b) {
 
             return (
@@ -2183,62 +3584,54 @@ function tasksForDate(date) {
         }
     );
 
-
-    return result;
-
 }
 
 
-/* ========================================
-   残り時間
-======================================== */
-
-function remainingText(task) {
+function remainingText(
+    task
+) {
 
     if (
         task.completed
     ) {
 
         return {
-
             text:
                 "✓ 提出済み",
-
             className:
                 "done"
-
         };
 
     }
 
 
-    var difference =
+    const difference =
         new Date(
             task.deadline
-        ).getTime()
+        )
+        .getTime()
         -
         getJapanNow()
         .getTime();
 
 
     if (
-        difference <= 0
+        difference
+        <=
+        0
     ) {
 
         return {
-
             text:
                 "⚠ 締切超過",
-
             className:
                 "overdue"
-
         };
 
     }
 
 
-    var totalMinutes =
+    const totalMinutes =
         Math.floor(
             difference
             /
@@ -2246,7 +3639,7 @@ function remainingText(task) {
         );
 
 
-    var days =
+    const days =
         Math.floor(
             totalMinutes
             /
@@ -2254,7 +3647,7 @@ function remainingText(task) {
         );
 
 
-    var hours =
+    const hours =
         Math.floor(
             (
                 totalMinutes
@@ -2266,18 +3659,19 @@ function remainingText(task) {
         );
 
 
-    var minutes =
+    const minutes =
         totalMinutes
         %
         60;
 
 
     if (
-        days > 0
+        days
+        >
+        0
     ) {
 
         return {
-
             text:
                 "あと "
                 +
@@ -2288,17 +3682,14 @@ function remainingText(task) {
                 hours
                 +
                 "時間",
-
             className:
                 ""
-
         };
 
     }
 
 
     return {
-
         text:
             "あと "
             +
@@ -2309,10 +3700,8 @@ function remainingText(task) {
             minutes
             +
             "分",
-
         className:
             ""
-
     };
 
 }
@@ -2322,30 +3711,28 @@ function remainingText(task) {
    課題カード
 ======================================== */
 
-function createTaskCard(task) {
+function createTaskCard(
+    task
+) {
 
-    var card =
+    const card =
         document.createElement(
             "div"
         );
 
 
     card.className =
+        task.completed
+        ?
+        "task completed"
+        :
         "task";
 
 
-    if (
-        task.completed
-    ) {
-
-        card.className +=
-            " completed";
-
-    }
-
-
-    var remaining =
-        remainingText(task);
+    const remaining =
+        remainingText(
+            task
+        );
 
 
     card.innerHTML =
@@ -2404,6 +3791,7 @@ function createTaskCard(task) {
 
             event.stopPropagation();
 
+
             editTask(
                 task.id
             );
@@ -2427,19 +3815,19 @@ function renderDay(
     subjectsId
 ) {
 
-    var container =
+    const container =
         document.getElementById(
             taskContainerId
         );
 
 
-    var summary =
+    const summary =
         document.getElementById(
             summaryId
         );
 
 
-    var subjectsElement =
+    const subjects =
         document.getElementById(
             subjectsId
         );
@@ -2449,13 +3837,13 @@ function renderDay(
         "";
 
 
-    subjectsElement.textContent =
+    subjects.textContent =
         subjectTextForDate(
             date
         );
 
 
-    var dayTasks =
+    const dayTasks =
         tasksForDate(
             date
         );
@@ -2486,19 +3874,18 @@ function renderDay(
         "件の課題";
 
 
-    for (
-        var i = 0;
-        i < dayTasks.length;
-        i++
-    ) {
+    dayTasks.forEach(
+        function(task) {
 
-        container.appendChild(
-            createTaskCard(
-                dayTasks[i]
-            )
-        );
+            container
+            .appendChild(
+                createTaskCard(
+                    task
+                )
+            );
 
-    }
+        }
+    );
 
 }
 
@@ -2509,78 +3896,60 @@ function renderDay(
 
 function updateDayOpenState() {
 
-    var todayContent =
+    const todayContent =
         document.getElementById(
             "todayContent"
         );
 
 
-    var todayArrow =
+    const todayArrow =
         document.getElementById(
             "todayArrow"
         );
 
 
-    var tomorrowContent =
+    const tomorrowContent =
         document.getElementById(
             "tomorrowContent"
         );
 
 
-    var tomorrowArrow =
+    const tomorrowArrow =
         document.getElementById(
             "tomorrowArrow"
         );
 
 
-    if (
+    todayContent.className =
         todayOpen
-    ) {
-
-        todayContent.className =
-            "day-content open";
-
-
-        todayArrow.className =
-            "day-arrow open";
-
-    }
-
-    else {
-
-        todayContent.className =
-            "day-content";
+        ?
+        "day-content open"
+        :
+        "day-content";
 
 
-        todayArrow.className =
-            "day-arrow";
+    todayArrow.className =
+        todayOpen
+        ?
+        "day-arrow open"
+        :
+        "day-arrow";
 
-    }
 
-
-    if (
+    tomorrowContent.className =
         tomorrowOpen
-    ) {
-
-        tomorrowContent.className =
-            "day-content open";
-
-
-        tomorrowArrow.className =
-            "day-arrow open";
-
-    }
-
-    else {
-
-        tomorrowContent.className =
-            "day-content";
+        ?
+        "day-content open"
+        :
+        "day-content";
 
 
-        tomorrowArrow.className =
-            "day-arrow";
-
-    }
+    tomorrowArrow.className =
+        tomorrowOpen
+        ?
+        "day-arrow open"
+        :
+        "day-arrow";
 
 }
 
@@ -2589,9 +3958,11 @@ function updateDayOpenState() {
    未来1週間
 ======================================== */
 
-function renderFuture(today) {
+function renderFuture(
+    today
+) {
 
-    var container =
+    const container =
         document.getElementById(
             "futureList"
         );
@@ -2602,34 +3973,29 @@ function renderFuture(today) {
 
 
     for (
-        var i = 2;
+        let i = 2;
         i <= 8;
         i++
     ) {
 
-        var date =
+        const date =
             addDays(
                 today,
                 i
             );
 
 
-        var dayTasks =
-            tasksForDate(
-                date
-            );
-
-
         createFutureRow(
             container,
             date,
-            dayTasks
+            tasksForDate(
+                date
+            )
         );
 
     }
 
 }
-
 
 
 function createFutureRow(
@@ -2638,7 +4004,7 @@ function createFutureRow(
     dayTasks
 ) {
 
-    var wrapper =
+    const wrapper =
         document.createElement(
             "div"
         );
@@ -2648,7 +4014,7 @@ function createFutureRow(
         "future-wrapper";
 
 
-    var row =
+    const row =
         document.createElement(
             "div"
         );
@@ -2658,12 +4024,14 @@ function createFutureRow(
         "future-row";
 
 
-    var preview =
+    let preview =
         "課題なし";
 
 
     if (
-        dayTasks.length > 0
+        dayTasks.length
+        >
+        0
     ) {
 
         preview =
@@ -2675,7 +4043,9 @@ function createFutureRow(
 
 
         if (
-            dayTasks.length > 1
+            dayTasks.length
+            >
+            1
         ) {
 
             preview +=
@@ -2692,12 +4062,6 @@ function createFutureRow(
         }
 
     }
-
-
-    var subjectText =
-        subjectTextForDate(
-            date
-        );
 
 
     row.innerHTML =
@@ -2743,7 +4107,9 @@ function createFutureRow(
         '<div class="future-subjects">'
         +
         escapeHTML(
-            subjectText
+            subjectTextForDate(
+                date
+            )
         )
         +
         "</div>"
@@ -2795,7 +4161,7 @@ function createFutureRow(
         "</div>";
 
 
-    var detail =
+    const detail =
         document.createElement(
             "div"
         );
@@ -2818,18 +4184,16 @@ function createFutureRow(
 
     else {
 
-        for (
-            var j = 0;
-            j < dayTasks.length;
-            j++
-        ) {
+        dayTasks.forEach(
+            function(task) {
 
-            addFutureTask(
-                detail,
-                dayTasks[j]
-            );
+                addFutureTask(
+                    detail,
+                    task
+                );
 
-        }
+            }
+        );
 
     }
 
@@ -2837,59 +4201,55 @@ function createFutureRow(
     row.onclick =
         function() {
 
-            var arrow =
+            const arrow =
                 row.querySelector(
                     ".arrow"
                 );
 
 
-            if (
-                detail.className.indexOf(
+            const open =
+                detail.classList
+                .contains(
                     "open"
-                )
-                !==
-                -1
-            ) {
-
-                detail.className =
-                    "future-detail";
+                );
 
 
-                arrow.className =
-                    "arrow";
-
-            }
-
-            else {
-
-                detail.className =
-                    "future-detail open";
+            detail.className =
+                open
+                ?
+                "future-detail"
+                :
+                "future-detail open";
 
 
-                arrow.className =
-                    "arrow open";
-
-            }
+            arrow.className =
+                open
+                ?
+                "arrow"
+                :
+                "arrow open";
 
         };
 
 
-    wrapper.appendChild(
+    wrapper
+    .appendChild(
         row
     );
 
 
-    wrapper.appendChild(
+    wrapper
+    .appendChild(
         detail
     );
 
 
-    container.appendChild(
+    container
+    .appendChild(
         wrapper
     );
 
 }
-
 
 
 function addFutureTask(
@@ -2897,7 +4257,7 @@ function addFutureTask(
     task
 ) {
 
-    var item =
+    const item =
         document.createElement(
             "div"
         );
@@ -2907,7 +4267,7 @@ function addFutureTask(
         "future-task";
 
 
-    var remaining =
+    const remaining =
         remainingText(
             task
         );
@@ -2977,7 +4337,8 @@ function addFutureTask(
         };
 
 
-    container.appendChild(
+    container
+    .appendChild(
         item
     );
 
@@ -2990,7 +4351,7 @@ function addFutureTask(
 
 function renderAllTasks() {
 
-    var container =
+    const container =
         document.getElementById(
             "allTasks"
         );
@@ -3015,42 +4376,38 @@ function renderAllTasks() {
     }
 
 
-    var sorted =
-        tasks.slice();
+    const sorted =
+        tasks
+        .slice()
+        .sort(
+            function(a,b) {
+
+                return (
+                    new Date(
+                        a.deadline
+                    )
+                    -
+                    new Date(
+                        b.deadline
+                    )
+                );
+
+            }
+        );
 
 
-    sorted.sort(
-        function(a,b) {
+    sorted.forEach(
+        function(task) {
 
-            return (
-                new Date(
-                    a.deadline
-                )
-                -
-                new Date(
-                    b.deadline
-                )
+            addAllTask(
+                container,
+                task
             );
 
         }
     );
 
-
-    for (
-        var i = 0;
-        i < sorted.length;
-        i++
-    ) {
-
-        addAllTask(
-            container,
-            sorted[i]
-        );
-
-    }
-
 }
-
 
 
 function addAllTask(
@@ -3058,7 +4415,7 @@ function addAllTask(
     task
 ) {
 
-    var item =
+    const item =
         document.createElement(
             "div"
         );
@@ -3117,7 +4474,8 @@ function addAllTask(
         };
 
 
-    container.appendChild(
+    container
+    .appendChild(
         item
     );
 
@@ -3129,6 +4487,13 @@ function addAllTask(
 ======================================== */
 
 function openAddDialog() {
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
 
     editingId =
         null;
@@ -3150,17 +4515,19 @@ function openAddDialog() {
 
     document.getElementById(
         "dialogTitle"
-    ).textContent =
+    )
+    .textContent =
         "課題を追加";
 
 
     deadlineInfo.textContent =
-        "授業日時を入力すると、7日後の同時刻を自動設定します。";
+        "授業日時を入力すると、6日後の23:59を提出期限に設定します。";
 
 
     document.getElementById(
         "editActions"
-    ).innerHTML =
+    )
+    .innerHTML =
         "";
 
 
@@ -3173,40 +4540,29 @@ function openAddDialog() {
    編集
 ======================================== */
 
-function editTask(id) {
+function editTask(
+    id
+) {
 
-    var task =
-        null;
+    const task =
+        tasks.find(
+            function(item) {
 
+                return (
+                    String(
+                        item.id
+                    )
+                    ===
+                    String(
+                        id
+                    )
+                );
 
-    for (
-        var i = 0;
-        i < tasks.length;
-        i++
-    ) {
-
-        if (
-            String(
-                tasks[i].id
-            )
-            ===
-            String(id)
-        ) {
-
-            task =
-                tasks[i];
+            }
+        );
 
 
-            break;
-
-        }
-
-    }
-
-
-    if (
-        !task
-    ) {
+    if (!task) {
 
         return;
 
@@ -3214,7 +4570,9 @@ function editTask(id) {
 
 
     editingId =
-        task.id;
+        String(
+            task.id
+        );
 
 
     deleteConfirmMode =
@@ -3223,7 +4581,8 @@ function editTask(id) {
 
     document.getElementById(
         "dialogTitle"
-    ).textContent =
+    )
+    .textContent =
         "課題を編集";
 
 
@@ -3262,7 +4621,7 @@ function editTask(id) {
         );
 
 
-    var editActions =
+    const editActions =
         document.getElementById(
             "editActions"
         );
@@ -3291,41 +4650,55 @@ function editTask(id) {
         '<div class="delete-message" id="deleteMessage">もう一度押すと完全に削除します</div>';
 
 
-    var completeButton =
-        document.getElementById(
-            "completeButton"
-        );
+    document.getElementById(
+        "completeButton"
+    )
+    .onclick =
+        async function() {
 
+            const oldTasks =
+                tasks.map(
+                    function(item) {
 
-    var deleteButton =
-        document.getElementById(
-            "deleteButton"
-        );
+                        return {
+                            ...item
+                        };
 
+                    }
+                );
 
-    var deleteMessage =
-        document.getElementById(
-            "deleteMessage"
-        );
-
-
-    completeButton.onclick =
-        function() {
 
             task.completed =
                 !task.completed;
 
 
+            task.updatedAt =
+                Date.now();
+
+
+            saveUserCache();
+
+            render();
+
+
+            taskDialog.close();
+
+
+            const success =
+                await saveTaskToCloud(
+                    task
+                );
+
+
             if (
-                saveTasks()
+                !success
             ) {
 
-                editingId =
-                    null;
+                tasks =
+                    oldTasks;
 
 
-                taskDialog.close();
-
+                saveUserCache();
 
                 render();
 
@@ -3334,19 +4707,28 @@ function editTask(id) {
         };
 
 
+    const deleteButton =
+        document.getElementById(
+            "deleteButton"
+        );
+
+
+    const deleteMessage =
+        document.getElementById(
+            "deleteMessage"
+        );
+
+
     deleteButton.onclick =
-        function(event) {
+        async function(event) {
 
             event.preventDefault();
-
 
             event.stopPropagation();
 
 
             if (
-                deleteConfirmMode
-                ===
-                false
+                !deleteConfirmMode
             ) {
 
                 deleteConfirmMode =
@@ -3370,7 +4752,7 @@ function editTask(id) {
             }
 
 
-            deleteTaskNow();
+            await deleteTaskNow();
 
         };
 
@@ -3381,10 +4763,10 @@ function editTask(id) {
 
 
 /* ========================================
-   削除
+   削除実行
 ======================================== */
 
-function deleteTaskNow() {
+async function deleteTaskNow() {
 
     if (
         editingId
@@ -3397,58 +4779,46 @@ function deleteTaskNow() {
     }
 
 
-    var deleteId =
+    const deleteId =
         String(
             editingId
         );
 
 
-    var oldTasks =
-        tasks.slice();
+    const oldTasks =
+        tasks.map(
+            function(item) {
 
+                return {
+                    ...item
+                };
 
-    var newTasks =
-        [];
-
-
-    for (
-        var i = 0;
-        i < tasks.length;
-        i++
-    ) {
-
-        if (
-            String(
-                tasks[i].id
-            )
-            !==
-            deleteId
-        ) {
-
-            newTasks.push(
-                tasks[i]
-            );
-
-        }
-
-    }
+            }
+        );
 
 
     tasks =
-        newTasks;
+        tasks.filter(
+            function(task) {
+
+                return (
+                    String(
+                        task.id
+                    )
+                    !==
+                    deleteId
+                );
+
+            }
+        );
 
 
-    if (
-        !saveTasks()
-    ) {
+    saveUserCache();
 
-        tasks =
-            oldTasks;
+    render();
 
 
-        return;
-
-    }
+    taskDialog.close();
 
 
     editingId =
@@ -3459,69 +4829,87 @@ function deleteTaskNow() {
         false;
 
 
-    taskDialog.close();
+    const success =
+        await deleteTaskFromCloud(
+            deleteId
+        );
 
 
-    render();
+    if (
+        !success
+    ) {
+
+        tasks =
+            oldTasks;
+
+
+        saveUserCache();
+
+        render();
+
+    }
 
 }
 
 
 /* ========================================
-   保存処理
+   保存
 ======================================== */
 
-function handleSubmit(event) {
+async function handleSubmit(
+    event
+) {
 
     event.preventDefault();
 
 
-    var name =
-        taskNameInput.value.trim();
+    if (
+        !currentUser
+    ) {
+
+        return;
+
+    }
+
+
+    const name =
+        taskNameInput.value
+        .trim();
 
 
     if (
-        classDateInput.value
-        ===
-        ""
+        !classDateInput.value
     ) {
 
         alert(
             "授業日時を入力してください。"
         );
 
-
         return;
 
     }
 
 
     if (
-        subjectInput.value
-        ===
-        ""
+        !subjectInput.value
     ) {
 
         alert(
             "科目を選択してください。"
         );
 
-
         return;
 
     }
 
 
     if (
-        name
-        ===
-        ""
+        !name
     ) {
 
         alert(
             "課題名を入力してください。"
         );
-
 
         return;
 
@@ -3531,24 +4919,19 @@ function handleSubmit(event) {
     calculateDeadline();
 
 
-    var data = {
+    const oldTasks =
+        tasks.map(
+            function(item) {
 
-        subject:
-            subjectInput.value,
+                return {
+                    ...item
+                };
 
-        name:
-            name,
+            }
+        );
 
-        classDate:
-            classDateInput.value,
 
-        deadline:
-            deadlineInput.value,
-
-        memo:
-            memoInput.value.trim()
-
-    };
+    let task;
 
 
     if (
@@ -3557,95 +4940,127 @@ function handleSubmit(event) {
         null
     ) {
 
-        tasks.push({
+        task = {
 
             id:
-                new Date()
-                .getTime(),
+                createId(),
 
             subject:
-                data.subject,
+                subjectInput.value,
 
             name:
-                data.name,
+                name,
 
             classDate:
-                data.classDate,
+                classDateInput.value,
 
             deadline:
-                data.deadline,
+                deadlineInput.value,
 
             memo:
-                data.memo,
+                memoInput.value
+                .trim(),
 
             completed:
-                false
+                false,
 
-        });
+            updatedAt:
+                Date.now()
+
+        };
+
+
+        tasks.push(
+            task
+        );
 
     }
 
     else {
 
-        for (
-            var i = 0;
-            i < tasks.length;
-            i++
-        ) {
+        task =
+            tasks.find(
+                function(item) {
 
-            if (
-                String(
-                    tasks[i].id
-                )
-                ===
-                String(
-                    editingId
-                )
-            ) {
+                    return (
+                        String(
+                            item.id
+                        )
+                        ===
+                        String(
+                            editingId
+                        )
+                    );
 
-                tasks[i].subject =
-                    data.subject;
+                }
+            );
 
 
-                tasks[i].name =
-                    data.name;
+        if (!task) {
 
-
-                tasks[i].classDate =
-                    data.classDate;
-
-
-                tasks[i].deadline =
-                    data.deadline;
-
-
-                tasks[i].memo =
-                    data.memo;
-
-
-                break;
-
-            }
+            return;
 
         }
+
+
+        task.subject =
+            subjectInput.value;
+
+
+        task.name =
+            name;
+
+
+        task.classDate =
+            classDateInput.value;
+
+
+        task.deadline =
+            deadlineInput.value;
+
+
+        task.memo =
+            memoInput.value
+            .trim();
+
+
+        task.updatedAt =
+            Date.now();
 
     }
 
 
+    saveUserCache();
+
+    render();
+
+
+    taskDialog.close();
+
+
+    editingId =
+        null;
+
+
+    deleteConfirmMode =
+        false;
+
+
+    const success =
+        await saveTaskToCloud(
+            task
+        );
+
+
     if (
-        saveTasks()
+        !success
     ) {
 
-        editingId =
-            null;
+        tasks =
+            oldTasks;
 
 
-        deleteConfirmMode =
-            false;
-
-
-        taskDialog.close();
-
+        saveUserCache();
 
         render();
 
@@ -3660,17 +5075,17 @@ function handleSubmit(event) {
 
 function render() {
 
-    var now =
+    const now =
         getJapanNow();
 
 
-    var today =
+    const today =
         startOfDay(
             now
         );
 
 
-    var tomorrow =
+    const tomorrow =
         addDays(
             today,
             1
@@ -3679,7 +5094,8 @@ function render() {
 
     document.getElementById(
         "nowText"
-    ).textContent =
+    )
+    .textContent =
 
         "日本時間　"
         +
@@ -3702,7 +5118,8 @@ function render() {
 
     document.getElementById(
         "todayTitle"
-    ).textContent =
+    )
+    .textContent =
         displayDate(
             today
         );
@@ -3710,7 +5127,8 @@ function render() {
 
     document.getElementById(
         "tomorrowTitle"
-    ).textContent =
+    )
+    .textContent =
         displayDate(
             tomorrow
         );
@@ -3746,50 +5164,153 @@ function render() {
 
 
 /* ========================================
-   クリック処理
+   ログイン状態
 ======================================== */
 
-document.getElementById(
-    "todayHeader"
-).onclick =
-    function() {
+onAuthStateChanged(
 
-        todayOpen =
-            !todayOpen;
+    auth,
+
+    async function(user) {
+
+        if (
+            unsubscribeTasks
+        ) {
+
+            unsubscribeTasks();
+
+            unsubscribeTasks =
+                null;
+
+        }
 
 
-        updateDayOpenState();
+        if (!user) {
+
+            currentUser =
+                null;
+
+
+            tasks =
+                [];
+
+
+            authGate.hidden =
+                false;
+
+
+            appContent.hidden =
+                true;
+
+
+            addButton.hidden =
+                true;
+
+
+            return;
+
+        }
+
+
+        currentUser =
+            user;
+
+
+        authGate.hidden =
+            true;
+
+
+        appContent.hidden =
+            false;
+
+
+        addButton.hidden =
+            false;
+
+
+        userName.textContent =
+            user.displayName
+            ||
+            user.email
+            ||
+            "ログイン中";
+
+
+        loadUserCache();
+
+        render();
+
+
+        await startRealtimeSync();
+
+    }
+
+);
+
+
+/* ========================================
+   イベント
+======================================== */
+
+googleLoginButton.onclick =
+    loginWithGoogle;
+
+
+logoutButton.onclick =
+    logout;
+
+
+addButton.onclick =
+    openAddDialog;
+
+
+retryButton.onclick =
+    async function() {
+
+        if (
+            !currentUser
+        ) {
+
+            return;
+
+        }
+
+
+        await startRealtimeSync();
 
     };
 
 
-document.getElementById(
-    "tomorrowHeader"
-).onclick =
+backupButton.onclick =
+    downloadBackup;
+
+
+restoreButton.onclick =
     function() {
 
-        tomorrowOpen =
-            !tomorrowOpen;
-
-
-        updateDayOpenState();
+        restoreFileInput.click();
 
     };
 
 
-document.getElementById(
-    "addButton"
-).onclick =
-    function() {
+restoreFileInput.onchange =
+    async function() {
 
-        openAddDialog();
+        const file =
+            restoreFileInput.files[0];
+
+
+        await restoreBackup(
+            file
+        );
 
     };
 
 
 document.getElementById(
     "cancelButton"
-).onclick =
+)
+.onclick =
     function() {
 
         editingId =
@@ -3805,11 +5326,40 @@ document.getElementById(
     };
 
 
+document.getElementById(
+    "todayHeader"
+)
+.onclick =
+    function() {
+
+        todayOpen =
+            !todayOpen;
+
+
+        updateDayOpenState();
+
+    };
+
+
+document.getElementById(
+    "tomorrowHeader"
+)
+.onclick =
+    function() {
+
+        tomorrowOpen =
+            !tomorrowOpen;
+
+
+        updateDayOpenState();
+
+    };
+
+
 classDateInput.oninput =
     function() {
 
         updateSubjects();
-
 
         calculateDeadline();
 
@@ -3821,43 +5371,62 @@ classDateInput.onchange =
 
         updateSubjects();
 
-
         calculateDeadline();
 
     };
 
 
 taskForm.onsubmit =
-    function(event) {
+    handleSubmit;
 
-        handleSubmit(
-            event
-        );
 
-    };
+window.addEventListener(
+    "offline",
+    function() {
+
+        if (
+            currentUser
+        ) {
+
+            showOfflineStatus();
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "online",
+    function() {
+
+        if (
+            currentUser
+        ) {
+
+            startRealtimeSync();
+
+        }
+
+    }
+);
 
 
 /* ========================================
-   起動
+   時計
 ======================================== */
-
-loadTasks();
 
 render();
 
 
 setInterval(
-    function() {
-
-        render();
-
-    },
+    render,
     60000
 );
 
 
 /* ========================================
-   PWA Service Worker
+   Service Worker
 ======================================== */
 
 if (
@@ -3887,7 +5456,7 @@ if (
             .catch(
                 function(error) {
 
-                    console.log(
+                    console.error(
                         "Service Worker 登録失敗",
                         error
                     );
@@ -3901,420 +5470,6 @@ if (
 }
 
 </script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-
-  import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyC_BkCO1tibXxv1c-GfaQECNYfk7Ru34iM",
-    authDomain: "track-the-progress.firebaseapp.com",
-    projectId: "track-the-progress",
-    storageBucket: "track-the-progress.firebasestorage.app",
-    messagingSenderId: "1093369809597",
-    appId: "1:1093369809597:web:a0e50b4bc5a82a35a185d4"
-  };
-
-
-  const firebaseApp = initializeApp(firebaseConfig);
-
-  const auth = getAuth(firebaseApp);
-
-  const db = getFirestore(firebaseApp);
-
-  const provider = new GoogleAuthProvider();
-// 課題が変更されたときにFirestoreへ保存する
-window.saveTasksToCloud = async function() {
-
-    const user = auth.currentUser;
-
-    // ログインしていない場合はクラウド保存しない
-    if (!user) {
-        return;
-    }
-
-    try {
-
-        const userDataRef = doc(
-            db,
-            "users",
-            user.uid,
-            "data",
-            "app"
-        );
-
-        const currentTasks =
-            window.getTasksForCloud();
-
-        await setDoc(
-            userDataRef,
-            {
-                tasks: currentTasks,
-                updatedAt: Date.now()
-            }
-        );
-
-        console.log(
-            "課題をFirestoreへ保存しました"
-        );
-
-    } catch(error) {
-
-        console.error(
-            "Firestore保存エラー",
-            error
-        );
-
-    }
-
-};
-
-  const loginArea =
-    document.createElement("div");
-
-
-  loginArea.id =
-    "loginArea";
-
-
-  loginArea.style.cssText = `
-    position: fixed;
-    top: calc(12px + env(safe-area-inset-top));
-    right: 15px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  `;
-
-
-  document.body.appendChild(
-    loginArea
-  );
-
-
-  async function loginWithGoogle() {
-
-    try {
-
-      await signInWithPopup(
-        auth,
-        provider
-      );
-
-    }
-
-    catch(error) {
-
-      console.error(
-        "Googleログインエラー",
-        error
-      );
-
-
-      alert(
-        "Googleログインに失敗しました。\n\n"
-        +
-        error.message
-      );
-
-    }
-
-  }
-
-
-  async function logout() {
-
-    try {
-
-      await signOut(
-        auth
-      );
-
-    }
-
-    catch(error) {
-
-      console.error(
-        "ログアウトエラー",
-        error
-      );
-
-    }
-
-  }
-
-
-  onAuthStateChanged(
-    auth,
-    async function(user) {
-      if (user) {
-
-        loginArea.innerHTML = `
-          <div
-            style="
-              background:white;
-              border:1px solid #ddd;
-              border-radius:20px;
-              padding:7px 11px;
-              font-size:12px;
-              box-shadow:0 2px 8px rgba(0,0,0,.08);
-              max-width:150px;
-              overflow:hidden;
-              white-space:nowrap;
-              text-overflow:ellipsis;
-            "
-          >
-            ${user.displayName || user.email || "ログイン中"}
-          </div>
-
-          <button
-            id="logoutButton"
-            type="button"
-            style="
-              border:none;
-              border-radius:18px;
-              padding:8px 11px;
-              background:#e9e9eb;
-              color:#333;
-              font-weight:650;
-              cursor:pointer;
-            "
-          >
-            ログアウト
-          </button>
-        `;
-
-
-        document
-          .getElementById(
-            "logoutButton"
-          )
-          .onclick =
-            logout;
-
-
-        console.log(
-          "ログイン成功",
-          user.uid
-        );
-
-                // ===== Firestore クラウド同期 =====
-
-        const userDataRef = doc(
-          db,
-          "users",
-          user.uid,
-          "data",
-          "app"
-        );
-
-       try {
-
-    // クラウドにデータがあるか確認
-    const cloudSnapshot =
-        await getDoc(userDataRef);
-
-    if (cloudSnapshot.exists()) {
-
-        const cloudData =
-            cloudSnapshot.data();
-
-        const cloudTasks =
-            Array.isArray(cloudData.tasks)
-            ? cloudData.tasks
-            : [];
-
-        const localTasks =
-            window.getLocalTasks();
-
-        // 端末とクラウドの課題を合体
-        // 同じIDならクラウド側を優先
-        const taskMap =
-            new Map();
-
-        localTasks.forEach(
-            function(task) {
-
-                taskMap.set(
-                    String(task.id),
-                    task
-                );
-
-            }
-        );
-
-        cloudTasks.forEach(
-            function(task) {
-
-                taskMap.set(
-                    String(task.id),
-                    task
-                );
-
-            }
-        );
-
-        const mergedTasks =
-            Array.from(
-                taskMap.values()
-            );
-
-        // 合体した課題をこの端末にも反映
-        window.setLocalTasks(
-            mergedTasks
-        );
-
-        // 合体した課題をFirestoreにも保存
-        await setDoc(
-            userDataRef,
-            {
-                tasks: mergedTasks,
-                updatedAt: Date.now()
-            }
-        );
-
-        console.log(
-            "端末とクラウドの課題を統合しました"
-        );
-
-    }
-
-    else {
-
-        // Firestoreにまだデータがない場合
-        // この端末にある課題をそのまま保存
-        const localTasks =
-            window.getLocalTasks();
-
-        await setDoc(
-            userDataRef,
-            {
-                tasks: localTasks,
-                updatedAt: Date.now()
-            }
-        );
-
-        console.log(
-            "既存の課題をFirestoreへ移行しました"
-        );
-
-    }
-
-
-    // Firestoreの変更をリアルタイム監視
-    onSnapshot(
-        userDataRef,
-        function(snapshot) {
-
-            if (!snapshot.exists()) {
-                return;
-            }
-
-            const data =
-                snapshot.data();
-
-            if (
-                !Array.isArray(
-                    data.tasks
-                )
-            ) {
-                return;
-            }
-
-            const currentTasks =
-                window.getLocalTasks();
-
-            if (
-                JSON.stringify(currentTasks)
-                !==
-                JSON.stringify(data.tasks)
-            ) {
-
-                window.setLocalTasks(
-                    data.tasks
-                );
-
-                console.log(
-                    "クラウドの課題を同期しました"
-                );
-
-            }
-
-        },
-
-        function(error) {
-
-            console.error(
-                "Firestore同期エラー",
-                error
-            );
-
-        }
-    );
-
-}
-
-catch(error) {
-
-    console.error(
-        "Firestore読み込みエラー",
-        error
-    );
-
-}
-      }
-
-      else {
-
-        loginArea.innerHTML = `
-          <button
-            id="googleLoginButton"
-            type="button"
-            style="
-              border:1px solid #ddd;
-              border-radius:20px;
-              padding:9px 14px;
-              background:white;
-              color:#1d1d1f;
-              font-weight:700;
-              cursor:pointer;
-              box-shadow:0 2px 8px rgba(0,0,0,.08);
-            "
-          >
-            Googleでログイン
-          </button>
-        `;
-
-
-        document
-          .getElementById(
-            "googleLoginButton"
-          )
-          .onclick =
-            loginWithGoogle;
-
-      }
-
-    }
-  );
-
-</script>
 
 </body>
-
 </html>
