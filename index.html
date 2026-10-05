@@ -1350,6 +1350,118 @@ TOMORROW
 ＋
 </button>
 
+<!-- =========================
+     課題詳細
+========================= -->
+
+<dialog id="detailDialog">
+
+<div class="dialog-content">
+
+<h2 id="detailTitle">
+課題詳細
+</h2>
+
+
+<div class="field">
+
+<label>
+科目
+</label>
+
+<div
+    class="subject-info"
+    id="detailSubject"
+></div>
+
+</div>
+
+
+<div class="field">
+
+<label>
+授業日時
+</label>
+
+<div
+    class="subject-info"
+    id="detailClassDate"
+></div>
+
+</div>
+
+
+<div class="field">
+
+<label>
+提出期限
+</label>
+
+<div
+    class="deadline-info"
+    id="detailDeadline"
+></div>
+
+</div>
+
+
+<div class="field">
+
+<label>
+メモ
+</label>
+
+<div
+    class="subject-info"
+    id="detailMemo"
+    style="
+        white-space: pre-wrap;
+        min-height: 48px;
+    "
+></div>
+
+</div>
+
+
+<div class="field">
+
+<label>
+状態
+</label>
+
+<div
+    class="subject-info"
+    id="detailStatus"
+></div>
+
+</div>
+
+
+<div class="dialog-buttons">
+
+<button
+    type="button"
+    class="cancel"
+    id="detailCloseButton"
+>
+閉じる
+</button>
+
+
+<button
+    type="button"
+    class="save"
+    id="detailEditButton"
+>
+編集
+</button>
+
+</div>
+
+
+</div>
+
+</dialog>
 
 <dialog id="taskDialog">
 
@@ -5582,14 +5694,13 @@ function addAllTask(
 
 
     item.onclick =
-        function() {
+         function() {
 
-            editTask(
-                task.id
-            );
+         showTaskDetails(
+            task.id
+        );
 
-        };
-
+    };
 
     container
     .appendChild(
@@ -5602,6 +5713,119 @@ function addAllTask(
 /* ========================================
    新規
 ======================================== */
+
+/* ========================================
+   課題詳細
+======================================== */
+
+function showTaskDetails(id) {
+
+    var task = null;
+
+
+    for (
+        var i = 0;
+        i < tasks.length;
+        i++
+    ) {
+
+        if (
+            String(tasks[i].id)
+            ===
+            String(id)
+        ) {
+
+            task = tasks[i];
+
+            break;
+
+        }
+
+    }
+
+
+    if (!task) {
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "detailTitle"
+    ).textContent =
+        task.name;
+
+
+    document.getElementById(
+        "detailSubject"
+    ).textContent =
+        task.subject;
+
+
+    document.getElementById(
+        "detailClassDate"
+    ).textContent =
+        displayDateTime(
+            task.classDate
+        );
+
+
+    document.getElementById(
+        "detailDeadline"
+    ).textContent =
+        displayDateTime(
+            task.deadline
+        );
+
+
+    document.getElementById(
+        "detailMemo"
+    ).textContent =
+        task.memo
+        ?
+        task.memo
+        :
+        "メモなし";
+
+
+    document.getElementById(
+        "detailStatus"
+    ).textContent =
+        task.completed
+        ?
+        "✅ 提出済み"
+        :
+        "未提出";
+
+
+    document.getElementById(
+        "detailCloseButton"
+    ).onclick =
+        function() {
+
+            detailDialog.close();
+
+        };
+
+
+    document.getElementById(
+        "detailEditButton"
+    ).onclick =
+        function() {
+
+            detailDialog.close();
+
+            editTask(
+                task.id
+            );
+
+        };
+
+
+    detailDialog.showModal();
+
+}
 
 function openAddDialog() {
 
