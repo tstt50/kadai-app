@@ -4301,23 +4301,94 @@ function getJapanNow() {
 
 }
 
-function getJapanNow() {
+function getCurrentClassStartDateTime() {
 
-    const text =
-        new Date()
-        .toLocaleString(
-            "en-US",
-            {
-                timeZone:
-                    "Asia/Tokyo"
-            }
+    var now =
+        getJapanNow();
+
+    var minutes =
+        now.getHours() * 60
+        +
+        now.getMinutes();
+
+
+    if (
+        minutes
+        <
+        10 * 60 + 45
+    ) {
+
+        now.setHours(
+            8,
+            50,
+            0,
+            0
         );
 
-    return new Date(
-        text
+    }
+
+    else if (
+        minutes
+        <
+        13 * 60 + 15
+    ) {
+
+        now.setHours(
+            10,
+            45,
+            0,
+            0
+        );
+
+    }
+
+    else if (
+        minutes
+        <
+        15 * 60 + 10
+    ) {
+
+        now.setHours(
+            13,
+            15,
+            0,
+            0
+        );
+
+    }
+
+    else if (
+        minutes
+        <
+        17 * 60 + 5
+    ) {
+
+        now.setHours(
+            15,
+            10,
+            0,
+            0
+        );
+
+    }
+
+    else {
+
+        now.setHours(
+            17,
+            5,
+            0,
+            0
+        );
+
+    }
+
+
+    return toDateTimeLocal(
+        now
     );
 
-}   ← 4302行目
+}
 
 function startOfDay(
     date
