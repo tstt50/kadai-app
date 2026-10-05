@@ -4301,6 +4301,23 @@ function getJapanNow() {
 
 }
 
+function getJapanNow() {
+
+    const text =
+        new Date()
+        .toLocaleString(
+            "en-US",
+            {
+                timeZone:
+                    "Asia/Tokyo"
+            }
+        );
+
+    return new Date(
+        text
+    );
+
+}   ← 4302行目
 
 function startOfDay(
     date
@@ -5845,6 +5862,8 @@ function openAddDialog() {
 
     taskForm.reset();
 
+    classDateInput.value =
+     getCurrentClassStartDateTime();
 
     deadlineInput.value =
         "";
