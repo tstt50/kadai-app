@@ -1909,6 +1909,7 @@ from
 "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 
+
 /* ========================================
    Firebase
 ======================================== */
@@ -1953,6 +1954,162 @@ const db =
         firebaseApp
     );
 
+/* ========================================
+   出席位置ログ受信
+======================================== */
+
+async function saveAttendanceFromUrl(user) {
+
+    if (!user) {
+        return;
+    }
+
+    const hash =
+        window.location.hash;
+
+    if (
+        !hash
+        ||
+        !hash.startsWith(
+            "#attendance="
+        )
+    ) {
+        return;
+    }
+
+
+    const params =
+        new URLSearchParams(
+            hash.substring(1)
+        );
+
+
+    const eventType =
+        params.get(
+            "attendance"
+        );
+
+    const recordedTime =
+        params.get(
+            "time"
+        );
+
+    const latitude =
+        params.get(
+            "lat"
+        );
+
+    const longitude =
+        params.get(
+            "lng"
+        );
+
+    const accuracy =
+        params.get(
+            "accuracy"
+        );
+
+
+    if (
+        eventType
+        !==
+        "arrival"
+        &&
+        eventType
+        !==
+        "departure"
+    ) {
+        return;
+    }
+
+
+    const logId =
+        Date.now()
+        .toString();
+
+
+    const logRef =
+        doc(
+            db,
+            "users",
+            user.uid,
+            "attendanceLogs",
+            logId
+        );
+
+
+    try {
+
+        await setDoc(
+            logRef,
+            {
+                event:
+                    eventType,
+
+                time:
+                    recordedTime
+                    ||
+                    new Date()
+                    .toISOString(),
+
+                latitude:
+                    latitude
+                    ?
+                    Number(
+                        latitude
+                    )
+                    :
+                    null,
+
+                longitude:
+                    longitude
+                    ?
+                    Number(
+                        longitude
+                    )
+                    :
+                    null,
+
+                accuracy:
+                    accuracy
+                    ?
+                    Number(
+                        accuracy
+                    )
+                    :
+                    null,
+
+                createdAt:
+                    Date.now()
+            }
+        );
+
+
+        console.log(
+            "出席位置ログを保存しました"
+        );
+
+
+        history.replaceState(
+            null,
+            "",
+            window.location.pathname
+            +
+            window.location.search
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "出席位置ログ保存エラー",
+            error
+        );
+
+    }
+
+}
 
 /* ========================================
    基本データ
@@ -6673,6 +6830,10 @@ onAuthStateChanged(
 
 
         await startRealtimeSync();
+
+    await saveAttendanceFromUrl(
+        user
+);
 
     }
 
