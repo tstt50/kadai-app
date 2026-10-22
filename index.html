@@ -8279,7 +8279,15 @@ const message =
         "attendanceSubjectMessage"
     );
 
-if (absent <= 3) {
+if (judgedTotal === 0) {
+
+    message.textContent =
+        "まだ出席データがありません";
+
+    message.style.color =
+        "#98a2b3";
+
+} else if (absent <= 3) {
 
     message.textContent =
         "現在は単位取得ラインを上回っています";
