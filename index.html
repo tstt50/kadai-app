@@ -1101,6 +1101,283 @@ input[readonly] {
 
 }
 
+/* ========================================
+   出席管理画面
+======================================== */
+
+#attendanceView {
+    padding:
+        18px 14px 30px;
+}
+
+.attendance-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.attendance-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+#attendanceBackButton {
+    position: absolute;
+    left: 0;
+
+    border: none;
+    background: transparent;
+
+    font-size: 38px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.attendance-tabs {
+    display: grid;
+    grid-template-columns:
+        1fr 1fr;
+
+    padding: 4px;
+    margin-bottom: 14px;
+
+    background: #edf4ff;
+    border-radius: 14px;
+}
+
+.attendance-tab {
+    border: none;
+    padding: 10px;
+
+    background: transparent;
+
+    border-radius: 11px;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: #667085;
+}
+
+.attendance-tab.active {
+    background: white;
+    color: #1677ff;
+
+    box-shadow:
+        0 2px 8px
+        rgba(
+            22,
+            119,
+            255,
+            0.14
+        );
+}
+
+.attendance-legend {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+
+    margin-bottom: 14px;
+
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.attendance-legend span:nth-child(1) {
+    color: #22b573;
+}
+
+.attendance-legend span:nth-child(2) {
+    color: #f5a623;
+}
+
+.attendance-legend span:nth-child(3) {
+    color: #ef4444;
+}
+
+.attendance-legend span:nth-child(4) {
+    color: #8b5cf6;
+}
+
+.attendance-legend span:nth-child(5) {
+    color: #98a2b3;
+}
+
+.attendance-table {
+    overflow: hidden;
+
+    background: white;
+
+    border:
+        1px solid
+        #dce7f7;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 6px 20px
+        rgba(
+            31,
+            91,
+            160,
+            0.08
+        );
+}
+
+.attendance-row {
+    display: grid;
+
+    grid-template-columns:
+        84px
+        repeat(
+            5,
+            1fr
+        );
+
+    min-height: 94px;
+
+    border-bottom:
+        1px solid
+        #e7eef8;
+}
+
+.attendance-row:last-child {
+    border-bottom: none;
+}
+
+.attendance-row > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px;
+
+    text-align: center;
+
+    border-right:
+        1px solid
+        #e7eef8;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.attendance-row > div:last-child {
+    border-right: none;
+}
+
+.attendance-days {
+    min-height: 48px;
+
+    background: #f5f9ff;
+}
+
+.attendance-days > div {
+    color: #344054;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.attendance-period {
+    flex-direction: column;
+
+    background: #f8fbff;
+}
+
+.attendance-period strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 14px;
+}
+
+.attendance-period small {
+    display: block;
+
+    color: #667085;
+
+    font-size: 10px;
+    line-height: 1.35;
+}
+
+/* 欠席数による科目名の色 */
+
+.attendance-safe {
+    color: #16a34a;
+}
+
+.attendance-warning {
+    color: #d99a00;
+}
+
+.attendance-danger {
+    color: #dc2626;
+}
+
+@media (
+    max-width: 600px
+) {
+
+    #attendanceView {
+        padding:
+            14px 8px 24px;
+    }
+
+    .attendance-row {
+        grid-template-columns:
+            74px
+            repeat(
+                5,
+                minmax(
+                    48px,
+                    1fr
+                )
+            );
+
+        min-height: 88px;
+    }
+
+    .attendance-row > div {
+        padding: 4px 2px;
+        font-size: 10px;
+    }
+
+    .attendance-period strong {
+        font-size: 12px;
+    }
+
+    .attendance-period small {
+        font-size: 9px;
+    }
+}
+
+body.attendance-open {
+    overflow: hidden;
+}
+
+body.attendance-open #attendanceView {
+    display: block;
+}
+
+#attendanceView {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    overflow-y: auto;
+
+    background: #f7faff;
+}
+
 </style>
 </head>
 
@@ -1196,6 +1473,13 @@ Microsoftでログイン
 
 </div>
 
+<button
+    type="button"
+    class="logout-button"
+    id="attendanceButton"
+>
+    📊 出席管理
+</button>
 
 <button
     type="button"
@@ -1209,6 +1493,125 @@ Microsoftでログイン
 
 </section>
 
+<section
+    id="attendanceView"
+    hidden
+>
+    <div class="attendance-header">
+        <button
+            type="button"
+            id="attendanceBackButton"
+        >
+            ‹
+        </button>
+
+        <h2>
+            出席管理
+        </h2>
+    </div>
+
+    <div class="attendance-tabs">
+        <button
+            type="button"
+            class="attendance-tab"
+        >
+            一覧
+        </button>
+
+        <button
+            type="button"
+            class="attendance-tab active"
+        >
+            時間割
+        </button>
+    </div>
+
+    <div class="attendance-legend">
+        <span>● 出席</span>
+        <span>● 遅刻</span>
+        <span>● 欠席</span>
+        <span>● ぴ逃げ</span>
+        <span>● 未判定</span>
+    </div>
+
+    <div class="attendance-table">
+
+        <div class="attendance-row attendance-days">
+            <div></div>
+            <div>月</div>
+            <div>火</div>
+            <div>水</div>
+            <div>木</div>
+            <div>金</div>
+        </div>
+
+        <div class="attendance-row">
+            <div class="attendance-period">
+                <strong>1コマ</strong>
+                <small>08:50–10:30</small>
+            </div>
+
+            <div></div>
+            <div>材料力学A</div>
+            <div>数理・DS・AI</div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <div class="attendance-row">
+            <div class="attendance-period">
+                <strong>2コマ</strong>
+                <small>10:45–12:25</small>
+            </div>
+
+            <div>基礎物理学B</div>
+            <div>哲学A</div>
+            <div>微分積分学A</div>
+            <div>ETC B</div>
+            <div></div>
+        </div>
+
+        <div class="attendance-row">
+            <div class="attendance-period">
+                <strong>3コマ</strong>
+                <small>13:15–14:55</small>
+            </div>
+
+            <div>実践基礎A</div>
+            <div>線形代数</div>
+            <div></div>
+            <div>微分積分学A</div>
+            <div>熱力学A</div>
+        </div>
+
+        <div class="attendance-row">
+            <div class="attendance-period">
+                <strong>4コマ</strong>
+                <small>15:10–16:50</small>
+            </div>
+
+            <div></div>
+            <div>基礎製図</div>
+            <div>日本国憲法</div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <div class="attendance-row">
+            <div class="attendance-period">
+                <strong>5コマ</strong>
+                <small>17:05–18:45</small>
+            </div>
+
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+    </div>
+</section>
 
 <div class="main-days">
 
@@ -6850,6 +7253,42 @@ googleLoginButton.onclick =
 microsoftLoginButton.onclick =
     loginWithMicrosoft;
 
+const attendanceButton =
+    document.getElementById(
+        "attendanceButton"
+    );
+
+const attendanceView =
+    document.getElementById(
+        "attendanceView"
+    );
+
+const attendanceBackButton =
+    document.getElementById(
+        "attendanceBackButton"
+    );
+
+attendanceButton.onclick =
+    function() {
+
+        attendanceView.hidden =
+            false;
+
+        document.body.classList.add(
+            "attendance-open"
+        );
+    };
+
+attendanceBackButton.onclick =
+    function() {
+
+        attendanceView.hidden =
+            true;
+
+        document.body.classList.remove(
+            "attendance-open"
+        );
+    };
 
 /* 設定を開く */
 settingsButton.onclick =
