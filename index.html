@@ -7955,12 +7955,29 @@ async function saveTimetable() {
         "timetable"
     );
 
+   try {
+
     await setDoc(
         timetableRef,
         {
             slots: timetableData
         }
     );
+
+    alert("時間割を保存しました");
+
+} catch (error) {
+
+    alert(
+        "時間割の保存に失敗しました\n\n" +
+        error.message
+    );
+
+    console.error(
+        "時間割保存エラー:",
+        error
+    );
+    }
 }
 
 
