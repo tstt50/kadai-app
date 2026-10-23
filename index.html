@@ -8100,11 +8100,24 @@ attendanceSubjectBackButton.onclick =
     const attendanceSnap =
         await getDocs(attendanceRef);
 
+const testRef = doc(
+    db,
+    "users",
+    user.uid,
+    "attendanceClasses",
+    "2026-10-20_08:50"
+);
+
+const testSnap =
+    await getDoc(testRef);
+
 alert(
     "科目：" + subjectName +
     "\n時間割：" + subjectSlots.join(", ") +
     "\nUID：" + user.uid +
-    "\n取得した出席記録：" + attendanceSnap.size + "件"
+    "\n一覧取得：" + attendanceSnap.size + "件" +
+    "\nテストデータ：" +
+    (testSnap.exists() ? "見つかった" : "見つからない")
 );
 
     let present = 0;
