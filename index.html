@@ -2731,6 +2731,7 @@ import {
     collection,
     doc,
     getDoc,
+    getDocFromServer,
     getDocs,
     getDocsFromServer,
     setDoc,
@@ -8110,7 +8111,7 @@ const testRef = doc(
 );
 
 const testSnap =
-    await getDoc(testRef);
+    await getDocFromServer(testRef);
 
 alert(
     "科目：" + subjectName +
