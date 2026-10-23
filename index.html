@@ -2732,6 +2732,7 @@ import {
     doc,
     getDoc,
     getDocs,
+    getDocsFromServer,
     setDoc,
     onSnapshot,
     runTransaction
@@ -8098,7 +8099,7 @@ attendanceSubjectBackButton.onclick =
         );
 
     const attendanceSnap =
-        await getDocs(attendanceRef);
+        await getDocsFromServer(attendanceRef);
 
 const testRef = doc(
     db,
