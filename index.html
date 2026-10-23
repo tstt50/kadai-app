@@ -8099,29 +8099,85 @@ attendanceSubjectBackButton.onclick =
             "attendanceClasses"
         );
 
-    const attendanceSnap =
-        await getDocsFromServer(attendanceRef);
+    // Firestore SDKを優先し、0件の場合は認証付きREST APIでも照合する。
+    // SDKとRESTの差を診断できるようにする（認証トークンは表示しない）。
+    let attendanceDocuments = [];
+    let sdkResult = "未実行";
+    let restResult = "未実行";
+    let restTestResult = "未実行";
+    const testKey = "2026-10-23_13:15";
+    const testRef = doc(db, "users", user.uid, "attendanceClasses", testKey);
+    let sdkTestResult = "未実行";
 
-const testRef = doc(
-    db,
-    "users",
-    user.uid,
-    "attendanceClasses",
-    "2026-10-20_08:50"
-);
+    try {
+        const attendanceSnap = await getDocsFromServer(attendanceRef);
+        sdkResult = attendanceSnap.size + "件";
+        attendanceDocuments = attendanceSnap.docs.map(snap => ({
+            id: snap.id,
+            data: snap.data()
+        }));
+    } catch (error) {
+        sdkResult = "エラー " + (error.code || error.message || String(error));
+    }
 
-const testSnap =
-    await getDocFromServer(testRef);
+    try {
+        const testSnap = await getDocFromServer(testRef);
+        sdkTestResult = testSnap.exists() ? "あり" : "なし";
+    } catch (error) {
+        sdkTestResult = "エラー " + (error.code || error.message || String(error));
+    }
 
-alert(
-    "科目：" + subjectName +
-    "\n時間割：" + subjectSlots.join(", ") +
-    "\nUID：" + user.uid +
-    "\nProject：" + firebaseApp.options.projectId +
-    "\n一覧取得：" + attendanceSnap.size + "件" +
-    "\nテストデータ：" +
-    (testSnap.exists() ? "見つかった" : "見つからない")
-);
+    if (attendanceDocuments.length === 0) {
+        try {
+            const token = await user.getIdToken();
+            const base = "https://firestore.googleapis.com/v1/projects/" +
+                encodeURIComponent(firebaseApp.options.projectId) +
+                "/databases/(default)/documents/users/" +
+                encodeURIComponent(user.uid) + "/attendanceClasses";
+            const headers = { Authorization: "Bearer " + token };
+            const [listResponse, testResponse] = await Promise.all([
+                fetch(base + "?pageSize=1000", { headers, cache: "no-store" }),
+                fetch(base + "/" + encodeURIComponent(testKey), { headers, cache: "no-store" })
+            ]);
+            const listData = await listResponse.json();
+            restResult = "HTTP " + listResponse.status;
+            if (listResponse.ok) {
+                const docs = Array.isArray(listData.documents) ? listData.documents : [];
+                restResult += " / " + docs.length + "件";
+                attendanceDocuments = docs.map(item => {
+                    const fields = item.fields || {};
+                    const unpack = name => {
+                        const field = fields[name] || {};
+                        return field.stringValue ?? field.integerValue ??
+                            field.doubleValue ?? field.booleanValue ?? null;
+                    };
+                    return {
+                        id: item.name.split("/").pop(),
+                        data: { classKey: unpack("classKey"), status: unpack("status") }
+                    };
+                });
+            } else {
+                restResult += " " + (listData.error?.message || "").slice(0, 140);
+            }
+            restTestResult = "HTTP " + testResponse.status;
+        } catch (error) {
+            restResult = "エラー " + (error.message || String(error));
+        }
+    }
+
+    if (attendanceDocuments.length === 0) {
+        alert(
+            "出席データの読み込み診断" +
+            "\n科目：" + subjectName +
+            "\n時間割：" + subjectSlots.join(", ") +
+            "\nProject：" + firebaseApp.options.projectId +
+            "\nUID一致：" + (auth.currentUser?.uid === user.uid) +
+            "\nSDK一覧：" + sdkResult +
+            "\nSDK本日：" + sdkTestResult +
+            "\nREST一覧：" + restResult +
+            "\nREST本日：" + restTestResult
+        );
+    }
 
     let present = 0;
     let absent = 0;
@@ -8147,13 +8203,13 @@ alert(
     };
 
 
-    attendanceSnap.forEach(function(docSnap) {
+    attendanceDocuments.forEach(function(record) {
 
-        const data = docSnap.data();
+        const data = record.data;
 
         const classKey =
             data.classKey ||
-            docSnap.id;
+            record.id;
 
         const parts =
             classKey.split("_");
