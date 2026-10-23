@@ -8115,6 +8115,7 @@ alert(
     "科目：" + subjectName +
     "\n時間割：" + subjectSlots.join(", ") +
     "\nUID：" + user.uid +
+    "\nProject：" + firebaseApp.options.projectId +
     "\n一覧取得：" + attendanceSnap.size + "件" +
     "\nテストデータ：" +
     (testSnap.exists() ? "見つかった" : "見つからない")
