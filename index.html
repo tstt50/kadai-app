@@ -8602,7 +8602,8 @@ attendanceManualSave.onclick = async () => {
             await loadSubjectAttendance(attendanceManualSubject);
             return;
         }
-        await setDoc(ref, {classKey:key,status:status,source:"manual",manualUpdatedAt:serverTimestamp()}, {merge:true});
+        // 手動確定フラグ。Apps Script側はこのフラグがtrueの記録を更新しない。
+        await setDoc(ref, {classKey:key,status:status,source:"manual",manualLocked:true,manualUpdatedAt:serverTimestamp()}, {merge:true});
         await loadSubjectAttendance(attendanceManualSubject);
     } catch (error) {
         alert("保存に失敗しました：" + (error.message || String(error)));
