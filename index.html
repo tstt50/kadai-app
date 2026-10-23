@@ -7865,8 +7865,6 @@ async function saveTimetable() {
         }
     );
 
-    alert("時間割を保存しました");
-
 } catch (error) {
 
     alert(
@@ -7878,7 +7876,7 @@ async function saveTimetable() {
         "時間割保存エラー:",
         error
     );
-    }
+}
 }
 
 
@@ -8102,6 +8100,11 @@ attendanceSubjectBackButton.onclick =
     const attendanceSnap =
         await getDocs(attendanceRef);
 
+alert(
+    "科目：" + subjectName +
+    "\n時間割：" + subjectSlots.join(", ") +
+    "\n取得した出席記録：" + attendanceSnap.size + "件"
+);
 
     let present = 0;
     let absent = 0;
