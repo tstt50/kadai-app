@@ -1579,6 +1579,23 @@ body.timetable-settings-open #timetableSettingsView {
     font-size: 26px;
 }
 
+
+/* 出席記録の手動登録・修正 */
+.attendance-manual-panel { margin-top:18px; background:#fff; border-radius:16px; padding:16px; }
+.attendance-manual-panel h3 { margin:0 0 10px; font-size:17px; }
+.attendance-manual-panel p { font-size:12px; color:#667085; line-height:1.6; }
+.attendance-manual-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.attendance-manual-grid label { font-size:12px; margin:8px 0 4px; }
+.attendance-manual-grid input, .attendance-manual-grid select { width:100%; min-width:0; }
+.attendance-manual-actions { display:flex; gap:8px; margin-top:14px; }
+.attendance-manual-actions button { flex:1; border:0; border-radius:10px; padding:12px 8px; font-weight:700; cursor:pointer; }
+#attendanceManualSave { background:#1677ff; color:white; }
+#attendanceManualDelete { background:#fee2e2; color:#b91c1c; }
+#attendanceManualList { margin-top:14px; }
+.attendance-manual-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 0; border-bottom:1px solid #edf0f5; font-size:13px; }
+.attendance-manual-row button { border:0; border-radius:8px; background:#eef4ff; color:#1264c7; padding:8px 10px; cursor:pointer; }
+#attendanceManualMessage { font-size:12px; margin-top:10px; min-height:16px; }
+
 </style>
 </head>
 
@@ -1890,6 +1907,29 @@ Microsoftでログイン
         </div>
 
     </div>
+
+    <section class="attendance-manual-panel" id="attendanceManualPanel">
+        <h3>出席記録の登録・修正</h3>
+        <p>実際の出席状況を確認できる授業だけ登録してください。登録済みの記録は下の一覧から編集できます。</p>
+        <div class="attendance-manual-grid">
+            <div><label for="attendanceManualDate">授業日</label><input id="attendanceManualDate" type="date"></div>
+            <div><label for="attendanceManualPeriod">授業時間</label><select id="attendanceManualPeriod"></select></div>
+            <div style="grid-column:1/-1"><label for="attendanceManualStatus">出席状況</label>
+                <select id="attendanceManualStatus">
+                    <option value="present">出席</option><option value="late">遅刻</option>
+                    <option value="absent">欠席</option><option value="pinige">ぴ逃げ</option>
+                    <option value="unknown">未判定</option>
+                </select>
+            </div>
+        </div>
+        <div class="attendance-manual-actions">
+            <button type="button" id="attendanceManualSave">登録・更新</button>
+            <button type="button" id="attendanceManualDelete" hidden>この記録を削除</button>
+        </div>
+        <div id="attendanceManualMessage" role="status" aria-live="polite"></div>
+        <h3 style="margin-top:18px">この科目の記録</h3>
+        <div id="attendanceManualList"></div>
+    </section>
 
 </section>
 
@@ -2735,6 +2775,8 @@ import {
     getDocs,
     getDocsFromServer,
     setDoc,
+    deleteDoc,
+    serverTimestamp,
     onSnapshot,
     runTransaction
 }
@@ -8067,7 +8109,7 @@ attendanceSubjectBackButton.onclick =
     if (!user) {
         return;
     }
-
+    attendanceManualSubject = subjectName;
 
     /* この科目が入っている時間割枠を取得 */
 
@@ -8278,6 +8320,8 @@ attendanceSubjectBackButton.onclick =
     });
 
 
+    renderAttendanceManual(subjectName, subjectSlots, attendanceDocuments);
+
     /* 数字を画面に反映 */
 
     document.getElementById(
@@ -8390,6 +8434,136 @@ if (judgedTotal === 0) {
 }
 
 }
+
+
+/* 出席記録の手動登録・修正（ログイン中のユーザーのみ） */
+let attendanceManualSubject = "";
+let attendanceManualSlots = [];
+let attendanceManualDocs = new Map();
+const attendanceManualTimes = ["08:50", "10:45", "13:15", "15:10", "17:05"];
+const attendanceManualDays = ["", "mon", "tue", "wed", "thu", "fri", ""];
+const attendanceManualLabels = {present:"出席", late:"遅刻", absent:"欠席", pinige:"ぴ逃げ", unknown:"未判定"};
+const attendanceManualDate = document.getElementById("attendanceManualDate");
+const attendanceManualPeriod = document.getElementById("attendanceManualPeriod");
+const attendanceManualStatus = document.getElementById("attendanceManualStatus");
+const attendanceManualDelete = document.getElementById("attendanceManualDelete");
+const attendanceManualMessage = document.getElementById("attendanceManualMessage");
+
+function attendanceManualKey() {
+    const day = attendanceManualDate.value;
+    const time = attendanceManualPeriod.value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !attendanceManualTimes.includes(time)) return null;
+    const date = new Date(day + "T12:00:00");
+    if (Number.isNaN(date.getTime()) ||
+        date.getFullYear() !== Number(day.slice(0,4)) ||
+        date.getMonth()+1 !== Number(day.slice(5,7)) ||
+        date.getDate() !== Number(day.slice(8,10))) return null;
+    const slot = attendanceManualDays[date.getDay()] + "_" + (attendanceManualTimes.indexOf(time)+1);
+    if (!attendanceManualSlots.includes(slot)) return null;
+    const now = new Date();
+    if (date > now) return null;
+    return day + "_" + time;
+}
+function attendanceManualSyncForm() {
+    const key = attendanceManualKey();
+    const existing = key && attendanceManualDocs.get(key);
+    attendanceManualDelete.hidden = !existing;
+    if (existing) attendanceManualStatus.value = existing.status || "unknown";
+    attendanceManualMessage.textContent = key ? "" : "この科目の授業がある曜日・時間と日付を合わせてください。";
+}
+function renderAttendanceManual(subjectName, slots, docs) {
+    attendanceManualSubject = subjectName;
+    attendanceManualSlots = slots;
+    attendanceManualDocs = new Map();
+    const list = document.getElementById("attendanceManualList");
+    list.replaceChildren();
+    attendanceManualPeriod.replaceChildren();
+    const periodNumbers = [...new Set(slots.map(slot => Number(slot.split("_")[1])))].sort((a,b)=>a-b);
+    for (const n of periodNumbers) {
+        const opt = document.createElement("option");
+        opt.value = attendanceManualTimes[n-1];
+        opt.textContent = n + "コマ（" + opt.value + "）";
+        attendanceManualPeriod.appendChild(opt);
+    }
+    const today = new Date();
+    attendanceManualDate.value = [today.getFullYear(),String(today.getMonth()+1).padStart(2,"0"),String(today.getDate()).padStart(2,"0")].join("-");
+    attendanceManualDate.max = attendanceManualDate.value;
+    const matched = [];
+    for (const record of docs) {
+        const key = record.data.classKey || record.id;
+        const match = /^(\d{4}-\d{2}-\d{2})_(\d{2}:\d{2})$/.exec(key);
+        if (!match) continue;
+        const date = new Date(match[1]+"T12:00:00");
+        const period = attendanceManualTimes.indexOf(match[2])+1;
+        const slot = attendanceManualDays[date.getDay()] + "_" + period;
+        if (!slots.includes(slot)) continue;
+        attendanceManualDocs.set(key, record.data);
+        matched.push({key, status:record.data.status});
+    }
+    matched.sort((a,b)=>b.key.localeCompare(a.key));
+    if (!matched.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "まだ記録がありません。";
+        list.appendChild(empty);
+    }
+    for (const item of matched) {
+        const row = document.createElement("div");
+        row.className = "attendance-manual-row";
+        const label = document.createElement("span");
+        label.textContent = item.key.replace("_", " ") + "　" + (attendanceManualLabels[item.status] || "未判定");
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.textContent = "編集";
+        edit.onclick = () => {
+            const parts = item.key.split("_");
+            attendanceManualDate.value = parts[0];
+            attendanceManualPeriod.value = parts[1];
+            attendanceManualStatus.value = item.status || "unknown";
+            attendanceManualSyncForm();
+            attendanceManualStatus.value = item.status || "unknown";
+            document.getElementById("attendanceManualPanel").scrollIntoView({behavior:"smooth",block:"start"});
+        };
+        row.append(label,edit);
+        list.appendChild(row);
+    }
+    attendanceManualSyncForm();
+}
+attendanceManualDate.addEventListener("change", attendanceManualSyncForm);
+attendanceManualPeriod.addEventListener("change", attendanceManualSyncForm);
+
+document.getElementById("attendanceManualSave").onclick = async () => {
+    const user = auth.currentUser;
+    if (!user || !attendanceManualSubject) return;
+    const key = attendanceManualKey();
+    if (!key) { alert("この科目の授業日・時間を正しく選んでください。未来の日付は登録できません。"); return; }
+    const status = attendanceManualStatus.value;
+    if (!Object.hasOwn(attendanceManualLabels,status)) return;
+    const existing = attendanceManualDocs.has(key);
+    if (!confirm(key.replace("_"," ") + " の記録を「" + attendanceManualLabels[status] + "」として" + (existing?"更新":"登録") + "しますか？")) return;
+    const button = document.getElementById("attendanceManualSave");
+    button.disabled = true;
+    try {
+        await setDoc(doc(db,"users",user.uid,"attendanceClasses",key),
+            {classKey:key,status:status,source:"manual",manualUpdatedAt:serverTimestamp()}, {merge:true});
+        attendanceManualMessage.textContent = "保存しました。";
+        await loadSubjectAttendance(attendanceManualSubject);
+    } catch (error) {
+        alert("保存に失敗しました：" + (error.message || String(error)));
+    } finally { button.disabled = false; }
+};
+attendanceManualDelete.onclick = async () => {
+    const user = auth.currentUser;
+    const key = attendanceManualKey();
+    if (!user || !key || !attendanceManualDocs.has(key)) return;
+    if (!confirm(key.replace("_"," ") + " の記録を削除しますか？この操作は元に戻せません。")) return;
+    attendanceManualDelete.disabled = true;
+    try {
+        await deleteDoc(doc(db,"users",user.uid,"attendanceClasses",key));
+        await loadSubjectAttendance(attendanceManualSubject);
+    } catch (error) {
+        alert("削除に失敗しました：" + (error.message || String(error)));
+    } finally { attendanceManualDelete.disabled = false; }
+};
 
 /* 設定を開く */
 settingsButton.onclick =
