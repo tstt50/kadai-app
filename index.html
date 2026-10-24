@@ -1566,6 +1566,21 @@ body.timetable-settings-open #timetableSettingsView {
 #syncStatusText { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .attendance-subject-cell { cursor:pointer; font-weight:700 !important; }
 #authMessage { margin-top:12px; color:#667085; font-size:13px; }
+
+.auth-loading { min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#667085; font-size:14px; }
+.auth-loading p { margin:0; padding:0 20px; text-align:center; line-height:1.6; }
+.auth-loading-spinner { width:28px; height:28px; border:3px solid #e1e9f4; border-top-color:#1677ff; border-radius:50%; animation:auth-loading-spin .8s linear infinite; }
+@keyframes auth-loading-spin { to { transform:rotate(360deg); } }
+@media(prefers-reduced-motion:reduce) { .auth-loading-spinner { animation:none; } }
+.attendance-date-control { position:relative; display:block; box-sizing:border-box; width:100%; min-width:0; height:48px; border:1px solid #ccc; border-radius:11px; background:white; overflow:hidden; }
+.attendance-date-text { display:flex; align-items:center; box-sizing:border-box; width:100%; height:100%; padding:0 32px 0 10px; margin:0; color:#111; font-size:16px; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap; pointer-events:none; }
+.attendance-date-control::after { content:""; position:absolute; width:14px; height:14px; top:50%; right:10px; transform:translateY(-50%); background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='2' y='3' width='12' height='11' rx='2' fill='none' stroke='%23667085'/%3E%3Cpath d='M2 6h12M5 1v4M11 1v4' stroke='%23667085' fill='none'/%3E%3C/svg%3E"); pointer-events:none; }
+.attendance-manual-grid #attendanceManualDate { position:absolute; inset:0; z-index:1; width:100%; height:100%; min-height:0; border:0; border-radius:10px; opacity:0; cursor:pointer; }
+.attendance-date-control:focus-within { border-color:#007aff; box-shadow:0 0 0 3px rgba(0,122,255,.12); }
+.attendance-manual-grid #attendanceManualDate:focus-visible { opacity:1; background:white; }
+.attendance-date-control.is-disabled { background:#f3f4f6; }
+.attendance-date-control.is-disabled .attendance-date-text { color:#667085; }
+
 </style>
 </head>
 
@@ -1586,9 +1601,16 @@ body.timetable-settings-open #timetableSettingsView {
 </header>
 
 
+<section id="authLoading" class="auth-loading" role="status" aria-live="polite">
+    <div class="auth-loading-spinner" aria-hidden="true"></div>
+    <p id="authLoadingMessage">読み込み中…</p>
+    <button type="button" id="authStartupRetry" class="tool-button" hidden>再読み込み</button>
+</section>
+
 <section
     class="auth-gate"
     id="authGate"
+    hidden
 >
 
 <div class="auth-card">
@@ -1867,7 +1889,7 @@ Microsoftでログイン
         <button type="button" id="attendanceManualStart" style="border:0;border-radius:10px;padding:12px 18px;background:#1677ff;color:white;font-weight:700;cursor:pointer">＋ 新規登録</button>
         <div id="attendanceManualForm" hidden>
             <div class="attendance-manual-grid">
-                <div><label for="attendanceManualDate">授業日</label><input id="attendanceManualDate" type="date"></div>
+                <div><label for="attendanceManualDate">授業日</label><div id="attendanceManualDateControl" class="attendance-date-control"><span id="attendanceManualDateDisplay" class="attendance-date-text" aria-hidden="true">日付を選択</span><input id="attendanceManualDate" type="date"></div></div>
                 <div><label for="attendanceManualPeriod">授業時間</label><select id="attendanceManualPeriod"></select></div>
                 <div style="grid-column:1/-1"><label for="attendanceManualStatus">出席状況</label>
                     <select id="attendanceManualStatus">
@@ -2997,6 +3019,7 @@ let tasks = [];
 let currentUser = null;
 let logoutInProgress = false;
 let authSessionGeneration = 0;
+let authInitialized = false;
 
 let editingId = null;
 
@@ -7613,7 +7636,18 @@ function setAuthBusy(busy) {
     googleLoginButton.disabled=busy;microsoftLoginButton.disabled=busy;logoutButton.disabled=busy;
     const message=document.getElementById("authMessage");message.textContent=busy?"ログアウトしています…":"";message.hidden=!busy;
 }
+function finishAuthStartup() {
+    authInitialized=true;
+    document.getElementById("authLoading").hidden=true;
+}
+function showAuthStartupError(error) {
+    if(authInitialized)return;
+    console.error("ログイン状態の確認に失敗",error);
+    document.getElementById("authLoadingMessage").textContent="ログイン状態を確認できませんでした。通信状態を確認し、再読み込みしてください。";
+    document.getElementById("authStartupRetry").hidden=false;
+}
 function showSignedOutScreen() {
+    finishAuthStartup();
     authSessionGeneration++;
     currentUser=null;tasks=[];
     if(unsubscribeTasks){unsubscribeTasks();unsubscribeTasks=null;}
@@ -7626,6 +7660,7 @@ function showSignedOutScreen() {
     render();window.scrollTo?.({top:0,behavior:"auto"});
 }
 async function activateUserSession(user) {
+    finishAuthStartup();
     const generation=++authSessionGeneration;
     currentUser=user;tasks=[];
     if(unsubscribeTasks){unsubscribeTasks();unsubscribeTasks=null;}
@@ -7752,8 +7787,10 @@ onAuthStateChanged(
         if(!user){showSignedOutScreen();return;}
         if(auth.currentUser?.uid!==user.uid)return;
         await activateUserSession(user);
-    }
+    },
+    showAuthStartupError
 );
+document.getElementById("authStartupRetry").onclick=()=>window.location.reload();
 
 /* ========================================
    イベント
@@ -8315,6 +8352,11 @@ const attendanceManualStart = document.getElementById("attendanceManualStart");
 const attendanceManualSave = document.getElementById("attendanceManualSave");
 let attendanceManualEditingKey = null;
 let attendanceManualFormMode = "view"; // view / create / edit
+function updateAttendanceManualDateDisplay() {
+    const value=attendanceManualDate.value;
+    document.getElementById("attendanceManualDateDisplay").textContent=/^\d{4}-\d{2}-\d{2}$/.test(value)?value.replace(/-/g,"/"):"日付を選択";
+    document.getElementById("attendanceManualDateControl").classList.toggle("is-disabled",attendanceManualDate.disabled);
+}
 function attendanceManualSetMode(mode, key = null) {
     attendanceManualFormMode = mode;
     attendanceManualEditingKey = mode === "edit" ? key : null;
@@ -8322,6 +8364,7 @@ function attendanceManualSetMode(mode, key = null) {
     attendanceManualStart.hidden = mode !== "view";
     attendanceManualDate.disabled = mode === "edit";
     attendanceManualPeriod.disabled = mode === "edit";
+    updateAttendanceManualDateDisplay();
     attendanceManualDelete.hidden = mode !== "edit";
     attendanceManualSave.textContent = mode === "edit" ? "変更を保存" : "新規登録する";
     attendanceManualMode.textContent = mode === "edit"
@@ -8419,7 +8462,13 @@ function renderAttendanceManual(subjectName, slots, docs) {
     }
     attendanceManualSetMode("view");
 }
-attendanceManualDate.addEventListener("change", attendanceManualSyncForm);
+attendanceManualDate.addEventListener("input",updateAttendanceManualDateDisplay);
+attendanceManualDate.addEventListener("change",()=>{updateAttendanceManualDateDisplay();attendanceManualSyncForm();});
+attendanceManualDate.addEventListener("click",()=>{
+    if(!attendanceManualDate.disabled && typeof attendanceManualDate.showPicker==="function"){
+        try{attendanceManualDate.showPicker();}catch(error){}
+    }
+});
 attendanceManualPeriod.addEventListener("change", attendanceManualSyncForm);
 
 attendanceManualSave.onclick = async () => {
