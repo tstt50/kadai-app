@@ -1627,6 +1627,10 @@ body.timetable-settings-open #timetableSettingsView {
 #taskForm input[type="datetime-local"] { min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; }
 
 #attendanceView, #attendanceSubjectView, #timetableSettingsView, dialog { touch-action:pan-y; overscroll-behavior-x:contain; }
+
+.app-back-dragging { transition:none !important; }
+.app-back-dragging.app-back-settling { transition:transform .2s cubic-bezier(.22,.7,.2,1),box-shadow .2s ease !important; }
+@media(prefers-reduced-motion:reduce) { .app-back-dragging.app-back-settling { transition:none !important; } }
 </style>
 </head>
 
@@ -3064,6 +3068,8 @@ let userTimetableSlots = {};
 let unsubscribeTimetable = null;
 let deadlineManuallyEdited = false;
 let openingTaskDialog = false;
+let activeTaskGestureCount = 0;
+let deferredTaskRender = false;
 const taskActionLocks = new Set();
 const taskCleanupUsers = new Set();
 
@@ -5481,107 +5487,219 @@ async function cleanupExpiredCompletedTasks() {
         if (changed && currentUser?.uid===uid && auth.currentUser?.uid===uid) { saveUserCache(); render(); }
     } finally { taskCleanupUsers.delete(uid); }
 }
-function horizontalSwipeAction(dx, dy, elapsed, width = 360) {
-    if (Math.abs(dx) < Math.abs(dy)*1.2) return null;
-    const distance = Math.abs(dx), duration = Math.max(1,elapsed);
-    const longEnough = distance >= Math.min(64,Math.max(44,width*.16));
-    const quickEnough = distance >= 24 && distance/duration >= .45;
+function horizontalSwipeAction(dx, dy, elapsed, width = 360, recentVelocity = 0) {
+    if (Math.abs(dx) < Math.abs(dy)*1.1) return null;
+    const distance=Math.abs(dx),velocity=Math.max(distance/Math.max(1,elapsed),recentVelocity);
+    const longEnough=distance>=Math.min(52,Math.max(36,width*.12));
+    const quickEnough=distance>=16 && velocity>=.25;
     return longEnough || quickEnough ? (dx>0 ? "complete" : "delete") : null;
 }
 const pointerEventTime = event => Number.isFinite(event.timeStamp) ? event.timeStamp : Date.now();
+/* タッチ端末はTouch Eventsを主に使い、同時に届くPointer Eventsを二重処理しない。 */
+function bindHorizontalGesture(target, callbacks, capture = false) {
+    let track=null,ignorePointerUntil=0;
+    const directTouch="ontouchstart" in window || typeof window.TouchEvent==="function" || navigator.maxTouchPoints>0;
+    function releaseCapture(id) {
+        try { if(target.hasPointerCapture?.(id))target.releasePointerCapture(id); } catch(error) {}
+    }
+    function cancel() {
+        if(!track)return;
+        const old=track; track=null;
+        if(old.kind==="pointer")releaseCapture(old.id);
+        callbacks.cancel?.(old);
+    }
+    function start(point,event,kind) {
+        if(track) { cancel(); return; }
+        if(callbacks.canStart && !callbacks.canStart(point,event))return;
+        track={...point,kind,horizontal:false,samples:[{x:point.x,time:point.time}]};
+        if(kind==="pointer") { try {target.setPointerCapture?.(point.id);}catch(error){} }
+        callbacks.start?.(track,event);
+    }
+    function info(point) {
+        const dx=point.x-track.x,dy=point.y-track.y;
+        const recent=track.samples.find(sample=>sample.time>=point.time-100 && sample.time<=point.time-8) || track.samples[0];
+        return {...track,dx,dy,elapsed:point.time-track.time,velocity:Math.abs(point.x-recent.x)/Math.max(1,point.time-recent.time)};
+    }
+    function move(point,event) {
+        if(!track || track.id!==point.id)return;
+        const state=info(point);
+        if(!track.horizontal) {
+            if(Math.abs(state.dy)>14 && Math.abs(state.dy)>Math.abs(state.dx)*1.4){cancel();return;}
+            if(Math.abs(state.dx)<6 || Math.abs(state.dx)<Math.abs(state.dy)*1.1)return;
+            track.horizontal=true;
+        }
+        if(event.cancelable!==false)event.preventDefault();
+        callbacks.move?.({...state,horizontal:true},event);
+        track.samples.push({x:point.x,time:point.time});
+        if(track.samples.length>12)track.samples.shift();
+    }
+    function end(point,event) {
+        if(!track || track.id!==point.id)return;
+        const state=info(point),old=track; track=null;
+        if(old.kind==="pointer")releaseCapture(old.id);
+        if((state.horizontal || Math.abs(state.dx)>=6 && Math.abs(state.dx)>=Math.abs(state.dy)*1.1) && event.cancelable!==false)event.preventDefault();
+        callbacks.end?.(state,event);
+    }
+    const pointerPoint=event=>({id:event.pointerId,x:event.clientX,y:event.clientY,time:pointerEventTime(event)});
+    target.addEventListener("pointerdown",event=>{
+        if(event.isPrimary===false || event.button!==0 || event.pointerType==="touch" && directTouch || Date.now()<ignorePointerUntil)return;
+        start(pointerPoint(event),event,"pointer");
+    },capture);
+    target.addEventListener("pointermove",event=>{if(track?.kind==="pointer")move(pointerPoint(event),event);},{capture,passive:false});
+    target.addEventListener("pointerup",event=>{if(track?.kind==="pointer")end(pointerPoint(event),event);},{capture,passive:false});
+    target.addEventListener("pointercancel",event=>{if(track?.kind==="pointer" && track.id===event.pointerId)cancel();},capture);
+    target.addEventListener("lostpointercapture",event=>{if(track?.kind==="pointer" && track.id===event.pointerId)cancel();},capture);
+    function touchPoint(touch,event){return {id:touch.identifier,x:touch.clientX,y:touch.clientY,time:pointerEventTime(event)};}
+    target.addEventListener("touchstart",event=>{
+        ignorePointerUntil=Date.now()+1000;
+        if(event.touches.length!==1){cancel();return;}
+        if(track?.kind==="pointer")cancel();
+        start(touchPoint(event.touches[0],event),event,"touch");
+    },{capture,passive:true});
+    target.addEventListener("touchmove",event=>{
+        if(track?.kind!=="touch")return;
+        if(event.touches.length!==1){cancel();return;}
+        const touch=[...event.touches].find(t=>t.identifier===track.id);
+        if(touch)move(touchPoint(touch,event),event);
+    },{capture,passive:false});
+    target.addEventListener("touchend",event=>{
+        ignorePointerUntil=Date.now()+1000;
+        if(track?.kind!=="touch")return;
+        if(event.touches.length){cancel();return;}
+        const touch=[...event.changedTouches].find(t=>t.identifier===track.id);
+        if(touch)end(touchPoint(touch,event),event);
+    },{capture,passive:false});
+    target.addEventListener("touchcancel",()=>{if(track?.kind==="touch")cancel();},{capture,passive:true});
+}
+function finishTaskGesture() {
+    activeTaskGestureCount=Math.max(0,activeTaskGestureCount-1);
+    Promise.resolve().then(()=>{
+        if(!activeTaskGestureCount && deferredTaskRender){deferredTaskRender=false;renderAllTasks();renderCompletedTasks();}
+    });
+}
 function attachTaskSwipe(item, task) {
     const wrapper=document.createElement("div"); wrapper.className="task-swipe";
     const completed=document.createElement("div"),deleted=document.createElement("div");
     completed.className="task-swipe-action complete"; completed.textContent="提出済み";
     deleted.className="task-swipe-action delete"; deleted.textContent="削除";
-    completed.setAttribute("aria-hidden","true"); deleted.setAttribute("aria-hidden","true");
-    wrapper.append(completed,deleted,item);
-    let gesture=null,blockedUntil=0;
+    completed.setAttribute("aria-hidden","true"); deleted.setAttribute("aria-hidden","true");wrapper.append(completed,deleted,item);
+    let blockedUntil=0,busy=false,horizontal=false;
     const click=item.onclick;
-    item.onclick=event=>{if(Date.now()<blockedUntil){event.preventDefault();event.stopPropagation();return;}click(event);};
-    item.tabIndex=0; item.setAttribute("role","button");
-    item.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();showTaskDetails(task.id);}});
-    function reset(){item.style.transform="";wrapper.classList.remove("swiping-right","swiping-left");gesture=null;}
-    item.addEventListener("pointerdown",event=>{
-        if (!event.isPrimary || event.button!==0 || (event.clientX<=24 && canGoBackInApp())) return;
-        gesture={id:event.pointerId,x:event.clientX,y:event.clientY,dx:0,horizontal:false,time:pointerEventTime(event)};
+    item.onclick=event=>{if(busy || Date.now()<blockedUntil){event.preventDefault();event.stopPropagation();return;}click(event);};
+    item.tabIndex=0;item.setAttribute("role","button");
+    item.addEventListener("keydown",event=>{if(!busy && (event.key==="Enter"||event.key===" ")){event.preventDefault();showTaskDetails(task.id);}});
+    function reset(){item.style.transform="";wrapper.classList.remove("swiping-right","swiping-left");}
+    bindHorizontalGesture(item,{
+        canStart:point=>!busy && !(point.x<=24 && canGoBackInApp()),
+        start(){horizontal=false;activeTaskGestureCount++;},
+        move(state){horizontal=true;item.style.transform="translate3d("+Math.max(-128,Math.min(128,state.dx))+"px,0,0)";wrapper.classList.toggle("swiping-right",state.dx>0);wrapper.classList.toggle("swiping-left",state.dx<0);},
+        end(state){
+            const action=horizontalSwipeAction(state.dx,state.dy,state.elapsed,item.clientWidth,state.velocity);
+            if(horizontal || Math.abs(state.dx)>=6)blockedUntil=Date.now()+800;
+            if(action){
+                busy=true;wrapper.classList.toggle("swiping-right",action==="complete");wrapper.classList.toggle("swiping-left",action==="delete");
+                item.style.transform="translate3d("+(action==="complete"?96:-96)+"px,0,0)";item.setAttribute("aria-busy","true");item.style.opacity=".65";
+                void performTaskSwipe(task.id,action).finally(()=>{busy=false;item.setAttribute("aria-busy","false");item.style.opacity="";reset();});
+            }else reset();
+            finishTaskGesture();
+        },
+        cancel(){if(horizontal)blockedUntil=Date.now()+800;reset();finishTaskGesture();}
     });
-    item.addEventListener("pointermove",event=>{
-        if (!gesture || gesture.id!==event.pointerId) return;
-        const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
-        if (!gesture.horizontal) {
-            if (Math.abs(dy)>12 && Math.abs(dy)>Math.abs(dx)) {reset();return;}
-            if (Math.abs(dx)<8 || Math.abs(dx)<Math.abs(dy)*1.2) return;
-            gesture.horizontal=true; item.setPointerCapture(event.pointerId);
-        }
-        event.preventDefault(); gesture.dx=dx;
-        item.style.transform="translateX("+Math.max(-120,Math.min(120,dx))+"px)";
-        wrapper.classList.toggle("swiping-right",dx>0); wrapper.classList.toggle("swiping-left",dx<0);
-    });
-    item.addEventListener("pointerup",event=>{
-        if (!gesture || gesture.id!==event.pointerId) return;
-        // 速い操作ではmoveが省略されるため、離した位置でも距離と速度を判定する。
-        const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
-        const action=horizontalSwipeAction(dx,dy,pointerEventTime(event)-gesture.time,item.clientWidth);
-        const horizontal=gesture.horizontal || (Math.abs(dx)>=8 && Math.abs(dx)>=Math.abs(dy)*1.2);
-        if(horizontal){blockedUntil=Date.now()+700;event.preventDefault();}
-        reset();
-        if(item.hasPointerCapture(event.pointerId))item.releasePointerCapture(event.pointerId);
-        if(action){
-            item.setAttribute("aria-busy","true"); item.style.opacity=".55";
-            void performTaskSwipe(task.id,action).finally(()=>{item.setAttribute("aria-busy","false");item.style.opacity="";});
-        }
-    });
-    item.addEventListener("pointercancel",()=>{if(gesture?.horizontal)blockedUntil=Date.now()+700;reset();});
-    item.addEventListener("lostpointercapture",reset);
     return wrapper;
 }
-/* 左端の戻る操作はアプリ内の画面だけを対象にする。 */
-function openAppDialogs() {
-    return [...document.querySelectorAll("dialog[open]")].filter(dialog=>dialog.open);
+function openAppDialogs() { return [...document.querySelectorAll("dialog[open]")].filter(dialog=>dialog.open); }
+function backSwipeSurface() {
+    const dialogs=openAppDialogs();
+    if(dialogs.length)return dialogs[dialogs.length-1];
+    if(!attendanceSubjectView.hidden)return attendanceSubjectView;
+    if(!timetableSettingsView.hidden)return timetableSettingsView;
+    if(!attendanceView.hidden)return attendanceView;
+    return null;
 }
-function canGoBackInApp() {
-    return openAppDialogs().length>0 || !attendanceSubjectView.hidden || !timetableSettingsView.hidden || !attendanceView.hidden;
-}
+function canGoBackInApp(){return !!backSwipeSurface();}
 function goBackInApp() {
     const dialogs=openAppDialogs();
     if(dialogs.length){
-        const dialog=dialogs[dialogs.length-1];
-        if(dialog.id==="classTimeDialog" && classTimeSaving)return false;
+        const dialog=dialogs[dialogs.length-1];if(dialog.id==="classTimeDialog" && classTimeSaving)return false;
         const buttons={classTimeDialog:"classTimeCancel",taskDialog:"cancelButton",detailDialog:"detailCloseButton",settingsDialog:"settingsCloseButton",accountInfoDialog:"accountInfoCloseButton",subjectInputDialog:"subjectCancelButton"};
         const button=document.getElementById(buttons[dialog.id] || "");
-        if(button && typeof button.onclick==="function")button.click(); else dialog.close();
-        return true;
+        if(button && typeof button.onclick==="function")button.click();else dialog.close();return true;
     }
     if(!attendanceSubjectView.hidden){attendanceSubjectBackButton.click();return true;}
     if(!timetableSettingsView.hidden){timetableSettingsBackButton.click();return true;}
     if(!attendanceView.hidden){attendanceBackButton.click();return true;}
     return false;
 }
-let appEdgeGesture=null,appEdgeClickBlockedUntil=0;
+let appBackPreview=null,appBackSettling=false,appEdgeClickBlockedUntil=0;
+function beginBackPreview() {
+    const surface=backSwipeSurface();
+    if(!surface || appBackSettling || surface.id==="classTimeDialog" && classTimeSaving)return false;
+    const parent=surface===attendanceSubjectView?attendanceView:null;
+    const saved={transform:surface.style.transform,transition:surface.style.transition,boxShadow:surface.style.boxShadow,willChange:surface.style.willChange};
+    appBackPreview={surface,parent,parentWasHidden:parent?.hidden,parentTransform:parent?.style.transform,parentTransition:parent?.style.transition,uid:auth.currentUser?.uid,width:window.innerWidth||surface.clientWidth||360,x:0,saved};
+    surface.style.transition="none";surface.style.willChange="transform";surface.classList.add("app-back-dragging");
+    if(parent){parent.hidden=false;parent.style.transform="translate3d(-28px,0,0)";}
+    return true;
+}
+function moveBackPreview(dx) {
+    const preview=appBackPreview;if(!preview)return;
+    preview.x=Math.max(0,Math.min(preview.width,dx));
+    const progress=preview.x/preview.width;
+    preview.surface.style.transform="translate3d("+preview.x+"px,0,0)";
+    preview.surface.style.boxShadow="-12px 0 32px rgba(0,0,0,"+(.18*(1-progress))+")";
+    if(preview.parent)preview.parent.style.transform="translate3d("+(-28*(1-progress))+"px,0,0)";
+}
+function restoreBackPreview(preview,committed) {
+    const {surface,parent,saved}=preview;
+    surface.classList.remove("app-back-dragging","app-back-settling");
+    Object.assign(surface.style,saved);
+    if(parent){parent.style.transform=preview.parentTransform;parent.style.transition=preview.parentTransition;if(!committed && auth.currentUser?.uid===preview.uid)parent.hidden=preview.parentWasHidden;}
+}
+function animateBackSurface(preview,x,duration) {
+    return new Promise(resolve=>{
+        let finished=false;
+        const finish=()=>{if(finished)return;finished=true;clearTimeout(timer);preview.surface.removeEventListener?.("transitionend",onEnd);resolve();};
+        const onEnd=event=>{if(event.target===preview.surface && event.propertyName==="transform")finish();};
+        const timer=setTimeout(finish,duration+70);
+        preview.surface.addEventListener("transitionend",onEnd);
+        preview.surface.getBoundingClientRect?.();
+        preview.surface.style.transition="transform "+duration+"ms cubic-bezier(.22,.7,.2,1), box-shadow "+duration+"ms ease";
+        const frame=window.requestAnimationFrame ? callback=>window.requestAnimationFrame(callback) : callback=>setTimeout(callback,0);
+        frame(()=>{
+            if(finished)return;
+            preview.surface.style.transform="translate3d("+x+"px,0,0)";
+            preview.surface.style.boxShadow="none";
+            if(preview.parent){preview.parent.style.transition="transform "+duration+"ms cubic-bezier(.22,.7,.2,1)";preview.parent.style.transform= x ? "translate3d(0,0,0)" : "translate3d(-28px,0,0)";}
+        });
+    });
+}
+async function finishBackPreview(commit) {
+    const preview=appBackPreview;if(!preview || appBackSettling)return;
+    appBackPreview=null;appBackSettling=true;
+    const reduced=window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const sameUser=()=>auth.currentUser?.uid===preview.uid;
+    try {
+        preview.surface.classList.add("app-back-settling");
+        if(!reduced)await animateBackSurface(preview,commit?preview.width:0,commit?200:170);
+        const committed=commit && sameUser() && backSwipeSurface()===preview.surface && goBackInApp();
+        restoreBackPreview(preview,committed);
+    }finally{appBackSettling=false;}
+}
 function installAppBackSwipe() {
-    document.addEventListener("pointerdown",event=>{
-        if(!event.isPrimary || event.button!==0 || event.clientX>24 || !canGoBackInApp())return;
-        appEdgeGesture={id:event.pointerId,x:event.clientX,y:event.clientY,time:pointerEventTime(event)};
+    let startingSurface=null;
+    bindHorizontalGesture(document,{
+        canStart:point=>point.x<=24 && !appBackSettling && canGoBackInApp() && !(backSwipeSurface()?.id==="classTimeDialog" && classTimeSaving),
+        start(){startingSurface=backSwipeSurface();},
+        move(state){if(state.dx>0 && backSwipeSurface()===startingSurface){if(!appBackPreview)beginBackPreview();moveBackPreview(state.dx);appEdgeClickBlockedUntil=Date.now()+800;}},
+        end(state,event){
+            const commit=backSwipeSurface()===startingSurface && horizontalSwipeAction(state.dx,state.dy,state.elapsed,window.innerWidth||360,state.velocity)==="complete";
+            if(commit){if(!appBackPreview && !beginBackPreview())return;appEdgeClickBlockedUntil=Date.now()+800;event.stopPropagation();moveBackPreview(state.dx);}
+            void finishBackPreview(commit);
+        },
+        cancel(){void finishBackPreview(false);}
     },true);
-    document.addEventListener("pointermove",event=>{
-        if(!appEdgeGesture || event.pointerId!==appEdgeGesture.id)return;
-        const dx=event.clientX-appEdgeGesture.x,dy=event.clientY-appEdgeGesture.y;
-        if(Math.abs(dy)>12 && Math.abs(dy)>Math.abs(dx)){appEdgeGesture=null;return;}
-        if(dx>8 && dx>Math.abs(dy)*1.2)event.preventDefault();
-    },{capture:true,passive:false});
-    document.addEventListener("pointerup",event=>{
-        if(!appEdgeGesture || event.pointerId!==appEdgeGesture.id)return;
-        const dx=event.clientX-appEdgeGesture.x,dy=event.clientY-appEdgeGesture.y;
-        const action=horizontalSwipeAction(dx,dy,pointerEventTime(event)-appEdgeGesture.time);
-        appEdgeGesture=null;
-        if(action==="complete" && goBackInApp()){
-            appEdgeClickBlockedUntil=Date.now()+700;event.preventDefault();event.stopPropagation();
-        }
-    },true);
-    document.addEventListener("pointercancel",()=>{appEdgeGesture=null;},true);
     document.addEventListener("click",event=>{
-        if(Date.now()<appEdgeClickBlockedUntil && event.detail!==0){event.preventDefault();event.stopPropagation();}
+        if((appBackSettling || Date.now()<appEdgeClickBlockedUntil) && event.detail!==0){event.preventDefault();event.stopPropagation();}
     },true);
 }
 
@@ -6623,9 +6741,11 @@ function renderTaskList(container, list, emptyMessage) {
     [...list].sort((a,b)=>taskDeadlineTimestamp(a.deadline)-taskDeadlineTimestamp(b.deadline)).forEach(task=>addAllTask(container,task));
 }
 function renderAllTasks() {
+    if(activeTaskGestureCount){deferredTaskRender=true;return;}
     renderTaskList(document.getElementById("allTasks"),tasks.filter(task=>!task.completed),"未提出の課題はありません");
 }
 function renderCompletedTasks() {
+    if(activeTaskGestureCount){deferredTaskRender=true;return;}
     renderTaskList(document.getElementById("completedTasks"),tasks.filter(task=>task.completed),"提出済みの課題はありません");
 }
 

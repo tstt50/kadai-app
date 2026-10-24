@@ -1,5 +1,5 @@
 var CACHE_NAME =
-    "kadai-manager-v9";
+    "kadai-manager-v10";
 
 
 var APP_FILES = [
