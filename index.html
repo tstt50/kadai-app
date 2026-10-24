@@ -1584,9 +1584,12 @@ body.timetable-settings-open #timetableSettingsView {
 .attendance-manual-panel { margin-top:18px; background:#fff; border-radius:16px; padding:16px; }
 .attendance-manual-panel h3 { margin:0 0 10px; font-size:17px; }
 .attendance-manual-panel p { font-size:12px; color:#667085; line-height:1.6; }
-.attendance-manual-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.attendance-manual-grid label { font-size:12px; margin:8px 0 4px; }
-.attendance-manual-grid input, .attendance-manual-grid select { width:100%; min-width:0; }
+.attendance-manual-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; align-items:start; }
+.attendance-manual-grid > div { min-width:0; }
+.attendance-manual-grid label { font-size:12px; line-height:16px; min-height:16px; margin:8px 0 4px; }
+.attendance-manual-grid input, .attendance-manual-grid select { display:block; box-sizing:border-box; width:100%; min-width:0; max-width:100%; height:48px; min-height:48px; margin:0; padding:0 10px; font-size:16px; line-height:normal; -webkit-appearance:none; appearance:none; }
+.attendance-manual-grid input::-webkit-date-and-time-value { min-width:0; text-align:left; }
+.attendance-manual-grid select { padding-right:24px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23667085' stroke-width='2'/%3E%3C/svg%3E"); background-position:right 8px center; background-repeat:no-repeat; }
 .attendance-manual-actions { display:flex; gap:8px; margin-top:14px; }
 .attendance-manual-actions button { flex:1; border:0; border-radius:10px; padding:12px 8px; font-weight:700; cursor:pointer; }
 #attendanceManualSave { background:#1677ff; color:white; }
@@ -1623,6 +1626,7 @@ body.timetable-settings-open #timetableSettingsView {
 .swipe-help { color: #777; font-size: 12px; margin: -4px 2px 10px; }
 #taskForm input[type="datetime-local"] { min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; }
 
+#attendanceView, #attendanceSubjectView, #timetableSettingsView, dialog { touch-action:pan-y; overscroll-behavior-x:contain; }
 </style>
 </head>
 
@@ -2240,6 +2244,9 @@ TOMORROW
     class="all-list"
     id="allTasks"
 ></div>
+
+<h2 class="section-title">提出済み</h2>
+<div class="all-list" id="completedTasks"></div>
 
 </main>
 
@@ -3563,6 +3570,8 @@ function normalizeTask(task) {
             Boolean(
                 task.completed
             ),
+
+        completedAt: Number.isFinite(Number(task.completedAt)) && Number(task.completedAt)>0 ? Number(task.completedAt) : null,
 
         updatedAt:
             Number(
@@ -5411,7 +5420,9 @@ function taskDeadlineTimestamp(value) {
 }
 function expiredCompletedTask(task, now = Date.now()) {
     const deadline = taskDeadlineTimestamp(task.deadline);
-    return task.completed === true && Number.isFinite(deadline) && deadline < now;
+    const completedAt=Number(task.completedAt);
+    const justSubmittedAfterDeadline=Number.isFinite(completedAt) && completedAt>0 && completedAt>=deadline;
+    return task.completed === true && Number.isFinite(deadline) && deadline < now && (!justSubmittedAfterDeadline || now>=completedAt+60000);
 }
 function taskTombstone(id) {
     const now=Date.now(); return {id:String(id),deleted:true,deletedAt:now,updatedAt:now};
@@ -5428,7 +5439,7 @@ async function performTaskSwipe(id, action) {
             const ref=doc(db,"users",uid,"tasks",String(id)), snapshot=await tx.get(ref);
             if (!snapshot.exists() || snapshot.data().deleted) { result={deleted:true}; return; }
             const latest=snapshot.data();
-            result=action === "delete" ? taskTombstone(id) : {...latest,id:String(id),completed:true,updatedAt:Date.now()};
+            result=action === "delete" ? taskTombstone(id) : {...latest,id:String(id),completed:true,completedAt:latest.completed && Number(latest.completedAt)>0 ? Number(latest.completedAt) : Date.now(),updatedAt:Date.now()};
             tx.set(ref,result);
         });
         if (currentUser?.uid !== uid || auth.currentUser?.uid !== uid) return;
@@ -5470,6 +5481,14 @@ async function cleanupExpiredCompletedTasks() {
         if (changed && currentUser?.uid===uid && auth.currentUser?.uid===uid) { saveUserCache(); render(); }
     } finally { taskCleanupUsers.delete(uid); }
 }
+function horizontalSwipeAction(dx, dy, elapsed, width = 360) {
+    if (Math.abs(dx) < Math.abs(dy)*1.2) return null;
+    const distance = Math.abs(dx), duration = Math.max(1,elapsed);
+    const longEnough = distance >= Math.min(64,Math.max(44,width*.16));
+    const quickEnough = distance >= 24 && distance/duration >= .45;
+    return longEnough || quickEnough ? (dx>0 ? "complete" : "delete") : null;
+}
+const pointerEventTime = event => Number.isFinite(event.timeStamp) ? event.timeStamp : Date.now();
 function attachTaskSwipe(item, task) {
     const wrapper=document.createElement("div"); wrapper.className="task-swipe";
     const completed=document.createElement("div"),deleted=document.createElement("div");
@@ -5484,15 +5503,15 @@ function attachTaskSwipe(item, task) {
     item.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();showTaskDetails(task.id);}});
     function reset(){item.style.transform="";wrapper.classList.remove("swiping-right","swiping-left");gesture=null;}
     item.addEventListener("pointerdown",event=>{
-        if (!event.isPrimary || event.button!==0) return;
-        gesture={id:event.pointerId,x:event.clientX,y:event.clientY,dx:0,horizontal:false};
+        if (!event.isPrimary || event.button!==0 || (event.clientX<=24 && canGoBackInApp())) return;
+        gesture={id:event.pointerId,x:event.clientX,y:event.clientY,dx:0,horizontal:false,time:pointerEventTime(event)};
     });
     item.addEventListener("pointermove",event=>{
         if (!gesture || gesture.id!==event.pointerId) return;
         const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
         if (!gesture.horizontal) {
             if (Math.abs(dy)>12 && Math.abs(dy)>Math.abs(dx)) {reset();return;}
-            if (Math.abs(dx)<12 || Math.abs(dx)<Math.abs(dy)*1.2) return;
+            if (Math.abs(dx)<8 || Math.abs(dx)<Math.abs(dy)*1.2) return;
             gesture.horizontal=true; item.setPointerCapture(event.pointerId);
         }
         event.preventDefault(); gesture.dx=dx;
@@ -5501,16 +5520,69 @@ function attachTaskSwipe(item, task) {
     });
     item.addEventListener("pointerup",event=>{
         if (!gesture || gesture.id!==event.pointerId) return;
-        const {dx,horizontal}=gesture;
+        // 速い操作ではmoveが省略されるため、離した位置でも距離と速度を判定する。
+        const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
+        const action=horizontalSwipeAction(dx,dy,pointerEventTime(event)-gesture.time,item.clientWidth);
+        const horizontal=gesture.horizontal || (Math.abs(dx)>=8 && Math.abs(dx)>=Math.abs(dy)*1.2);
         if(horizontal){blockedUntil=Date.now()+700;event.preventDefault();}
-        const threshold=Math.min(90,Math.max(56,item.clientWidth*.22));
         reset();
         if(item.hasPointerCapture(event.pointerId))item.releasePointerCapture(event.pointerId);
-        if(horizontal && Math.abs(dx)>=threshold) void performTaskSwipe(task.id,dx>0?"complete":"delete");
+        if(action){
+            item.setAttribute("aria-busy","true"); item.style.opacity=".55";
+            void performTaskSwipe(task.id,action).finally(()=>{item.setAttribute("aria-busy","false");item.style.opacity="";});
+        }
     });
     item.addEventListener("pointercancel",()=>{if(gesture?.horizontal)blockedUntil=Date.now()+700;reset();});
     item.addEventListener("lostpointercapture",reset);
     return wrapper;
+}
+/* 左端の戻る操作はアプリ内の画面だけを対象にする。 */
+function openAppDialogs() {
+    return [...document.querySelectorAll("dialog[open]")].filter(dialog=>dialog.open);
+}
+function canGoBackInApp() {
+    return openAppDialogs().length>0 || !attendanceSubjectView.hidden || !timetableSettingsView.hidden || !attendanceView.hidden;
+}
+function goBackInApp() {
+    const dialogs=openAppDialogs();
+    if(dialogs.length){
+        const dialog=dialogs[dialogs.length-1];
+        if(dialog.id==="classTimeDialog" && classTimeSaving)return false;
+        const buttons={classTimeDialog:"classTimeCancel",taskDialog:"cancelButton",detailDialog:"detailCloseButton",settingsDialog:"settingsCloseButton",accountInfoDialog:"accountInfoCloseButton",subjectInputDialog:"subjectCancelButton"};
+        const button=document.getElementById(buttons[dialog.id] || "");
+        if(button && typeof button.onclick==="function")button.click(); else dialog.close();
+        return true;
+    }
+    if(!attendanceSubjectView.hidden){attendanceSubjectBackButton.click();return true;}
+    if(!timetableSettingsView.hidden){timetableSettingsBackButton.click();return true;}
+    if(!attendanceView.hidden){attendanceBackButton.click();return true;}
+    return false;
+}
+let appEdgeGesture=null,appEdgeClickBlockedUntil=0;
+function installAppBackSwipe() {
+    document.addEventListener("pointerdown",event=>{
+        if(!event.isPrimary || event.button!==0 || event.clientX>24 || !canGoBackInApp())return;
+        appEdgeGesture={id:event.pointerId,x:event.clientX,y:event.clientY,time:pointerEventTime(event)};
+    },true);
+    document.addEventListener("pointermove",event=>{
+        if(!appEdgeGesture || event.pointerId!==appEdgeGesture.id)return;
+        const dx=event.clientX-appEdgeGesture.x,dy=event.clientY-appEdgeGesture.y;
+        if(Math.abs(dy)>12 && Math.abs(dy)>Math.abs(dx)){appEdgeGesture=null;return;}
+        if(dx>8 && dx>Math.abs(dy)*1.2)event.preventDefault();
+    },{capture:true,passive:false});
+    document.addEventListener("pointerup",event=>{
+        if(!appEdgeGesture || event.pointerId!==appEdgeGesture.id)return;
+        const dx=event.clientX-appEdgeGesture.x,dy=event.clientY-appEdgeGesture.y;
+        const action=horizontalSwipeAction(dx,dy,pointerEventTime(event)-appEdgeGesture.time);
+        appEdgeGesture=null;
+        if(action==="complete" && goBackInApp()){
+            appEdgeClickBlockedUntil=Date.now()+700;event.preventDefault();event.stopPropagation();
+        }
+    },true);
+    document.addEventListener("pointercancel",()=>{appEdgeGesture=null;},true);
+    document.addEventListener("click",event=>{
+        if(Date.now()<appEdgeClickBlockedUntil && event.detail!==0){event.preventDefault();event.stopPropagation();}
+    },true);
 }
 
 
@@ -5777,6 +5849,8 @@ function tasksForDate(
         function(task) {
 
             return (
+                !task.completed
+                &&
                 task.deadline
                 &&
                 task.deadline
@@ -6257,11 +6331,11 @@ function createFutureRow(
     ) {
 
         preview =
-            dayTasks[0].subject
+            dayTasks[0].name
             +
             "："
             +
-            dayTasks[0].name;
+            dayTasks[0].subject;
 
 
         if (
@@ -6543,66 +6617,17 @@ function addFutureTask(
    全課題
 ======================================== */
 
-function renderAllTasks() {
-
-    const container =
-        document.getElementById(
-            "allTasks"
-        );
-
-
-    container.innerHTML =
-        "";
-
-
-    if (
-        tasks.length
-        ===
-        0
-    ) {
-
-        container.innerHTML =
-            '<div class="all-task" style="color:#999;">まだ課題が登録されていません</div>';
-
-
-        return;
-
-    }
-
-
-    const sorted =
-        tasks
-        .slice()
-        .sort(
-            function(a,b) {
-
-                return (
-                    new Date(
-                        a.deadline
-                    )
-                    -
-                    new Date(
-                        b.deadline
-                    )
-                );
-
-            }
-        );
-
-
-    sorted.forEach(
-        function(task) {
-
-            addAllTask(
-                container,
-                task
-            );
-
-        }
-    );
-
+function renderTaskList(container, list, emptyMessage) {
+    container.replaceChildren();
+    if (!list.length) { const empty=document.createElement("div"); empty.className="all-task"; empty.style.color="#999"; empty.textContent=emptyMessage; container.appendChild(empty); return; }
+    [...list].sort((a,b)=>taskDeadlineTimestamp(a.deadline)-taskDeadlineTimestamp(b.deadline)).forEach(task=>addAllTask(container,task));
 }
-
+function renderAllTasks() {
+    renderTaskList(document.getElementById("allTasks"),tasks.filter(task=>!task.completed),"未提出の課題はありません");
+}
+function renderCompletedTasks() {
+    renderTaskList(document.getElementById("completedTasks"),tasks.filter(task=>task.completed),"提出済みの課題はありません");
+}
 
 function addAllTask(
     container,
@@ -6987,6 +7012,7 @@ function editTask(
 
             task.completed =
                 !task.completed;
+            task.completedAt = task.completed ? Date.now() : null;
 
 
             task.updatedAt =
@@ -7484,6 +7510,7 @@ function render() {
 
 
     renderAllTasks();
+    renderCompletedTasks();
     void cleanupExpiredCompletedTasks();
 
 }
@@ -8729,6 +8756,8 @@ window.addEventListener(
 
     }
 );
+
+installAppBackSwipe();
 
 /* ========================================
    時計
