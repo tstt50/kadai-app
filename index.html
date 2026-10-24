@@ -2540,6 +2540,7 @@ TOMORROW
 </button>
 
 
+<button type="button" class="complete-button" id="classTimeSettingsButton">授業時間設定</button>
 <button
     type="button"
     class="delete-button"
@@ -2756,7 +2757,11 @@ Microsoftを連携
     hidden
 >
 
-<script type="module">
+<dialog id="classTimeDialog" aria-labelledby="classTimeTitle"><form id="classTimeForm" class="dialog-content">
+<h2 id="classTimeTitle">授業時間設定</h2><p>1〜5限の開始時刻と授業時間（分）を入力してください。</p>
+<div id="classTimeFields"></div><p id="classTimeError" role="alert" style="color:#d70015"></p>
+<div class="dialog-buttons"><button type="button" class="cancel" id="classTimeCancel">キャンセル</button><button type="submit" class="save" id="classTimeSave">保存</button></div>
+</form></dialog><script type="module">
 
 import {
     initializeApp
@@ -7641,11 +7646,100 @@ function render() {
    ログイン状態
 ======================================== */
 
+const DEFAULT_CLASS_TIMES = ["08:50","10:45","13:15","15:10","17:05"].map(start=>({start,duration:100}));
+let classTimes=DEFAULT_CLASS_TIMES.map(p=>({...p})), classTimeHistory=[], classTimesConfigured=false;
+let classTimeOwner=null, classTimeContinue=false, classTimeSaving=false, unsubscribeClassTimes=null;
+const classTimeDialog=document.getElementById("classTimeDialog"), classTimeForm=document.getElementById("classTimeForm"), classTimeError=document.getElementById("classTimeError");
+const clockMinutes=t=>Number(t.slice(0,2))*60+Number(t.slice(3));
+const minutesClock=n=>String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
+function validClassTimes(a) {
+ return Array.isArray(a)&&a.length===5&&a.every((p,i)=>p&&/^([01]\d|2[0-3]):[0-5]\d$/.test(p.start)&&Number.isInteger(p.duration)&&p.duration>0&&clockMinutes(p.start)+p.duration<1440&&(!i||clockMinutes(p.start)>=clockMinutes(a[i-1].start)+a[i-1].duration));
+}
+function applyClassTimes(data) {
+ classTimesConfigured=validClassTimes(data?.periods);
+ classTimes=(classTimesConfigured?data.periods:DEFAULT_CLASS_TIMES).map(p=>({...p}));
+ classTimeHistory=Array.isArray(data?.history)?data.history.filter(h=>validClassTimes(h.periods)):[];
+ document.querySelectorAll("#attendanceView .attendance-period small, #timetableSettingsView .attendance-period small").forEach((el,i)=>{const p=classTimes[i%5];el.textContent=p.start+"–"+minutesClock(clockMinutes(p.start)+p.duration);});
+}
+const classTimeRef=uid=>doc(db,"users",uid,"settings","classTimes");
+async function loadClassTimes() {
+ const uid=auth.currentUser?.uid;if(!uid)throw new Error("ログインしてください。");
+ const snap=await getDocFromServer(classTimeRef(uid));
+ if(auth.currentUser?.uid!==uid)throw new Error("アカウントが変更されました。");
+ applyClassTimes(snap.exists()?snap.data():null);
+}
+function recordPeriod(data,time,date) {
+ if(Number.isInteger(data.period)&&data.period>=1&&data.period<=5)return data.period;
+ const past=classTimeHistory.find(h=>date<=h.throughDate);
+ return (past?past.periods:classTimes).findIndex(p=>p.start===time)+1;
+}
+async function showTimetableSettings() {
+ const uid=auth.currentUser?.uid;await loadTimetable();if(!uid||auth.currentUser?.uid!==uid)return;
+ timetableSettingsView.hidden=false;document.body.classList.add("timetable-settings-open");
+}
+async function openClassTimeSettings(next) {
+ try {
+ await loadClassTimes();settingsDialog.close();
+ if(next&&classTimesConfigured){await showTimetableSettings();return;}
+ classTimeOwner=auth.currentUser.uid;classTimeContinue=next;classTimeError.textContent="";
+ document.getElementById("classTimeFields").innerHTML=classTimes.map((p,i)=>`<fieldset style="border:1px solid #ddd;border-radius:12px;margin:12px 0;padding:12px"><legend>${i+1}限</legend><label for="classStart${i}">開始時刻</label><input id="classStart${i}" type="time" required value="${p.start}"><label for="classDuration${i}" style="margin-top:10px">授業時間（分）</label><input id="classDuration${i}" type="number" required min="1" max="1439" step="1" value="${p.duration}"></fieldset>`).join("");
+ document.getElementById("classTimeSave").textContent=next?"保存して時間割へ":"保存";classTimeDialog.showModal();
+ }catch(e){alert("授業時間設定を読み込めませんでした。通信状態を確認して再試行してください。\n"+e.message);}
+}
+document.getElementById("classTimeSettingsButton").onclick=()=>openClassTimeSettings(false);
+document.getElementById("classTimeCancel").onclick=()=>{if(!classTimeSaving)classTimeDialog.close();};
+classTimeDialog.addEventListener("cancel",e=>{if(classTimeSaving)e.preventDefault();});
+classTimeForm.onsubmit=async e=>{
+ e.preventDefault();if(classTimeSaving||!classTimeForm.reportValidity())return;
+ const uid=classTimeOwner;if(!uid||auth.currentUser?.uid!==uid)return;
+ const periods=classTimes.map((_,i)=>({start:document.getElementById("classStart"+i).value,duration:Number(document.getElementById("classDuration"+i).value)}));
+ if(!validClassTimes(periods)){classTimeError.textContent="授業時間は正の整数で入力し、1〜5限が重ならず同日中に終了するようにしてください。";return;}
+ if(!navigator.onLine){classTimeError.textContent="オンラインで保存してください。入力内容はそのまま再試行できます。";return;}
+ classTimeSaving=true;document.getElementById("classTimeSave").disabled=true;
+ try {
+ let saved;
+ // 時刻変更前に既存記録の限を確定する。状態・手動ロックは変更しない。
+ const existing = await getDocsFromServer(collection(db,"users",uid,"attendanceClasses"));
+ const untagged = existing.docs.filter(d=>!Number.isInteger(d.data().period));
+ if(untagged.length>450)throw new Error("出席記録が多いため時間設定を変更できません。管理者にご相談ください。");
+ await runTransaction(db,async tx=>{
+ if(auth.currentUser?.uid!==uid)throw new Error("アカウントが変更されました。");
+ const ref=classTimeRef(uid),snap=await tx.get(ref),old=snap.exists()?snap.data():null;
+ const records=await Promise.all(untagged.map(d=>tx.get(d.ref)));
+ const previous=validClassTimes(old?.periods)?old.periods:DEFAULT_CLASS_TIMES;
+ const history=Array.isArray(old?.history)?old.history.filter(h=>validClassTimes(h.periods)):[];
+ for(const record of records){
+ if(!record.exists()||Number.isInteger(record.data().period))continue;
+ const data=record.data(),parts=(data.classKey||record.id).split("_"),past=history.find(h=>parts[0]<=h.throughDate);
+ const period=(past?past.periods:previous).findIndex(p=>p.start===parts[1])+1;
+ if(period)tx.set(record.ref,{period},{merge:true});
+ }
+ if(JSON.stringify(previous)!==JSON.stringify(periods)){
+ const d=new Date(),throughDate=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+ history.push({throughDate,periods:previous});history.sort((a,b)=>a.throughDate.localeCompare(b.throughDate));
+ }
+ saved={periods,history};tx.set(ref,{...saved,updatedAt:serverTimestamp()},{merge:true});
+ });
+ if(auth.currentUser?.uid!==uid)return;applyClassTimes(saved);classTimeDialog.close();
+ if(classTimeContinue)await showTimetableSettings();
+ }catch(error){classTimeError.textContent="保存に失敗しました。入力内容を確認して再試行してください。 "+error.message;console.error(error);}
+ finally{classTimeSaving=false;document.getElementById("classTimeSave").disabled=false;}
+};
+function resetClassTimeSession(user) {
+ if(unsubscribeClassTimes)unsubscribeClassTimes();unsubscribeClassTimes=null;classTimeOwner=null;classTimeDialog.close();applyClassTimes(null);
+ document.querySelectorAll(".timetable-cell").forEach(c=>c.textContent="");
+ ["timetableSettingsView","attendanceView","attendanceSubjectView"].forEach(id=>document.getElementById(id).hidden=true);
+ document.body.classList.remove("timetable-settings-open","attendance-open");
+ if(user)unsubscribeClassTimes=onSnapshot(classTimeRef(user.uid),snap=>{if(auth.currentUser?.uid===user.uid)applyClassTimes(snap.exists()?snap.data():null);},error=>console.error("授業時間同期エラー",error));
+}
+
 onAuthStateChanged(
 
     auth,
 
     async function(user) {
+
+        resetClassTimeSession(user);
 
         if (
             unsubscribeTasks
@@ -7767,20 +7861,7 @@ const timetableSettingsBackButton =
         "timetableSettingsBackButton"
     );
 
-timetableSettingsButton.onclick =
-    async function() {
-
-        settingsDialog.close();
-
-        await loadTimetable();
-
-        timetableSettingsView.hidden =
-            false;
-
-        document.body.classList.add(
-            "timetable-settings-open"
-        );
-    };
+timetableSettingsButton.onclick = () => openClassTimeSettings(true);
 
 timetableSettingsBackButton.onclick =
     function() {
@@ -7958,6 +8039,7 @@ async function loadTimetable() {
 
     const timetableSnap =
         await getDoc(timetableRef);
+    if (auth.currentUser?.uid !== user.uid) return;
 
     if (!timetableSnap.exists()) {
         return;
@@ -8034,8 +8116,11 @@ async function loadTimetable() {
 attendanceButton.onclick =
     async function() {
 
-        await loadTimetable();
+        const viewUid = auth.currentUser?.uid;
+        try { await loadClassTimes(); await loadTimetable(); }
+        catch(error) { alert("出席画面を読み込めませんでした。再試行してください。"); return; }
 
+        if (!viewUid || auth.currentUser?.uid !== viewUid) return;
         attendanceView.hidden =
             false;
 
@@ -8094,9 +8179,11 @@ attendanceView.addEventListener(
         attendanceSubjectTitle.textContent =
             subjectName;
 
+        const subjectUid = auth.currentUser?.uid;
         await loadSubjectAttendance(
             subjectName
         );
+        if (!subjectUid || auth.currentUser?.uid !== subjectUid) return;
 
         attendanceView.hidden = true;
         attendanceSubjectView.hidden = false;
@@ -8207,7 +8294,7 @@ attendanceSubjectBackButton.onclick =
                     };
                     return {
                         id: item.name.split("/").pop(),
-                        data: { classKey: unpack("classKey"), status: unpack("status") }
+                        data: { classKey: unpack("classKey"), status: unpack("status"), period: Number(unpack("period")) }
                     };
                 });
             } else {
@@ -8233,6 +8320,7 @@ attendanceSubjectBackButton.onclick =
         );
     }
 
+    if (auth.currentUser?.uid !== user.uid) return;
     let present = 0;
     let absent = 0;
     let late = 0;
@@ -8248,13 +8336,7 @@ attendanceSubjectBackButton.onclick =
         5: "fri"
     };
 
-    const periodMap = {
-        "08:50": 1,
-        "10:45": 2,
-        "13:15": 3,
-        "15:10": 4,
-        "17:05": 5
-    };
+
 
 
     attendanceDocuments.forEach(function(record) {
@@ -8287,7 +8369,7 @@ attendanceSubjectBackButton.onclick =
             dayNames[date.getDay()];
 
         const period =
-            periodMap[startTime];
+            recordPeriod(data,startTime,dateText);
 
         if (!day || !period) {
             return;
@@ -8452,7 +8534,7 @@ if (judgedTotal === 0) {
 let attendanceManualSubject = "";
 let attendanceManualSlots = [];
 let attendanceManualDocs = new Map();
-const attendanceManualTimes = ["08:50", "10:45", "13:15", "15:10", "17:05"];
+const attendanceManualTimes = {includes:t=>classTimes.some(p=>p.start===t),indexOf:t=>classTimes.findIndex(p=>p.start===t)};
 const attendanceManualDays = ["", "mon", "tue", "wed", "thu", "fri", ""];
 const attendanceManualLabels = {present:"出席", late:"遅刻", absent:"欠席", pinige:"ぴ逃げ", unknown:"未判定"};
 const attendanceManualDate = document.getElementById("attendanceManualDate");
@@ -8492,6 +8574,7 @@ document.getElementById("attendanceManualCancel").onclick = () => attendanceManu
 function attendanceManualKey() {
     const day = attendanceManualDate.value;
     const time = attendanceManualPeriod.value;
+    if (attendanceManualFormMode === "edit" && attendanceManualEditingKey === day+"_"+time) return attendanceManualEditingKey;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !attendanceManualTimes.includes(time)) return null;
     const date = new Date(day + "T12:00:00");
     if (Number.isNaN(date.getTime()) ||
@@ -8523,7 +8606,7 @@ function renderAttendanceManual(subjectName, slots, docs) {
     const periodNumbers = [...new Set(slots.map(slot => Number(slot.split("_")[1])))].sort((a,b)=>a-b);
     for (const n of periodNumbers) {
         const opt = document.createElement("option");
-        opt.value = attendanceManualTimes[n-1];
+        opt.value = classTimes[n-1].start;
         opt.textContent = n + "コマ（" + opt.value + "）";
         attendanceManualPeriod.appendChild(opt);
     }
@@ -8536,7 +8619,7 @@ function renderAttendanceManual(subjectName, slots, docs) {
         const match = /^(\d{4}-\d{2}-\d{2})_(\d{2}:\d{2})$/.exec(key);
         if (!match) continue;
         const date = new Date(match[1]+"T12:00:00");
-        const period = attendanceManualTimes.indexOf(match[2])+1;
+        const period = recordPeriod(record.data,match[2],match[1]);
         const slot = attendanceManualDays[date.getDay()] + "_" + period;
         if (!slots.includes(slot)) continue;
         attendanceManualDocs.set(key, record.data);
@@ -8559,6 +8642,7 @@ function renderAttendanceManual(subjectName, slots, docs) {
         edit.onclick = () => {
             const parts = item.key.split("_");
             attendanceManualDate.value = parts[0];
+            if (![...attendanceManualPeriod.options].some(o=>o.value===parts[1])) { const o=document.createElement("option"); o.value=parts[1]; o.textContent=parts[1]+"（記録時）"; attendanceManualPeriod.appendChild(o); }
             attendanceManualPeriod.value = parts[1];
             attendanceManualStatus.value = item.status || "unknown";
             attendanceManualSetMode("edit", item.key);
@@ -8603,7 +8687,7 @@ attendanceManualSave.onclick = async () => {
             return;
         }
         // 手動確定フラグ。Apps Script側はこのフラグがtrueの記録を更新しない。
-        await setDoc(ref, {classKey:key,status:status,source:"manual",manualLocked:true,manualUpdatedAt:serverTimestamp()}, {merge:true});
+        await setDoc(ref, {period: attendanceManualFormMode === "edit" ? recordPeriod(attendanceManualDocs.get(key),key.split("_")[1],key.split("_")[0]) : classTimes.findIndex(p=>p.start===key.split("_")[1])+1, classKey:key,status:status,source:"manual",manualLocked:true,manualUpdatedAt:serverTimestamp()}, {merge:true});
         await loadSubjectAttendance(attendanceManualSubject);
     } catch (error) {
         alert("保存に失敗しました：" + (error.message || String(error)));
