@@ -1601,6 +1601,28 @@ body.timetable-settings-open #timetableSettingsView {
 .attendance-manual-row button { border:0; border-radius:8px; background:#eef4ff; color:#1264c7; padding:8px 10px; cursor:pointer; }
 #attendanceManualMessage { font-size:12px; margin-top:10px; min-height:16px; }
 
+
+/* 時刻入力のネイティブ最小幅でダイアログが広がらないようにする。 */
+#classTimeDialog { max-width: calc(100vw - 24px); }
+#classTimeForm, #classTimeFields { min-width: 0; max-width: 100%; }
+#classTimeFields fieldset { min-inline-size: 0; min-width: 0; width: 100%; margin-inline: 0; }
+#classTimeFields input { box-sizing: border-box; min-width: 0; max-width: 100%; width: 100%; }
+#classTimeFields input[type="time"] { -webkit-appearance: none; appearance: none; height: 48px; }
+#classTimeFields input::-webkit-date-and-time-value { min-width: 0; text-align: left; }
+.attendance-load-message { margin: 12px 0; color: #667085; font-size: 14px; }
+
+
+.task-swipe { position: relative; overflow: hidden; border-bottom: 1px solid #eee; }
+.task-swipe:last-child { border-bottom: 0; }
+.task-swipe .all-task { position: relative; z-index: 1; background: white; border-bottom: 0; touch-action: pan-y; transition: transform .15s; user-select: none; }
+.task-swipe.swiping-right .all-task, .task-swipe.swiping-left .all-task { transition: none; }
+.task-swipe-action { position: absolute; inset: 0; display: flex; align-items: center; padding: 20px; font-weight: 700; color: white; visibility: hidden; }
+.task-swipe-action.complete { background: #229954; justify-content: flex-start; }
+.task-swipe-action.delete { background: #d70015; justify-content: flex-end; }
+.task-swipe.swiping-right .complete, .task-swipe.swiping-left .delete { visibility: visible; }
+.swipe-help { color: #777; font-size: 12px; margin: -4px 2px 10px; }
+#taskForm input[type="datetime-local"] { min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; }
+
 </style>
 </head>
 
@@ -1757,6 +1779,7 @@ Microsoftでログイン
         <span>● 未判定</span>
     </div>
 
+    <p id="attendanceTimetableMessage" class="attendance-load-message" role="status" hidden></p>
     <div class="attendance-table">
 
         <div class="attendance-row attendance-days">
@@ -1775,8 +1798,8 @@ Microsoftでログイン
             </div>
 
             <div></div>
-            <div>材料力学A</div>
-            <div>数理・DS・AI</div>
+            <div></div>
+            <div></div>
             <div></div>
             <div></div>
         </div>
@@ -1787,10 +1810,10 @@ Microsoftでログイン
                 <small>10:45–12:25</small>
             </div>
 
-            <div>基礎物理学B</div>
-            <div>哲学A</div>
-            <div>微分積分学A</div>
-            <div>ETC B</div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
             <div></div>
         </div>
 
@@ -1800,11 +1823,11 @@ Microsoftでログイン
                 <small>13:15–14:55</small>
             </div>
 
-            <div>実践基礎A</div>
-            <div>線形代数</div>
             <div></div>
-            <div>微分積分学A</div>
-            <div>熱力学A</div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
         </div>
 
         <div class="attendance-row">
@@ -1814,8 +1837,8 @@ Microsoftでログイン
             </div>
 
             <div></div>
-            <div>基礎製図</div>
-            <div>日本国憲法</div>
+            <div></div>
+            <div></div>
             <div></div>
             <div></div>
         </div>
@@ -1855,6 +1878,8 @@ Microsoftでログイン
 
     </div>
 
+    <p id="attendanceSubjectLoadMessage" class="attendance-load-message" role="status" hidden></p>
+    <button type="button" id="attendanceSubjectRetry" class="tool-button" hidden>再読み込み</button>
     <div class="attendance-subject-card">
 
         <div class="attendance-circle">
@@ -2210,6 +2235,7 @@ TOMORROW
 すべての課題
 </h2>
 
+<p class="swipe-help">右へスワイプで提出済み・左へスワイプで削除</p>
 <div
     class="all-list"
     id="allTasks"
@@ -2388,7 +2414,7 @@ TOMORROW
     class="subject-info"
     id="subjectInfo"
 >
-授業日時を選ぶと、その曜日の科目だけ表示します。
+授業日時を選ぶと、登録した時間割の科目を表示します。
 </div>
 
 </div>
@@ -2420,14 +2446,14 @@ TOMORROW
 <input
     id="deadline"
     type="datetime-local"
-    readonly
+    required
 >
 
 <div
     class="deadline-info"
     id="deadlineInfo"
 >
-授業日時を入力すると、6日後の23:59を提出期限に設定します。
+初期値は授業日の6日後の23:59です。日時は変更できます。
 </div>
 
 </div>
@@ -2758,7 +2784,7 @@ Microsoftを連携
 >
 
 <dialog id="classTimeDialog" aria-labelledby="classTimeTitle"><form id="classTimeForm" class="dialog-content">
-<h2 id="classTimeTitle">授業時間設定</h2><p>1〜5限の開始時刻と授業時間（分）を入力してください。</p>
+<h2 id="classTimeTitle">授業時間設定</h2><p>1〜5限の開始時刻と、すべての授業に共通する授業時間（分）を入力してください。</p>
 <div id="classTimeFields"></div><p id="classTimeError" role="alert" style="color:#d70015"></p>
 <div class="dialog-buttons"><button type="button" class="cancel" id="classTimeCancel">キャンセル</button><button type="submit" class="save" id="classTimeSave">保存</button></div>
 </form></dialog><script type="module">
@@ -3026,44 +3052,13 @@ const weekdays = [
 ];
 
 
-const timetable = {
-
-    0: [
-        "その他"
-    ],
-
-    1: [
-        "基礎物理学B",
-        "実践基礎A"
-    ],
-
-    2: [
-        "材料力学A",
-        "哲学A",
-        "線形代数",
-        "基礎製図"
-    ],
-
-    3: [
-        "数理・データサイエンス・AI入門",
-        "微分積分学A",
-        "日本国憲法"
-    ],
-
-    4: [
-        "微分積分学A",
-        "ETC B"
-    ],
-
-    5: [
-        "熱力学"
-    ],
-
-    6: [
-        "その他"
-    ]
-
-};
+const timetableDays = [null,"mon","tue","wed","thu","fri",null];
+let userTimetableSlots = {};
+let unsubscribeTimetable = null;
+let deadlineManuallyEdited = false;
+let openingTaskDialog = false;
+const taskActionLocks = new Set();
+const taskCleanupUsers = new Set();
 
 
 /* ========================================
@@ -3849,6 +3844,8 @@ function applyCloudSnapshot(
 
 async function startRealtimeSync() {
 
+    const syncUid = currentUser?.uid;
+
     if (!currentUser) {
 
         return;
@@ -3889,6 +3886,7 @@ async function startRealtimeSync() {
     try {
 
         await ensureNewDatabase();
+        if (!syncUid || currentUser?.uid !== syncUid || auth.currentUser?.uid !== syncUid) return;
 
 
         unsubscribeTasks =
@@ -3903,6 +3901,7 @@ async function startRealtimeSync() {
 
                 function(snapshot) {
 
+                    if (currentUser?.uid !== syncUid || auth.currentUser?.uid !== syncUid) return;
                     applyCloudSnapshot(
                         snapshot
                     );
@@ -3954,6 +3953,7 @@ async function saveTaskToCloud(
     task
 ) {
 
+    const saveUid = currentUser?.uid;
     if (!currentUser) {
 
         alert(
@@ -4029,6 +4029,8 @@ async function saveTaskToCloud(
         );
 
 
+        if (currentUser?.uid !== saveUid || auth.currentUser?.uid !== saveUid) return false;
+
         if (
             deletedAlready
         ) {
@@ -4077,6 +4079,7 @@ async function saveTaskToCloud(
     }
 
     catch(error) {
+        if (currentUser?.uid !== saveUid || auth.currentUser?.uid !== saveUid) return false;
 
         console.error(
             "課題保存エラー",
@@ -5350,94 +5353,166 @@ function getJapanNow() {
 
 }
 
-function getCurrentClassStartDateTime() {
-
-    var now =
-        getJapanNow();
-
-    var minutes =
-        now.getHours() * 60
-        +
-        now.getMinutes();
-
-
-    if (
-        minutes
-        <
-        10 * 60 + 45
-    ) {
-
-        now.setHours(
-            8,
-            50,
-            0,
-            0
-        );
-
-    }
-
-    else if (
-        minutes
-        <
-        13 * 60 + 15
-    ) {
-
-        now.setHours(
-            10,
-            45,
-            0,
-            0
-        );
-
-    }
-
-    else if (
-        minutes
-        <
-        15 * 60 + 10
-    ) {
-
-        now.setHours(
-            13,
-            15,
-            0,
-            0
-        );
-
-    }
-
-    else if (
-        minutes
-        <
-        17 * 60 + 5
-    ) {
-
-        now.setHours(
-            15,
-            10,
-            0,
-            0
-        );
-
-    }
-
-    else {
-
-        now.setHours(
-            17,
-            5,
-            0,
-            0
-        );
-
-    }
-
-
-    return toDateTimeLocal(
-        now
-    );
-
+/* 登録時間割と課題フォームの連動 */
+function registeredClassAt(date) {
+    if (!classTimesConfigured || Number.isNaN(date.getTime())) return null;
+    const day = timetableDays[date.getDay()];
+    if (!day) return null;
+    const minute = date.getHours()*60+date.getMinutes();
+    const index = classTimes.findIndex(period => minute >= clockMinutes(period.start) && minute < clockMinutes(period.start)+period.duration);
+    if (index < 0) return null;
+    const subject = userTimetableSlots[day+"_"+(index+1)];
+    return typeof subject === "string" && subject.trim() ? {start:classTimes[index].start,subject,period:index+1} : null;
 }
+function getCurrentClassStartDateTime() {
+    const now = getJapanNow(), current = registeredClassAt(now);
+    if (current) now.setHours(...current.start.split(":").map(Number),0,0);
+    return toDateTimeLocal(now);
+}
+function subjectsForDate(date) {
+    const day = timetableDays[date.getDay()];
+    if (!day) return [];
+    return [...new Set(Array.from({length:5},(_,i)=>userTimetableSlots[day+"_"+(i+1)]).filter(name=>typeof name === "string" && name.trim()))];
+}
+function updateSubjects(selectedSubject) {
+    subjectInput.replaceChildren();
+    const date = new Date(classDateInput.value);
+    if (!classDateInput.value || Number.isNaN(date.getTime())) {
+        const option = document.createElement("option"); option.value=""; option.textContent="先に授業日時を選択してください";
+        subjectInput.appendChild(option); subjectInfo.textContent="授業日時を選ぶと、登録した時間割の科目を表示します。"; return;
+    }
+    const current = registeredClassAt(date), subjects = subjectsForDate(date);
+    const selection = selectedSubject || current?.subject || "";
+    if (!selection) {
+        const option=document.createElement("option"); option.value=""; option.textContent="科目を選択してください"; option.selected=true; subjectInput.appendChild(option);
+    }
+    if (!subjects.includes("その他")) subjects.push("その他");
+    if (selection && !subjects.includes(selection)) subjects.push(selection);
+    for (const name of subjects) {
+        const option=document.createElement("option"); option.value=name; option.textContent=name; option.selected=name===selection; subjectInput.appendChild(option);
+    }
+    subjectInput.value=selection;
+    subjectInfo.textContent=current && !selectedSubject ? "登録した時間割から、この時間の科目を選択しました。変更もできます。" : "登録した"+weekdays[date.getDay()]+"曜日の科目から選べます。";
+}
+function updateDeadlineInfo() {
+    deadlineInfo.textContent = deadlineInput.value ? "提出期限："+displayDateTime(deadlineInput.value)+"（変更できます）" : "初期値は授業日の6日後の23:59です。日時は変更できます。";
+}
+function calculateDeadline(force = false) {
+    if (deadlineManuallyEdited && !force) { updateDeadlineInfo(); return; }
+    const date = new Date(classDateInput.value);
+    if (!classDateInput.value || Number.isNaN(date.getTime())) { deadlineInput.value=""; updateDeadlineInfo(); return; }
+    date.setDate(date.getDate()+6); date.setHours(23,59,0,0);
+    deadlineInput.value=toDateTimeLocal(date); updateDeadlineInfo();
+}
+/* datetime-localの保存値は、このアプリが表示する日本時間として比較する。 */
+function taskDeadlineTimestamp(value) {
+    if (typeof value !== "string" || !value) return NaN;
+    return Date.parse(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(value) ? value+"+09:00" : value);
+}
+function expiredCompletedTask(task, now = Date.now()) {
+    const deadline = taskDeadlineTimestamp(task.deadline);
+    return task.completed === true && Number.isFinite(deadline) && deadline < now;
+}
+function taskTombstone(id) {
+    const now=Date.now(); return {id:String(id),deleted:true,deletedAt:now,updatedAt:now};
+}
+async function performTaskSwipe(id, action) {
+    const uid=currentUser?.uid;
+    if (!uid || auth.currentUser?.uid !== uid || !["complete","delete"].includes(action)) return;
+    const lock=uid+"/"+id;
+    if (taskActionLocks.has(lock)) return;
+    taskActionLocks.add(lock);
+    try {
+        let result=null;
+        await runTransaction(db,async tx=>{
+            const ref=doc(db,"users",uid,"tasks",String(id)), snapshot=await tx.get(ref);
+            if (!snapshot.exists() || snapshot.data().deleted) { result={deleted:true}; return; }
+            const latest=snapshot.data();
+            result=action === "delete" ? taskTombstone(id) : {...latest,id:String(id),completed:true,updatedAt:Date.now()};
+            tx.set(ref,result);
+        });
+        if (currentUser?.uid !== uid || auth.currentUser?.uid !== uid) return;
+        tasks=result?.deleted ? tasks.filter(task=>String(task.id)!==String(id)) : tasks.map(task=>String(task.id)===String(id)?normalizeTask(result):task);
+        saveUserCache(); render();
+    } catch(error) {
+        console.error("スワイプ操作の保存に失敗",error);
+        if (auth.currentUser?.uid === uid) alert("操作を保存できませんでした。通信状態を確認して、もう一度お試しください。");
+    } finally { taskActionLocks.delete(lock); void cleanupExpiredCompletedTasks(); }
+}
+async function cleanupExpiredCompletedTasks() {
+    const uid=currentUser?.uid;
+    if (!uid || auth.currentUser?.uid !== uid || !navigator.onLine || taskCleanupUsers.has(uid)) return;
+    const expired=tasks.filter(task=>expiredCompletedTask(task));
+    if (!expired.length) return;
+    taskCleanupUsers.add(uid);
+    let changed=false;
+    try {
+        for (const task of expired) {
+            if (currentUser?.uid !== uid || auth.currentUser?.uid !== uid) break;
+            const lock=uid+"/"+task.id;
+            if (taskActionLocks.has(lock)) continue;
+            taskActionLocks.add(lock);
+            try {
+                let removed=false;
+                await runTransaction(db,async tx=>{
+                    const ref=doc(db,"users",uid,"tasks",String(task.id)),snapshot=await tx.get(ref);
+                    // 別端末で未提出へ戻したり期限を延長した課題は削除しない。
+                    if (!snapshot.exists() || snapshot.data().deleted) { removed=true; return; }
+                    if (!expiredCompletedTask(snapshot.data())) return;
+                    tx.set(ref,taskTombstone(task.id)); removed=true;
+                });
+                if (removed && currentUser?.uid===uid && auth.currentUser?.uid===uid) {
+                    tasks=tasks.filter(item=>String(item.id)!==String(task.id)); changed=true;
+                }
+            } catch(error) { console.error("提出済み課題の期限後削除に失敗",error); }
+            finally { taskActionLocks.delete(lock); }
+        }
+        if (changed && currentUser?.uid===uid && auth.currentUser?.uid===uid) { saveUserCache(); render(); }
+    } finally { taskCleanupUsers.delete(uid); }
+}
+function attachTaskSwipe(item, task) {
+    const wrapper=document.createElement("div"); wrapper.className="task-swipe";
+    const completed=document.createElement("div"),deleted=document.createElement("div");
+    completed.className="task-swipe-action complete"; completed.textContent="提出済み";
+    deleted.className="task-swipe-action delete"; deleted.textContent="削除";
+    completed.setAttribute("aria-hidden","true"); deleted.setAttribute("aria-hidden","true");
+    wrapper.append(completed,deleted,item);
+    let gesture=null,blockedUntil=0;
+    const click=item.onclick;
+    item.onclick=event=>{if(Date.now()<blockedUntil){event.preventDefault();event.stopPropagation();return;}click(event);};
+    item.tabIndex=0; item.setAttribute("role","button");
+    item.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();showTaskDetails(task.id);}});
+    function reset(){item.style.transform="";wrapper.classList.remove("swiping-right","swiping-left");gesture=null;}
+    item.addEventListener("pointerdown",event=>{
+        if (!event.isPrimary || event.button!==0) return;
+        gesture={id:event.pointerId,x:event.clientX,y:event.clientY,dx:0,horizontal:false};
+    });
+    item.addEventListener("pointermove",event=>{
+        if (!gesture || gesture.id!==event.pointerId) return;
+        const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
+        if (!gesture.horizontal) {
+            if (Math.abs(dy)>12 && Math.abs(dy)>Math.abs(dx)) {reset();return;}
+            if (Math.abs(dx)<12 || Math.abs(dx)<Math.abs(dy)*1.2) return;
+            gesture.horizontal=true; item.setPointerCapture(event.pointerId);
+        }
+        event.preventDefault(); gesture.dx=dx;
+        item.style.transform="translateX("+Math.max(-120,Math.min(120,dx))+"px)";
+        wrapper.classList.toggle("swiping-right",dx>0); wrapper.classList.toggle("swiping-left",dx<0);
+    });
+    item.addEventListener("pointerup",event=>{
+        if (!gesture || gesture.id!==event.pointerId) return;
+        const {dx,horizontal}=gesture;
+        if(horizontal){blockedUntil=Date.now()+700;event.preventDefault();}
+        const threshold=Math.min(90,Math.max(56,item.clientWidth*.22));
+        reset();
+        if(item.hasPointerCapture(event.pointerId))item.releasePointerCapture(event.pointerId);
+        if(horizontal && Math.abs(dx)>=threshold) void performTaskSwipe(task.id,dx>0?"complete":"delete");
+    });
+    item.addEventListener("pointercancel",()=>{if(gesture?.horizontal)blockedUntil=Date.now()+700;reset();});
+    item.addEventListener("lostpointercapture",reset);
+    return wrapper;
+}
+
 
 function startOfDay(
     date
@@ -5620,21 +5695,6 @@ function displayDateTime(
    科目
 ======================================== */
 
-function subjectsForDate(
-    date
-) {
-
-    return (
-        timetable[
-            date.getDay()
-        ]
-        ||
-        []
-    );
-
-}
-
-
 function subjectTextForDate(
     date
 ) {
@@ -5673,210 +5733,6 @@ function subjectTextForDate(
             "・"
         )
     );
-
-}
-
-
-function updateSubjects(
-    selectedSubject
-) {
-
-    subjectInput.innerHTML =
-        "";
-
-
-    if (
-        !classDateInput.value
-    ) {
-
-        const option =
-            document.createElement(
-                "option"
-            );
-
-
-        option.value =
-            "";
-
-
-        option.textContent =
-            "先に授業日時を選択してください";
-
-
-        subjectInput
-        .appendChild(
-            option
-        );
-
-
-        subjectInfo.textContent =
-            "授業日時を選ぶと、その曜日の科目だけ表示します。";
-
-
-        return;
-
-    }
-
-
-    const date =
-        new Date(
-            classDateInput.value
-        );
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    const day =
-        date.getDay();
-
-
-    const subjects =
-        timetable[day]
-        ?
-        timetable[day].slice()
-        :
-        [
-            "その他"
-        ];
-
-
-    if (
-        selectedSubject
-        &&
-        !subjects.includes(
-            selectedSubject
-        )
-    ) {
-
-        subjects.push(
-            selectedSubject
-        );
-
-    }
-
-
-    subjects.forEach(
-        function(subject) {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                subject;
-
-
-            option.textContent =
-                subject;
-
-
-            if (
-                selectedSubject
-                ===
-                subject
-            ) {
-
-                option.selected =
-                    true;
-
-            }
-
-
-            subjectInput
-            .appendChild(
-                option
-            );
-
-        }
-    );
-
-
-    subjectInfo.textContent =
-        weekdays[day]
-        +
-        "曜日の授業のみ表示しています";
-
-}
-
-
-/* ========================================
-   提出期限
-======================================== */
-
-function calculateDeadline() {
-
-    if (
-        !classDateInput.value
-    ) {
-
-        deadlineInput.value =
-            "";
-
-
-        deadlineInfo.textContent =
-            "授業日時を入力すると、6日後の23:59を提出期限に設定します。";
-
-
-        return;
-
-    }
-
-
-    const date =
-        new Date(
-            classDateInput.value
-        );
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    date.setDate(
-        date.getDate()
-        +
-        6
-    );
-
-
-    date.setHours(
-        23,
-        59,
-        0,
-        0
-    );
-
-
-    deadlineInput.value =
-        toDateTimeLocal(
-            date
-        );
-
-
-    deadlineInfo.textContent =
-        "→ 提出期限："
-        +
-        displayDateTime(
-            deadlineInput.value
-        );
 
 }
 
@@ -6490,34 +6346,7 @@ function createFutureRow(
 
         +
 
-        '<span class="badge '
-        +
-        (
-            dayTasks.length
-            ===
-            0
-            ?
-            "zero"
-            :
-            ""
-        )
-        +
-        '">'
-        +
-        (
-            dayTasks.length
-            ===
-            0
-            ?
-            "0"
-            :
-            dayTasks.length
-            +
-            "件"
-        )
-        +
-        "</span>"
-
+        (dayTasks.length ? '<span class="badge">'+dayTasks.length+'件</span>' : "")
         +
 
         '<span class="arrow">›</span>'
@@ -6838,10 +6667,7 @@ function addAllTask(
 
     };
 
-    container
-    .appendChild(
-        item
-    );
+    container.appendChild(attachTaskSwipe(item, task));
 
 }
 
@@ -6963,7 +6789,7 @@ function showTaskDetails(id) {
 
 }
 
-function openAddDialog() {
+async function openAddDialog() {
 
     if (!currentUser) {
 
@@ -6972,6 +6798,15 @@ function openAddDialog() {
     }
 
 
+    if (openingTaskDialog || taskDialog.open) return;
+    openingTaskDialog = true;
+    const uid = currentUser.uid;
+    try { await Promise.all([loadClassTimes(),loadTimetable()]); }
+    catch(error) { console.error("課題フォーム用の時間割取得に失敗",error); }
+    finally { openingTaskDialog = false; }
+    if (auth.currentUser?.uid !== uid || currentUser?.uid !== uid) return;
+
+    deadlineManuallyEdited = false;
     editingId =
         null;
 
@@ -6990,6 +6825,7 @@ function openAddDialog() {
 
 
     updateSubjects();
+    calculateDeadline(true);
 
 
     document.getElementById(
@@ -6999,8 +6835,7 @@ function openAddDialog() {
         "課題を追加";
 
 
-    deadlineInfo.textContent =
-        "授業日時を入力すると、6日後の23:59を提出期限に設定します。";
+    updateDeadlineInfo();
 
 
     document.getElementById(
@@ -7048,6 +6883,7 @@ function editTask(
     }
 
 
+    const editUid = currentUser?.uid;
     editingId =
         String(
             task.id
@@ -7082,6 +6918,7 @@ function editTask(
         task.name;
 
 
+    deadlineManuallyEdited = true;
     deadlineInput.value =
         task.deadline;
 
@@ -7134,6 +6971,7 @@ function editTask(
     )
     .onclick =
         async function() {
+            if (!editUid || currentUser?.uid !== editUid || auth.currentUser?.uid !== editUid) return;
 
             const oldTasks =
                 tasks.map(
@@ -7169,6 +7007,7 @@ function editTask(
                 );
 
 
+            if (currentUser?.uid !== editUid || auth.currentUser?.uid !== editUid) return;
             if (
                 !success
             ) {
@@ -7258,6 +7097,8 @@ async function deleteTaskNow() {
     }
 
 
+    const deleteUid = currentUser?.uid;
+    if (!deleteUid || auth.currentUser?.uid !== deleteUid) return;
     const deleteId =
         String(
             editingId
@@ -7314,6 +7155,7 @@ async function deleteTaskNow() {
         );
 
 
+    if (currentUser?.uid !== deleteUid || auth.currentUser?.uid !== deleteUid) return;
     if (
         !success
     ) {
@@ -7351,6 +7193,7 @@ async function handleSubmit(
     }
 
 
+    const submitUid = currentUser.uid;
     const name =
         taskNameInput.value
         .trim();
@@ -7395,7 +7238,9 @@ async function handleSubmit(
     }
 
 
-    calculateDeadline();
+    if (!deadlineInput.value || !Number.isFinite(taskDeadlineTimestamp(deadlineInput.value))) {
+        alert("提出期限を正しく入力してください。"); return;
+    }
 
 
     const oldTasks =
@@ -7531,6 +7376,7 @@ async function handleSubmit(
         );
 
 
+    if (currentUser?.uid !== submitUid || auth.currentUser?.uid !== submitUid) return;
     if (
         !success
     ) {
@@ -7638,6 +7484,7 @@ function render() {
 
 
     renderAllTasks();
+    void cleanupExpiredCompletedTasks();
 
 }
 
@@ -7659,7 +7506,7 @@ function applyClassTimes(data) {
  classTimesConfigured=validClassTimes(data?.periods);
  classTimes=(classTimesConfigured?data.periods:DEFAULT_CLASS_TIMES).map(p=>({...p}));
  classTimeHistory=Array.isArray(data?.history)?data.history.filter(h=>validClassTimes(h.periods)):[];
- document.querySelectorAll("#attendanceView .attendance-period small, #timetableSettingsView .attendance-period small").forEach((el,i)=>{const p=classTimes[i%5];el.textContent=p.start+"–"+minutesClock(clockMinutes(p.start)+p.duration);});
+ document.querySelectorAll("#attendanceView .attendance-period small, #timetableSettingsView .attendance-period small").forEach((el,i)=>{const p=classTimes[i%5];el.textContent=classTimesConfigured ? p.start+"–"+minutesClock(clockMinutes(p.start)+p.duration) : "未設定";});
 }
 const classTimeRef=uid=>doc(db,"users",uid,"settings","classTimes");
 async function loadClassTimes() {
@@ -7675,6 +7522,8 @@ function recordPeriod(data,time,date) {
 }
 async function showTimetableSettings() {
  const uid=auth.currentUser?.uid;await loadTimetable();if(!uid||auth.currentUser?.uid!==uid)return;
+ attendanceView.hidden=true; attendanceSubjectView.hidden=true;
+ document.body.classList.remove("attendance-open");
  timetableSettingsView.hidden=false;document.body.classList.add("timetable-settings-open");
 }
 async function openClassTimeSettings(next) {
@@ -7682,7 +7531,10 @@ async function openClassTimeSettings(next) {
  await loadClassTimes();settingsDialog.close();
  if(next&&classTimesConfigured){await showTimetableSettings();return;}
  classTimeOwner=auth.currentUser.uid;classTimeContinue=next;classTimeError.textContent="";
- document.getElementById("classTimeFields").innerHTML=classTimes.map((p,i)=>`<fieldset style="border:1px solid #ddd;border-radius:12px;margin:12px 0;padding:12px"><legend>${i+1}限</legend><label for="classStart${i}">開始時刻</label><input id="classStart${i}" type="time" required value="${p.start}"><label for="classDuration${i}" style="margin-top:10px">授業時間（分）</label><input id="classDuration${i}" type="number" required min="1" max="1439" step="1" value="${p.duration}"></fieldset>`).join("");
+ const commonDuration=classTimes.every(p=>p.duration===classTimes[0].duration)?classTimes[0].duration:"";
+ document.getElementById("classTimeFields").innerHTML=
+ `<fieldset style="border:1px solid #ddd;border-radius:12px;margin:12px 0;padding:12px"><legend>全限共通</legend><label for="classDuration">授業時間（分）</label><input id="classDuration" type="number" required min="1" max="1439" step="1" value="${commonDuration}" aria-describedby="classDurationHint"><p id="classDurationHint" style="font-size:13px;color:#667085;margin-bottom:0">1〜5限すべてに同じ授業時間を適用します。</p></fieldset>`+
+ classTimes.map((p,i)=>`<fieldset style="border:1px solid #ddd;border-radius:12px;margin:12px 0;padding:12px"><legend>${i+1}限</legend><label for="classStart${i}">開始時刻</label><input id="classStart${i}" type="time" required value="${p.start}"></fieldset>`).join("");
  document.getElementById("classTimeSave").textContent=next?"保存して時間割へ":"保存";classTimeDialog.showModal();
  }catch(e){alert("授業時間設定を読み込めませんでした。通信状態を確認して再試行してください。\n"+e.message);}
 }
@@ -7692,7 +7544,8 @@ classTimeDialog.addEventListener("cancel",e=>{if(classTimeSaving)e.preventDefaul
 classTimeForm.onsubmit=async e=>{
  e.preventDefault();if(classTimeSaving||!classTimeForm.reportValidity())return;
  const uid=classTimeOwner;if(!uid||auth.currentUser?.uid!==uid)return;
- const periods=classTimes.map((_,i)=>({start:document.getElementById("classStart"+i).value,duration:Number(document.getElementById("classDuration"+i).value)}));
+ const duration=Number(document.getElementById("classDuration").value);
+ const periods=classTimes.map((_,i)=>({start:document.getElementById("classStart"+i).value,duration}));
  if(!validClassTimes(periods)){classTimeError.textContent="授業時間は正の整数で入力し、1〜5限が重ならず同日中に終了するようにしてください。";return;}
  if(!navigator.onLine){classTimeError.textContent="オンラインで保存してください。入力内容はそのまま再試行できます。";return;}
  classTimeSaving=true;document.getElementById("classTimeSave").disabled=true;
@@ -7726,10 +7579,20 @@ classTimeForm.onsubmit=async e=>{
  finally{classTimeSaving=false;document.getElementById("classTimeSave").disabled=false;}
 };
 function resetClassTimeSession(user) {
+ document.getElementById("taskDialog").close(); document.getElementById("detailDialog").close();
+ editingId=null; deleteConfirmMode=false;
+ if(unsubscribeTimetable)unsubscribeTimetable(); unsubscribeTimetable=null;
  if(unsubscribeClassTimes)unsubscribeClassTimes();unsubscribeClassTimes=null;classTimeOwner=null;classTimeDialog.close();applyClassTimes(null);
- document.querySelectorAll(".timetable-cell").forEach(c=>c.textContent="");
+ applyTimetableSlots({});
+ attendanceSubjectRequest++;
+ attendanceManualSubject=""; attendanceManualSlots=[]; attendanceManualDocs=new Map();
+ document.getElementById("attendanceManualList").replaceChildren();
+ attendanceManualSetMode("view");
  ["timetableSettingsView","attendanceView","attendanceSubjectView"].forEach(id=>document.getElementById(id).hidden=true);
  document.body.classList.remove("timetable-settings-open","attendance-open");
+ if(user)unsubscribeTimetable=onSnapshot(doc(db,"users",user.uid,"settings","timetable"),snap=>{
+    if(auth.currentUser?.uid===user.uid)applyTimetableSlots(snap.exists()?snap.data().slots||{}:{});
+ },error=>console.error("時間割同期エラー",error));
  if(user)unsubscribeClassTimes=onSnapshot(classTimeRef(user.uid),snap=>{if(auth.currentUser?.uid===user.uid)applyClassTimes(snap.exists()?snap.data():null);},error=>console.error("授業時間同期エラー",error));
 }
 
@@ -8001,6 +7864,7 @@ async function saveTimetable() {
             slots: timetableData
         }
     );
+    if (auth.currentUser?.uid === user.uid) applyTimetableSlots(timetableData);
 
 } catch (error) {
 
@@ -8021,96 +7885,35 @@ async function saveTimetable() {
    時間割をFirestoreから読み込み
 ======================================== */
 
-async function loadTimetable() {
-
-    const user = auth.currentUser;
-
-    if (!user) {
-        return;
-    }
-
-    const timetableRef = doc(
-        db,
-        "users",
-        user.uid,
-        "settings",
-        "timetable"
-    );
-
-    const timetableSnap =
-        await getDoc(timetableRef);
-    if (auth.currentUser?.uid !== user.uid) return;
-
-    if (!timetableSnap.exists()) {
-        return;
-    }
-
-    const data = timetableSnap.data();
-    const slots = data.slots || {};
-
-
-    /* =========================
-       時間割設定画面に反映
-    ========================= */
-
-    document
-        .querySelectorAll(".timetable-cell")
-        .forEach(function(cell) {
-
-            cell.textContent =
-                slots[cell.dataset.slot] || "";
-
+function applyTimetableSlots(slots) {
+    userTimetableSlots = {...slots};
+    document.querySelectorAll(".timetable-cell").forEach(cell => {
+        const name = slots[cell.dataset.slot];
+        cell.textContent = typeof name === "string" ? name : "";
+    });
+    const days = ["mon","tue","wed","thu","fri"];
+    document.querySelectorAll("#attendanceView .attendance-row:not(.attendance-days)").forEach((row,periodIndex) => {
+        days.forEach((day,dayIndex) => {
+            const cell = row.children[dayIndex+1];
+            if (!cell) return;
+            const slot = day+"_"+(periodIndex+1), name = slots[slot];
+            cell.textContent = typeof name === "string" ? name : "";
+            cell.dataset.slot = slot;
+            cell.classList.add("attendance-subject-cell");
         });
-
-
-    /* =========================
-       出席管理画面に反映
-    ========================= */
-
-    const days = [
-        "mon",
-        "tue",
-        "wed",
-        "thu",
-        "fri"
-    ];
-
-    const attendanceRows =
-        document.querySelectorAll(
-            "#attendanceView .attendance-row:not(.attendance-days)"
-        );
-
-    attendanceRows.forEach(
-        function(row, periodIndex) {
-
-            const cells = row.children;
-
-            days.forEach(
-                function(day, dayIndex) {
-
-                    const slot =
-                        day + "_" + (periodIndex + 1);
-
-                    const cell =
-                        cells[dayIndex + 1];
-
-                    if (!cell) {
-                        return;
-                    }
-
-                    cell.textContent =
-                        slots[slot] || "";
-
-                    cell.dataset.slot =
-                        slot;
-
-                    cell.classList.add(
-                        "attendance-subject-cell"
-                    );
-                }
-            );
-        }
-    );
+    });
+    const message = document.getElementById("attendanceTimetableMessage");
+    const hasSubjects = Object.values(slots).some(name => typeof name === "string" && name.trim());
+    message.textContent = hasSubjects ? "" : "時間割は未設定です。「設定 → 時間割設定」から授業時間と科目を登録してください。";
+    message.hidden = hasSubjects;
+    render();
+}
+async function loadTimetable() {
+    const user = auth.currentUser;
+    if (!user) { applyTimetableSlots({}); return; }
+    const snapshot = await getDocFromServer(doc(db,"users",user.uid,"settings","timetable"));
+    if (auth.currentUser?.uid !== user.uid) return;
+    applyTimetableSlots(snapshot.exists() ? snapshot.data().slots || {} : {});
 }
 
 attendanceButton.onclick =
@@ -8155,52 +7958,56 @@ const attendanceSubjectTitle =
     );
 
 
-/* 出席管理の科目をタップ */
-attendanceView.addEventListener(
-    "click",
-    async function(event) {
-
-        const cell =
-            event.target.closest(
-                ".attendance-subject-cell"
-            );
-
-        if (!cell) {
-            return;
-        }
-
-        const subjectName =
-            cell.textContent.trim();
-
-        if (!subjectName) {
-            return;
-        }
-
-        attendanceSubjectTitle.textContent =
-            subjectName;
-
-        const subjectUid = auth.currentUser?.uid;
-        await loadSubjectAttendance(
-            subjectName
-        );
-        if (!subjectUid || auth.currentUser?.uid !== subjectUid) return;
-
-        attendanceView.hidden = true;
-        attendanceSubjectView.hidden = false;
+let attendanceSubjectRequest = 0;
+function subjectLoadStatus(message, retry = false) {
+    const status = document.getElementById("attendanceSubjectLoadMessage");
+    status.textContent = message;
+    status.hidden = !message;
+    document.getElementById("attendanceSubjectRetry").hidden = !retry;
+}
+async function openAttendanceSubject(subjectName) {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    const request = ++attendanceSubjectRequest;
+    attendanceSubjectTitle.textContent = subjectName;
+    attendanceView.hidden = true;
+    attendanceSubjectView.hidden = false;
+    subjectLoadStatus("出席記録を読み込んでいます…");
+    document.getElementById("attendanceManualPanel").hidden = true;
+    ["subjectPresentCount","subjectAbsentCount","subjectLateCount","subjectPinigeCount","subjectUnknownCount"].forEach(id => document.getElementById(id).textContent = "—");
+    document.getElementById("attendanceCircleValue").textContent = "—";
+    document.querySelector(".attendance-circle").style.background = "#e8eef7";
+    document.getElementById("attendanceSubjectMessage").textContent = "出席状況を確認しています";
+    try {
+        await loadSubjectAttendance(subjectName,request);
+        if (auth.currentUser?.uid !== uid || request !== attendanceSubjectRequest) return;
+        subjectLoadStatus("");
+        document.getElementById("attendanceManualPanel").hidden = false;
+    } catch(error) {
+        if (auth.currentUser?.uid !== uid || request !== attendanceSubjectRequest) return;
+        subjectLoadStatus("出席記録を読み込めませんでした。通信状態を確認し、再読み込みしてください。",true);
+        document.getElementById("attendanceSubjectMessage").textContent = "出席状況を取得できませんでした";
+        console.error("出席記録読み込みエラー",error);
     }
-);
-
+}
+attendanceView.addEventListener("click",event => {
+    const cell = event.target.closest(".attendance-subject-cell");
+    const subjectName = cell?.textContent.trim();
+    if (subjectName) openAttendanceSubject(subjectName);
+});
+document.getElementById("attendanceSubjectRetry").onclick = () => openAttendanceSubject(attendanceSubjectTitle.textContent);
 
 /* 科目詳細から時間割へ戻る */
 attendanceSubjectBackButton.onclick =
     function() {
 
+        attendanceSubjectRequest++;
         attendanceSubjectView.hidden = true;
         attendanceView.hidden = false;
     };
     
     async function loadSubjectAttendance(
-    subjectName
+    subjectName, request = attendanceSubjectRequest
 ) {
 
     const user = auth.currentUser;
@@ -8240,87 +8047,36 @@ attendanceSubjectBackButton.onclick =
             "attendanceClasses"
         );
 
-    // Firestore SDKを優先し、0件の場合は認証付きREST APIでも照合する。
-    // SDKとRESTの差を診断できるようにする（認証トークンは表示しない）。
-    let attendanceDocuments = [];
-    let sdkResult = "未実行";
-    let restResult = "未実行";
-    let restTestResult = "未実行";
-    const testKey = "2026-10-23_13:15";
-    const testRef = doc(db, "users", user.uid, "attendanceClasses", testKey);
-    let sdkTestResult = "未実行";
-
+    let attendanceDocuments;
     try {
-        const attendanceSnap = await getDocsFromServer(attendanceRef);
-        sdkResult = attendanceSnap.size + "件";
-        attendanceDocuments = attendanceSnap.docs.map(snap => ({
-            id: snap.id,
-            data: snap.data()
-        }));
-    } catch (error) {
-        sdkResult = "エラー " + (error.code || error.message || String(error));
-    }
-
-    try {
-        const testSnap = await getDocFromServer(testRef);
-        sdkTestResult = testSnap.exists() ? "あり" : "なし";
-    } catch (error) {
-        sdkTestResult = "エラー " + (error.code || error.message || String(error));
-    }
-
-    if (attendanceDocuments.length === 0) {
-        try {
-            const token = await user.getIdToken();
-            const base = "https://firestore.googleapis.com/v1/projects/" +
-                encodeURIComponent(firebaseApp.options.projectId) +
-                "/databases/(default)/documents/users/" +
-                encodeURIComponent(user.uid) + "/attendanceClasses";
-            const headers = { Authorization: "Bearer " + token };
-            const [listResponse, testResponse] = await Promise.all([
-                fetch(base + "?pageSize=1000", { headers, cache: "no-store" }),
-                fetch(base + "/" + encodeURIComponent(testKey), { headers, cache: "no-store" })
-            ]);
-            const listData = await listResponse.json();
-            restResult = "HTTP " + listResponse.status;
-            if (listResponse.ok) {
-                const docs = Array.isArray(listData.documents) ? listData.documents : [];
-                restResult += " / " + docs.length + "件";
-                attendanceDocuments = docs.map(item => {
-                    const fields = item.fields || {};
-                    const unpack = name => {
-                        const field = fields[name] || {};
-                        return field.stringValue ?? field.integerValue ??
-                            field.doubleValue ?? field.booleanValue ?? null;
-                    };
-                    return {
-                        id: item.name.split("/").pop(),
-                        data: { classKey: unpack("classKey"), status: unpack("status"), period: Number(unpack("period")) }
-                    };
-                });
-            } else {
-                restResult += " " + (listData.error?.message || "").slice(0, 140);
+        const snapshot = await getDocsFromServer(attendanceRef);
+        // 0件は正常な空データ。追加診断リクエストや警告は行わない。
+        attendanceDocuments = snapshot.docs.map(snap => ({id:snap.id,data:snap.data()}));
+    } catch(sdkError) {
+        // SDKの取得が失敗した場合だけ認証付きRESTで再試行する。
+        const token = await user.getIdToken();
+        const base = "https://firestore.googleapis.com/v1/projects/"+encodeURIComponent(firebaseApp.options.projectId)+
+            "/databases/(default)/documents/users/"+encodeURIComponent(user.uid)+"/attendanceClasses";
+        attendanceDocuments = [];
+        let pageToken = "";
+        do {
+            if (auth.currentUser?.uid !== user.uid || request !== attendanceSubjectRequest) return;
+            const response = await fetch(base+"?pageSize=1000"+(pageToken ? "&pageToken="+encodeURIComponent(pageToken) : ""),{
+                headers:{Authorization:"Bearer "+token},cache:"no-store"
+            });
+            if (!response.ok) throw new Error("出席記録を取得できませんでした（HTTP "+response.status+"）");
+            const result = await response.json();
+            for (const item of result.documents || []) {
+                const unpack = name => {
+                    const field = item.fields?.[name] || {};
+                    return field.stringValue ?? field.integerValue ?? field.doubleValue ?? field.booleanValue ?? null;
+                };
+                attendanceDocuments.push({id:item.name.split("/").pop(),data:{classKey:unpack("classKey"),status:unpack("status"),period:Number(unpack("period"))}});
             }
-            restTestResult = "HTTP " + testResponse.status;
-        } catch (error) {
-            restResult = "エラー " + (error.message || String(error));
-        }
+            pageToken = result.nextPageToken || "";
+        } while(pageToken);
     }
-
-    if (attendanceDocuments.length === 0) {
-        alert(
-            "出席データの読み込み診断" +
-            "\n科目：" + subjectName +
-            "\n時間割：" + subjectSlots.join(", ") +
-            "\nProject：" + firebaseApp.options.projectId +
-            "\nUID一致：" + (auth.currentUser?.uid === user.uid) +
-            "\nSDK一覧：" + sdkResult +
-            "\nSDK本日：" + sdkTestResult +
-            "\nREST一覧：" + restResult +
-            "\nREST本日：" + restTestResult
-        );
-    }
-
-    if (auth.currentUser?.uid !== user.uid) return;
+    if (auth.currentUser?.uid !== user.uid || request !== attendanceSubjectRequest) return;
     let present = 0;
     let absent = 0;
     let late = 0;
@@ -8931,6 +8687,11 @@ classDateInput.onchange =
     };
 
 
+deadlineInput.oninput = deadlineInput.onchange = function() {
+    deadlineManuallyEdited = true;
+    updateDeadlineInfo();
+};
+
 /* 課題保存 */
 taskForm.onsubmit =
     handleSubmit;
@@ -8980,6 +8741,7 @@ setInterval(
     render,
     60000
 );
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden)render(); });
 
 
 /* ========================================
