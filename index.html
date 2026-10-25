@@ -1581,6 +1581,8 @@ body.timetable-settings-open #timetableSettingsView {
 .attendance-date-control.is-disabled { background:#f3f4f6; }
 .attendance-date-control.is-disabled .attendance-date-text { color:#667085; }
 
+
+#attendanceBackButton, #attendanceSubjectBackButton { display: none !important; }
 </style>
 </head>
 
@@ -2452,6 +2454,7 @@ TOMORROW
      設定
 ========================= -->
 
+<dialog id="trashDialog"><div class="dialog-content"><h2>🗑️ ゴミ箱</h2><p>削除した課題は７日間復元できます。復元後は未提出に戻ります。</p><p id="trashStatus" role="status"></p><div id="trashList"></div><button type="button" class="cancel" id="trashCloseButton">閉じる</button></div></dialog>
 <dialog id="settingsDialog">
 
 <div class="dialog-content">
@@ -2495,22 +2498,10 @@ TOMORROW
 </button>
 
 
-<button
-    type="button"
-    class="complete-button"
-    id="backupButton"
->
-↓ バックアップ
-</button>
+<button type="button" class="complete-button" id="trashButton">🗑️ ゴミ箱</button>
 
 
-<button
-    type="button"
-    class="complete-button"
-    id="restoreButton"
->
-↑ 復元
-</button>
+
 
 
 <button type="button" class="complete-button" id="classTimeSettingsButton">授業時間設定</button>
@@ -2723,12 +2714,7 @@ Microsoftを連携
 </dialog>
 
 
-<input
-    type="file"
-    id="restoreFileInput"
-    accept=".json,application/json"
-    hidden
->
+
 
 <dialog id="classTimeDialog" aria-labelledby="classTimeTitle"><form id="classTimeForm" class="dialog-content">
 <h2 id="classTimeTitle">授業時間設定</h2><p>1〜5限の開始時刻と、すべての授業に共通する授業時間（分）を入力してください。</p>
@@ -3015,6 +3001,8 @@ const taskCleanupUsers = new Set();
 ======================================== */
 
 let tasks = [];
+let trashedTasks=[];
+let trashBusy=false;
 
 let currentUser = null;
 let logoutInProgress = false;
@@ -3166,22 +3154,13 @@ const retryButton =
     );
 
 
-const backupButton =
-    document.getElementById(
-        "backupButton"
-    );
 
 
-const restoreButton =
-    document.getElementById(
-        "restoreButton"
-    );
 
 
-const restoreFileInput =
-    document.getElementById(
-        "restoreFileInput"
-    );
+
+
+
 
 
 const taskDialog =
@@ -3732,6 +3711,7 @@ function applyCloudSnapshot(
 ) {
 
     const nextTasks = [];
+    trashedTasks=[];
 
 
     snapshot.forEach(
@@ -3747,6 +3727,7 @@ function applyCloudSnapshot(
                 true
             ) {
 
+                if(data.name && Number(data.deletedAt)>0)trashedTasks.push({...data,id:documentSnapshot.id});
                 return;
 
             }
@@ -3764,6 +3745,8 @@ function applyCloudSnapshot(
 
     tasks =
         nextTasks;
+    renderTrash();
+    void cleanupTrash();
 
 
     saveUserCache();
@@ -4081,30 +4064,11 @@ async function deleteTaskFromCloud(
 
     try {
 
-        await setDoc(
-
-            doc(
-                userTasksCollection(),
-                String(id)
-            ),
-
-            {
-                id:
-                    String(id),
-
-                deleted:
-                    true,
-
-                deletedAt:
-                    now,
-
-                updatedAt:
-                    now
-            }
-
-        );
-
-
+        const uid=currentUser.uid;
+        await runTransaction(db,async tx=>{
+            const ref=doc(db,"users",uid,"tasks",String(id)),snap=await tx.get(ref);
+            if(snap.exists() && !snap.data().deleted)tx.set(ref,taskTombstone(id,snap.data()));
+        });
         setSyncStatus(
             "synced",
             "✓ 同期済み"
@@ -4909,345 +4873,6 @@ async function logout() {
    バックアップ
 ======================================== */
 
-function downloadBackup() {
-
-    if (!currentUser) {
-
-        return;
-
-    }
-
-
-    const backup = {
-
-        version: 2,
-
-        exportedAt:
-            new Date()
-            .toISOString(),
-
-        account:
-            currentUser.email
-            ||
-            "",
-
-        tasks:
-            tasks
-
-    };
-
-
-    const blob =
-        new Blob(
-
-            [
-                JSON.stringify(
-                    backup,
-                    null,
-                    2
-                )
-            ],
-
-            {
-                type:
-                    "application/json"
-            }
-
-        );
-
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const link =
-        document.createElement(
-            "a"
-        );
-
-
-    const date =
-        new Date();
-
-
-    link.href =
-        url;
-
-
-    link.download =
-        "kadai-backup-"
-        +
-        date.getFullYear()
-        +
-        "-"
-        +
-        String(
-            date.getMonth()
-            +
-            1
-        )
-        .padStart(
-            2,
-            "0"
-        )
-        +
-        "-"
-        +
-        String(
-            date.getDate()
-        )
-        .padStart(
-            2,
-            "0"
-        )
-        +
-        ".json";
-
-
-    document.body
-    .appendChild(
-        link
-    );
-
-
-    link.click();
-
-    link.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-}
-
-
-/* ========================================
-   復元
-======================================== */
-
-async function restoreBackup(
-    file
-) {
-
-    if (
-        !file
-        ||
-        !currentUser
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const text =
-            await file.text();
-
-
-        const parsed =
-            JSON.parse(
-                text
-            );
-
-
-        const importedTasks =
-            Array.isArray(
-                parsed
-            )
-            ?
-            parsed
-            :
-            parsed.tasks;
-
-
-        if (
-            !Array.isArray(
-                importedTasks
-            )
-        ) {
-
-            throw new Error(
-                "課題データが見つかりません。"
-            );
-
-        }
-
-
-        const normalized =
-            importedTasks
-            .map(
-                normalizeTask
-            )
-            .filter(
-                function(task) {
-
-                    return (
-                        task.name
-                        &&
-                        task.deadline
-                    );
-
-                }
-            );
-
-
-        const confirmed =
-            confirm(
-                "現在の課題をバックアップ内容で置き換えます。\n\n復元する課題："
-                +
-                normalized.length
-                +
-                "件\n\n続けますか？"
-            );
-
-
-        if (
-            !confirmed
-        ) {
-
-            return;
-
-        }
-
-
-        setSyncStatus(
-            "syncing",
-            "バックアップを復元中..."
-        );
-
-
-        const cloudSnapshot =
-            await getDocs(
-                userTasksCollection()
-            );
-
-
-        const restoreTime =
-            Date.now();
-
-
-        for (
-            const documentSnapshot
-            of
-            cloudSnapshot.docs
-        ) {
-
-            await setDoc(
-
-                documentSnapshot.ref,
-
-                {
-                    id:
-                        documentSnapshot.id,
-
-                    deleted:
-                        true,
-
-                    deletedAt:
-                        restoreTime,
-
-                    updatedAt:
-                        restoreTime
-                }
-
-            );
-
-        }
-
-
-        for (
-            let i = 0;
-            i < normalized.length;
-            i++
-        ) {
-
-            const task =
-                normalized[i];
-
-
-            task.updatedAt =
-                restoreTime
-                +
-                1
-                +
-                i;
-
-
-            await setDoc(
-
-                doc(
-                    userTasksCollection(),
-                    String(
-                        task.id
-                    )
-                ),
-
-                {
-                    ...task,
-                    deleted:
-                        false,
-                    deletedAt:
-                        null
-                }
-
-            );
-
-        }
-
-
-        setSyncStatus(
-            "synced",
-            "✓ 復元完了"
-        );
-
-
-        alert(
-            "バックアップを復元しました。"
-        );
-
-    }
-
-    catch(error) {
-
-        console.error(
-            "復元エラー",
-            error
-        );
-
-
-        setSyncStatus(
-            "error",
-            "復元エラー"
-        );
-
-
-        alert(
-            "バックアップを復元できませんでした。\n\n"
-            +
-            error.message
-        );
-
-    }
-
-    finally {
-
-        restoreFileInput.value =
-            "";
-
-    }
-
-}
-
-
-/* ========================================
-   日付
-======================================== */
-
 function pad(
     number
 ) {
@@ -5344,8 +4969,8 @@ function expiredCompletedTask(task, now = Date.now()) {
     const justSubmittedAfterDeadline=Number.isFinite(completedAt) && completedAt>0 && completedAt>=deadline;
     return task.completed === true && Number.isFinite(deadline) && deadline < now && (!justSubmittedAfterDeadline || now>=completedAt+60000);
 }
-function taskTombstone(id) {
-    const now=Date.now(); return {id:String(id),deleted:true,deletedAt:now,updatedAt:now};
+function taskTombstone(id,task=null) {
+    const now=Date.now();return {...(task||{}),id:String(id),deleted:true,deletedAt:now,updatedAt:now,trashExpiresAt:task ? new Date(now+7*86400000) : null};
 }
 async function performTaskSwipe(id, action) {
     const uid=currentUser?.uid;
@@ -5359,7 +4984,7 @@ async function performTaskSwipe(id, action) {
             const ref=doc(db,"users",uid,"tasks",String(id)), snapshot=await tx.get(ref);
             if (!snapshot.exists() || snapshot.data().deleted) { result={deleted:true}; return; }
             const latest=snapshot.data();
-            result=action === "delete" ? taskTombstone(id) : {...latest,id:String(id),completed:true,completedAt:latest.completed && Number(latest.completedAt)>0 ? Number(latest.completedAt) : Date.now(),updatedAt:Date.now()};
+            result=action === "delete" ? taskTombstone(id,latest) : {...latest,id:String(id),completed:true,completedAt:latest.completed && Number(latest.completedAt)>0 ? Number(latest.completedAt) : Date.now(),updatedAt:Date.now()};
             tx.set(ref,result);
         });
         if (currentUser?.uid !== uid || auth.currentUser?.uid !== uid) return;
@@ -5390,7 +5015,7 @@ async function cleanupExpiredCompletedTasks() {
                     // 別端末で未提出へ戻したり期限を延長した課題は削除しない。
                     if (!snapshot.exists() || snapshot.data().deleted) { removed=true; return; }
                     if (!expiredCompletedTask(snapshot.data())) return;
-                    tx.set(ref,taskTombstone(task.id)); removed=true;
+                    tx.set(ref,taskTombstone(task.id,snapshot.data())); removed=true;
                 });
                 if (removed && currentUser?.uid===uid && auth.currentUser?.uid===uid) {
                     tasks=tasks.filter(item=>String(item.id)!==String(task.id)); changed=true;
@@ -5401,6 +5026,60 @@ async function cleanupExpiredCompletedTasks() {
         if (changed && currentUser?.uid===uid && auth.currentUser?.uid===uid) { saveUserCache(); render(); }
     } finally { taskCleanupUsers.delete(uid); }
 }
+
+function trashExpired(task,now=Date.now()){
+ return task.deleted===true && Number(task.deletedAt)>0 && now>=Number(task.deletedAt)+7*86400000;
+}
+function renderTrash(){
+ const list=document.getElementById("trashList");list.replaceChildren();
+ const items=trashedTasks.filter(t=>!trashExpired(t)).sort((a,b)=>b.deletedAt-a.deletedAt);
+ document.getElementById("trashStatus").textContent=items.length ? `${items.length}件` : "ゴミ箱は空です";
+ for(const task of items){
+  const row=document.createElement("div");row.style.cssText="padding:12px 0;border-bottom:1px solid #ddd";
+  const title=document.createElement("div");title.textContent=task.name+(task.subject ? "："+task.subject : "");
+  const info=document.createElement("small");info.textContent="自動消去："+new Date(Number(task.deletedAt)+7*86400000).toLocaleString("ja-JP");
+  const button=document.createElement("button");button.type="button";button.className="tool-button";button.textContent="復元";
+  button.onclick=()=>restoreTrashedTask(String(task.id),button);
+  row.append(title,info,button);list.appendChild(row);
+ }
+}
+async function restoreTrashedTask(id,button){
+ const uid=currentUser?.uid;if(!uid || auth.currentUser?.uid!==uid)return;
+ if(!navigator.onLine){alert("復元するにはインターネットに接続してください。");return;}
+ button.disabled=true;
+ try{
+  let restored=null;
+  await runTransaction(db,async tx=>{
+   restored=null;
+   const ref=doc(db,"users",uid,"tasks",id),snap=await tx.get(ref);
+   if(!snap.exists() || !snap.data().deleted || !snap.data().name || trashExpired(snap.data()))return;
+   restored={...snap.data(),id,deleted:false,deletedAt:null,trashExpiresAt:null,completed:false,completedAt:null,updatedAt:Date.now()};tx.set(ref,restored);
+  });
+  if(currentUser?.uid!==uid || auth.currentUser?.uid!==uid)return;
+  if(!restored){alert("この課題は復元済みか、保存期間が終了しています。");return;}
+  trashedTasks=trashedTasks.filter(t=>String(t.id)!==id);tasks=[...tasks.filter(t=>String(t.id)!==id),normalizeTask(restored)];saveUserCache();render();renderTrash();
+ }catch(error){console.error("課題の復元に失敗",error);if(currentUser?.uid===uid)alert("復元できませんでした。通信状態を確認してください。");}
+ finally{button.disabled=false;}
+}
+async function cleanupTrash(){
+ const uid=currentUser?.uid;if(!uid || auth.currentUser?.uid!==uid || !navigator.onLine || trashBusy)return;
+ const expired=trashedTasks.filter(t=>trashExpired(t));if(!expired.length)return;
+ trashBusy=true;
+ try{
+  for(const task of expired){
+   if(currentUser?.uid!==uid || auth.currentUser?.uid!==uid)break;
+   await runTransaction(db,async tx=>{
+    const ref=doc(db,"users",uid,"tasks",String(task.id)),snap=await tx.get(ref);
+    if(snap.exists() && snap.data().name && trashExpired(snap.data()))tx.set(ref,{id:String(task.id),deleted:true,deletedAt:Number(snap.data().deletedAt),updatedAt:Date.now(),trashExpiresAt:new Date(Number(snap.data().deletedAt)+7*86400000)});
+   });
+  }
+ }catch(error){console.error("ゴミ箱の自動消去に失敗",error);}finally{trashBusy=false;}
+}
+document.getElementById("trashButton").onclick=()=>{settingsDialog.close();renderTrash();document.getElementById("trashDialog").showModal();void cleanupTrash();};
+document.getElementById("trashCloseButton").onclick=()=>document.getElementById("trashDialog").close();
+setInterval(()=>{renderTrash();void cleanupTrash();},60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){renderTrash();void cleanupTrash();}});
+
 function horizontalSwipeAction(dx, dy, elapsed, width = 360, recentVelocity = 0) {
     if (Math.abs(dx) < Math.abs(dy)*1.1) return null;
     const distance=Math.abs(dx),velocity=Math.max(distance/Math.max(1,elapsed),recentVelocity);
@@ -5535,7 +5214,7 @@ function goBackInApp() {
     const dialogs=openAppDialogs();
     if(dialogs.length){
         const dialog=dialogs[dialogs.length-1];if(dialog.id==="classTimeDialog" && classTimeSaving)return false;
-        const buttons={classTimeDialog:"classTimeCancel",taskDialog:"cancelButton",detailDialog:"detailCloseButton",settingsDialog:"settingsCloseButton",accountInfoDialog:"accountInfoCloseButton",subjectInputDialog:"subjectCancelButton"};
+        const buttons={classTimeDialog:"classTimeCancel",taskDialog:"cancelButton",detailDialog:"detailCloseButton",settingsDialog:"settingsCloseButton",trashDialog:"trashCloseButton",accountInfoDialog:"accountInfoCloseButton",subjectInputDialog:"subjectCancelButton"};
         const button=document.getElementById(buttons[dialog.id] || "");
         if(button && typeof button.onclick==="function")button.click();else dialog.close();return true;
     }
@@ -7649,7 +7328,7 @@ function showAuthStartupError(error) {
 function showSignedOutScreen() {
     finishAuthStartup();
     authSessionGeneration++;
-    currentUser=null;tasks=[];
+    currentUser=null;tasks=[];trashedTasks=[];renderTrash();
     if(unsubscribeTasks){unsubscribeTasks();unsubscribeTasks=null;}
     document.querySelectorAll("dialog[open]").forEach(dialog=>dialog.close());
     settingsDialog.close();
@@ -7662,7 +7341,7 @@ function showSignedOutScreen() {
 async function activateUserSession(user) {
     finishAuthStartup();
     const generation=++authSessionGeneration;
-    currentUser=user;tasks=[];
+    currentUser=user;tasks=[];trashedTasks=[];renderTrash();
     if(unsubscribeTasks){unsubscribeTasks();unsubscribeTasks=null;}
     resetClassTimeSession(user);
     authGate.hidden=true;appContent.hidden=false;addButton.hidden=false;
@@ -8641,34 +8320,6 @@ retryButton.onclick =
 
 
         await startRealtimeSync();
-
-    };
-
-
-/* バックアップ */
-backupButton.onclick =
-    downloadBackup;
-
-
-/* 復元 */
-restoreButton.onclick =
-    function() {
-
-        restoreFileInput.click();
-
-    };
-
-
-restoreFileInput.onchange =
-    async function() {
-
-        const file =
-            restoreFileInput.files[0];
-
-
-        await restoreBackup(
-            file
-        );
 
     };
 
