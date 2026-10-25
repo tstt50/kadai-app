@@ -2455,6 +2455,16 @@ TOMORROW
 ========================= -->
 
 <dialog id="trashDialog"><div class="dialog-content"><h2>🗑️ ゴミ箱</h2><p>削除した課題は７日間復元できます。復元後は未提出に戻ります。</p><p id="trashStatus" role="status"></p><div id="trashList"></div><button type="button" class="cancel" id="trashCloseButton">閉じる</button></div></dialog>
+<dialog id="attendanceLinkDialog"><div class="dialog-content">
+<h2>自動出席の連携</h2><p>連携情報を自分のショートカットに設定します。再発行すると以前の連携は無効になります。</p>
+<p id="attendanceLinkStatus" role="status"></p>
+<button type="button" class="complete-button" id="attendanceLinkCreate">連携情報を発行・再発行</button>
+<textarea id="attendanceLinkSecret" readonly hidden aria-label="ショートカット用連携情報" style="box-sizing:border-box;width:100%;height:140px;font-size:14px"></textarea>
+<button type="button" class="complete-button" id="attendanceLinkDownload" hidden>連携ファイルを保存</button>
+<p id="attendanceLinkHint" hidden>連携ファイルを保存して、自分のショートカットから読み込ませます。この情報は発行時だけ表示します。他人に送ったり共有用ショートカットに含めたりしないでください。</p>
+<button type="button" class="delete-button" id="attendanceLinkRevoke">連携を解除</button>
+<button type="button" class="cancel" id="attendanceLinkClose">閉じる</button>
+</div></dialog>
 <dialog id="settingsDialog">
 
 <div class="dialog-content">
@@ -2504,6 +2514,7 @@ TOMORROW
 
 
 
+<button type="button" class="complete-button" id="attendanceLinkButton">自動出席の連携</button>
 <button type="button" class="complete-button" id="classTimeSettingsButton">授業時間設定</button>
 <button
     type="button"
@@ -5214,7 +5225,7 @@ function goBackInApp() {
     const dialogs=openAppDialogs();
     if(dialogs.length){
         const dialog=dialogs[dialogs.length-1];if(dialog.id==="classTimeDialog" && classTimeSaving)return false;
-        const buttons={classTimeDialog:"classTimeCancel",taskDialog:"cancelButton",detailDialog:"detailCloseButton",settingsDialog:"settingsCloseButton",trashDialog:"trashCloseButton",accountInfoDialog:"accountInfoCloseButton",subjectInputDialog:"subjectCancelButton"};
+        const buttons={classTimeDialog:"classTimeCancel",taskDialog:"cancelButton",detailDialog:"detailCloseButton",settingsDialog:"settingsCloseButton",attendanceLinkDialog:"attendanceLinkClose",trashDialog:"trashCloseButton",accountInfoDialog:"accountInfoCloseButton",subjectInputDialog:"subjectCancelButton"};
         const button=document.getElementById(buttons[dialog.id] || "");
         if(button && typeof button.onclick==="function")button.click();else dialog.close();return true;
     }
@@ -5223,6 +5234,46 @@ function goBackInApp() {
     if(!attendanceView.hidden){attendanceBackButton.click();return true;}
     return false;
 }
+
+let attendanceLinkBusy=false;
+function clearAttendanceLinkSecret(){document.getElementById("attendanceLinkDownload").hidden=true;const el=document.getElementById("attendanceLinkSecret");el.value="";el.hidden=true;document.getElementById("attendanceLinkHint").hidden=true;document.getElementById("attendanceLinkStatus").textContent="";}
+function attendanceLinkRef(uid){return doc(db,"users",uid,"integrations","attendance");}
+function sameAttendanceUser(uid){return !!uid && currentUser?.uid===uid && auth.currentUser?.uid===uid && !logoutInProgress;}
+async function updateAttendanceLink(revoke=false){
+ const uid=currentUser?.uid;if(!sameAttendanceUser(uid) || attendanceLinkBusy)return;
+ if(!navigator.onLine){alert("インターネットに接続してください。");return;}
+ if(!confirm(revoke ? "連携を解除しますか？自動判定が停止します。" : "連携情報を発行しますか？以前の連携情報は使えなくなります。"))return;
+ attendanceLinkBusy=true;clearAttendanceLinkSecret();
+ const create=document.getElementById("attendanceLinkCreate"),disable=document.getElementById("attendanceLinkRevoke");create.disabled=true;disable.disabled=true;
+ try{
+  let token="",data;
+  if(revoke)data={enabled:false,tokenHash:"",expiresAt:0,updatedAt:Date.now()};
+  else{
+   const bytes=new Uint8Array(32);window.crypto.getRandomValues(bytes);token=Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
+   const digest=await window.crypto.subtle.digest("SHA-256",new TextEncoder().encode(token));
+   data={enabled:true,tokenHash:Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,"0")).join(""),expiresAt:Date.now()+180*86400000,updatedAt:Date.now()};
+  }
+  if(!sameAttendanceUser(uid))return;
+  await setDoc(attendanceLinkRef(uid),data);
+  if(!sameAttendanceUser(uid))return;
+  document.getElementById("attendanceLinkStatus").textContent=revoke ? "連携を解除しました" : "連携情報を発行しました。有効期限："+new Date(data.expiresAt).toLocaleDateString("ja-JP");
+  if(!revoke && document.getElementById("attendanceLinkDialog").open){const el=document.getElementById("attendanceLinkSecret");el.value=JSON.stringify({uid,attendanceToken:token},null,2);el.hidden=false;document.getElementById("attendanceLinkDownload").hidden=false;document.getElementById("attendanceLinkHint").hidden=false;}
+ }catch(error){console.error("連携設定の保存に失敗");if(sameAttendanceUser(uid))alert("保存できませんでした。通信状態とアクセス設定を確認してください。");}
+ finally{attendanceLinkBusy=false;create.disabled=false;disable.disabled=false;}
+}
+document.getElementById("attendanceLinkButton").onclick=async()=>{
+ const uid=currentUser?.uid;if(!sameAttendanceUser(uid))return;clearAttendanceLinkSecret();settingsDialog.close();document.getElementById("attendanceLinkDialog").showModal();
+ try{const snap=await getDocFromServer(attendanceLinkRef(uid));if(!sameAttendanceUser(uid))return;const data=snap.exists()?snap.data():null;document.getElementById("attendanceLinkStatus").textContent=data?.enabled && data.expiresAt>Date.now() ? "連携は有効です。有効期限："+new Date(data.expiresAt).toLocaleDateString("ja-JP") : "連携されていません。";}catch(error){if(sameAttendanceUser(uid))document.getElementById("attendanceLinkStatus").textContent="連携状態を取得できませんでした。";}
+};
+document.getElementById("attendanceLinkDownload").onclick=()=>{
+ const text=document.getElementById("attendanceLinkSecret").value;if(!text || !sameAttendanceUser(JSON.parse(text).uid))return;
+ const url=URL.createObjectURL(new Blob([text],{type:"application/json"})),a=document.createElement("a");a.href=url;a.download="kadai-attendance-link.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+document.getElementById("attendanceLinkCreate").onclick=()=>updateAttendanceLink(false);
+document.getElementById("attendanceLinkRevoke").onclick=()=>updateAttendanceLink(true);
+document.getElementById("attendanceLinkClose").onclick=()=>{clearAttendanceLinkSecret();document.getElementById("attendanceLinkDialog").close();};
+document.getElementById("attendanceLinkDialog").addEventListener("close",clearAttendanceLinkSecret);
+
 let appBackPreview=null,appBackSettling=false,appEdgeClickBlockedUntil=0;
 function beginBackPreview() {
     const surface=backSwipeSurface();
@@ -6701,7 +6752,7 @@ function editTask(
 
         +
 
-        '<div class="delete-message" id="deleteMessage">もう一度押すと完全に削除します</div>';
+        '<div class="delete-message" id="deleteMessage">もう一度押すとゴミ箱へ移動します（７日間復元可能）</div>';
 
 
     document.getElementById(
@@ -7439,6 +7490,7 @@ classTimeForm.onsubmit=async e=>{
  finally{classTimeSaving=false;document.getElementById("classTimeSave").disabled=false;}
 };
 function resetClassTimeSession(user) {
+ clearAttendanceLinkSecret();document.getElementById("attendanceLinkDialog").close();
  if(unsubscribeAttendanceSummary)unsubscribeAttendanceSummary();unsubscribeAttendanceSummary=null;attendanceSummaryDocuments=null;attendanceSummaryRevision++;
  document.getElementById("taskDialog").close(); document.getElementById("detailDialog").close();
  editingId=null; deleteConfirmMode=false;
