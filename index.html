@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理</title>
+<title>課題管理 v20</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1137,77 +1137,6 @@ input[readonly] {
     cursor: pointer;
 }
 
-.attendance-tabs {
-    display: grid;
-    grid-template-columns:
-        1fr 1fr;
-
-    padding: 4px;
-    margin-bottom: 14px;
-
-    background: #edf4ff;
-    border-radius: 14px;
-}
-
-.attendance-tab {
-    border: none;
-    padding: 10px;
-
-    background: transparent;
-
-    border-radius: 11px;
-
-    font-size: 15px;
-    font-weight: 700;
-
-    color: #667085;
-}
-
-.attendance-tab.active {
-    background: white;
-    color: #1677ff;
-
-    box-shadow:
-        0 2px 8px
-        rgba(
-            22,
-            119,
-            255,
-            0.14
-        );
-}
-
-.attendance-legend {
-    display: flex;
-    justify-content: space-between;
-    gap: 6px;
-
-    margin-bottom: 14px;
-
-    font-size: 11px;
-    white-space: nowrap;
-}
-
-.attendance-legend span:nth-child(1) {
-    color: #22b573;
-}
-
-.attendance-legend span:nth-child(2) {
-    color: #f5a623;
-}
-
-.attendance-legend span:nth-child(3) {
-    color: #ef4444;
-}
-
-.attendance-legend span:nth-child(4) {
-    color: #8b5cf6;
-}
-
-.attendance-legend span:nth-child(5) {
-    color: #98a2b3;
-}
-
 .attendance-table {
     overflow: hidden;
 
@@ -1378,11 +1307,291 @@ body.attendance-open #attendanceView {
     background: #f7faff;
 }
 
+body.timetable-settings-open {
+    overflow: hidden;
+}
+
+body.timetable-settings-open #timetableSettingsView {
+    display: block;
+}
+
+#timetableSettingsView {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    overflow-y: auto;
+    background: #f7faff;
+}
+
+.timetable-cell {
+    border: none;
+    border-right: 1px solid #e7eef8;
+    background: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-align: center;
+    overflow-wrap: anywhere;
+
+    cursor: pointer;
+}
+
+.timetable-cell:last-child {
+    border-right: none;
+}
+
+.timetable-cell:empty::after {
+    content: "＋";
+    color: #98a2b3;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+#attendanceSubjectView {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+
+    overflow-y: auto;
+
+    padding:
+        18px 14px 30px;
+
+    background: #f7faff;
+}
+
+.attendance-subject-card {
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 24px 18px;
+
+    box-shadow:
+        0 6px 20px
+        rgba(31, 91, 160, .08);
+
+    text-align: center;
+}
+
+.attendance-circle {
+    position: relative;
+
+    width: 180px;
+    height: 180px;
+
+    margin: 10px auto 24px;
+
+    border-radius: 50%;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        conic-gradient(
+            #1677ff 0deg,
+            #1677ff 0deg,
+            #e8eef7 0deg,
+            #e8eef7 360deg
+        );
+}
+
+.attendance-circle::before {
+    content: "";
+
+    position: absolute;
+
+    width: 140px;
+    height: 140px;
+
+    border-radius: 50%;
+
+    background: white;
+}
+
+.attendance-circle-value,
+.attendance-circle-label {
+    position: relative;
+    z-index: 1;
+}
+
+.attendance-circle-value {
+    font-size: 38px;
+    font-weight: 800;
+
+    color: #1677ff;
+}
+
+.attendance-circle-label {
+    margin-top: 4px;
+
+    color: #667085;
+
+    font-size: 13px;
+}
+
+.attendance-line {
+    margin-top: 8px;
+
+    padding: 12px;
+
+    border-radius: 12px;
+
+    background: #edf4ff;
+
+    color: #475467;
+
+    font-size: 14px;
+}
+
+.attendance-line strong {
+    margin-left: 6px;
+
+    color: #1677ff;
+}
+
+.attendance-subject-message {
+    margin-top: 14px;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: #16a34a;
+}
+
+.attendance-stat-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+
+    margin-top: 18px;
+}
+
+.attendance-stat-card {
+    background: white;
+
+    padding: 18px 12px;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 4px 14px
+        rgba(31, 91, 160, .06);
+
+    text-align: center;
+}
+
+.attendance-stat-card span {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #667085;
+
+    font-size: 13px;
+}
+
+.attendance-stat-card strong {
+    font-size: 26px;
+}
+
+
+/* 出席記録の手動登録・修正 */
+.attendance-manual-panel { margin-top:18px; background:#fff; border-radius:16px; padding:16px; }
+.attendance-manual-panel h3 { margin:0 0 10px; font-size:17px; }
+.attendance-manual-panel p { font-size:12px; color:#667085; line-height:1.6; }
+.attendance-manual-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; align-items:start; }
+.attendance-manual-grid > div { min-width:0; }
+.attendance-manual-grid label { font-size:12px; line-height:16px; min-height:16px; margin:8px 0 4px; }
+.attendance-manual-grid input, .attendance-manual-grid select { display:block; box-sizing:border-box; width:100%; min-width:0; max-width:100%; height:48px; min-height:48px; margin:0; padding:0 10px; font-size:16px; line-height:normal; -webkit-appearance:none; appearance:none; }
+.attendance-manual-grid input::-webkit-date-and-time-value { min-width:0; text-align:left; }
+.attendance-manual-grid select { padding-right:24px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23667085' stroke-width='2'/%3E%3C/svg%3E"); background-position:right 8px center; background-repeat:no-repeat; }
+.attendance-manual-actions { display:flex; gap:8px; margin-top:14px; }
+.attendance-manual-actions button { flex:1; border:0; border-radius:10px; padding:12px 8px; font-weight:700; cursor:pointer; }
+#attendanceManualSave { background:#1677ff; color:white; }
+#attendanceManualStart { background:#1677ff; color:white; }
+#attendanceManualCancel { background:#eef2f7; color:#344054; }
+#attendanceManualMode { font-size:13px; font-weight:700; color:#344054; margin:10px 0; }
+#attendanceManualForm[hidden], #attendanceManualStart[hidden] { display:none !important; }
+.attendance-manual-grid :disabled { background:#f3f4f6; color:#667085; opacity:1; }
+#attendanceManualDelete { background:#fee2e2; color:#b91c1c; }
+#attendanceManualList { margin-top:14px; }
+.attendance-manual-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 0; border-bottom:1px solid #edf0f5; font-size:13px; }
+.attendance-manual-row button { border:0; border-radius:8px; background:#eef4ff; color:#1264c7; padding:8px 10px; cursor:pointer; }
+#attendanceManualMessage { font-size:12px; margin-top:10px; min-height:16px; }
+
+
+/* 時刻入力のネイティブ最小幅でダイアログが広がらないようにする。 */
+#classTimeDialog { max-width: calc(100vw - 24px); }
+#classTimeForm, #classTimeFields { min-width: 0; max-width: 100%; }
+#classTimeFields fieldset { min-inline-size: 0; min-width: 0; width: 100%; margin-inline: 0; }
+#classTimeFields input { box-sizing: border-box; min-width: 0; max-width: 100%; width: 100%; }
+#classTimeFields input[type="time"] { -webkit-appearance: none; appearance: none; height: 48px; }
+#classTimeFields input::-webkit-date-and-time-value { min-width: 0; text-align: left; }
+.attendance-load-message { margin: 12px 0; color: #667085; font-size: 14px; }
+
+
+.task-swipe { position: relative; overflow: hidden; border-bottom: 1px solid #eee; }
+.task-swipe:last-child { border-bottom: 0; }
+.task-swipe .all-task { position: relative; z-index: 1; background: white; border-bottom: 0; touch-action: pan-y; transition: transform .15s; user-select: none; }
+.task-swipe.swiping-right .all-task, .task-swipe.swiping-left .all-task { transition: none; }
+.task-swipe-action { position: absolute; inset: 0; display: flex; align-items: center; padding: 20px; font-weight: 700; color: white; visibility: hidden; }
+.task-swipe-action.complete { background: #229954; justify-content: flex-start; }
+.task-swipe-action.delete { background: #d70015; justify-content: flex-end; }
+.task-swipe.swiping-right .complete, .task-swipe.swiping-left .delete { visibility: visible; }
+.swipe-help { color: #777; font-size: 12px; margin: -4px 2px 10px; }
+#taskForm input[type="datetime-local"] { min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; }
+
+#attendanceView, #attendanceSubjectView, #timetableSettingsView, dialog { touch-action:pan-y; overscroll-behavior-x:contain; }
+
+.app-back-dragging { transition:none !important; }
+.app-back-dragging.app-back-settling { transition:transform .2s cubic-bezier(.22,.7,.2,1),box-shadow .2s ease !important; }
+@media(prefers-reduced-motion:reduce) { .app-back-dragging.app-back-settling { transition:none !important; } }
+
+.account-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:auto; }
+.account-row .sync-status { min-width:0; margin-top:0; flex:1; }
+#syncStatusText { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.attendance-subject-cell { cursor:pointer; font-weight:700 !important; }
+#authMessage { margin-top:12px; color:#667085; font-size:13px; }
+
+.auth-loading { min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#667085; font-size:14px; }
+.auth-loading p { margin:0; padding:0 20px; text-align:center; line-height:1.6; }
+.auth-loading-spinner { width:28px; height:28px; border:3px solid #e1e9f4; border-top-color:#1677ff; border-radius:50%; animation:auth-loading-spin .8s linear infinite; }
+@keyframes auth-loading-spin { to { transform:rotate(360deg); } }
+@media(prefers-reduced-motion:reduce) { .auth-loading-spinner { animation:none; } }
+.attendance-date-control { position:relative; display:block; box-sizing:border-box; width:100%; min-width:0; height:48px; border:1px solid #ccc; border-radius:11px; background:white; overflow:hidden; }
+.attendance-date-text { display:flex; align-items:center; box-sizing:border-box; width:100%; height:100%; padding:0 32px 0 10px; margin:0; color:#111; font-size:16px; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap; pointer-events:none; }
+.attendance-date-control::after { content:""; position:absolute; width:14px; height:14px; top:50%; right:10px; transform:translateY(-50%); background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='2' y='3' width='12' height='11' rx='2' fill='none' stroke='%23667085'/%3E%3Cpath d='M2 6h12M5 1v4M11 1v4' stroke='%23667085' fill='none'/%3E%3C/svg%3E"); pointer-events:none; }
+.attendance-manual-grid #attendanceManualDate { position:absolute; inset:0; z-index:1; width:100%; height:100%; min-height:0; border:0; border-radius:10px; opacity:0; cursor:pointer; }
+.attendance-date-control:focus-within { border-color:#007aff; box-shadow:0 0 0 3px rgba(0,122,255,.12); }
+.attendance-manual-grid #attendanceManualDate:focus-visible { opacity:1; background:white; }
+.attendance-date-control.is-disabled { background:#f3f4f6; }
+.attendance-date-control.is-disabled .attendance-date-text { color:#667085; }
+
+
+#attendanceBackButton, #attendanceSubjectBackButton { display: none !important; }
+</style>
+<style>
+.academic-toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.attendance-header{flex-wrap:wrap;gap:8px}.academic-toolbar button,.academic-toolbar select{font-size:13px;padding:8px;border:1px solid #d5dceb;border-radius:9px;background:white;color:#234}.academic-dialog{box-sizing:border-box;width:min(94vw,460px);max-height:85dvh;overflow:auto;border:0;border-radius:16px;padding:20px}.academic-dialog label,#subjectInputDialog label{display:block;margin:12px 0}.academic-dialog input,#subjectInputDialog select,#subjectInputDialog input{box-sizing:border-box;width:100%;min-width:0;max-width:100%;padding:10px}.academic-dialog button{margin:6px;padding:10px}.academic-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;padding:12px}.academic-charts[hidden]{display:none}.academic-chart{display:flex;flex-direction:column;align-items:center;gap:10px;background:white;border:1px solid #ddd;border-radius:16px;padding:16px;overflow-wrap:anywhere}.academic-ring{width:90px;height:90px;border-radius:50%;display:grid;place-items:center}.academic-ring>span{background:white;width:66px;height:66px;display:grid;place-items:center;border-radius:50%;font-size:20px}.attendance-manual-row{display:flex!important;align-items:center!important;gap:8px}.attendance-record-label{flex:1;display:grid;grid-template-columns:minmax(90px,1.5fr) minmax(45px,0.8fr) minmax(54px,1fr);gap:6px;font-variant-numeric:tabular-nums;align-items:center;font-size:13px;min-width:0}.attendance-record-label span:last-child{text-align:center;white-space:nowrap}.pull-hint{position:fixed;top:env(safe-area-inset-top,0);left:50%;transform:translateX(-50%);z-index:10000;padding:10px;background:#1677ff;color:white;border-radius:12px;pointer-events:none}
 </style>
 </head>
 
 
 <body>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v20・2026/10/29</div>
 
 
 <header>
@@ -1398,9 +1607,16 @@ body.attendance-open #attendanceView {
 </header>
 
 
+<section id="authLoading" class="auth-loading" role="status" aria-live="polite">
+    <div class="auth-loading-spinner" aria-hidden="true"></div>
+    <p id="authLoadingMessage">読み込み中…</p>
+    <button type="button" id="authStartupRetry" class="tool-button" hidden>再読み込み</button>
+</section>
+
 <section
     class="auth-gate"
     id="authGate"
+    hidden
 >
 
 <div class="auth-card">
@@ -1434,6 +1650,7 @@ Googleでログイン
 >
 Microsoftでログイン
 </button>
+<p id="authMessage" role="status" hidden></p>
 
 <p style="
     margin-top:14px;
@@ -1473,6 +1690,7 @@ Microsoftでログイン
 
 </div>
 
+<div class="account-actions">
 <button
     type="button"
     class="logout-button"
@@ -1488,6 +1706,7 @@ Microsoftでログイン
 >
 ⚙️ 設定
 </button>
+</div>
 
 </div>
 
@@ -1510,30 +1729,7 @@ Microsoftでログイン
         </h2>
     </div>
 
-<div class="attendance-tabs">
-    <button
-        type="button"
-        class="attendance-tab"
-    >
-        一覧
-    </button>
-
-    <button
-        type="button"
-        class="attendance-tab active"
-    >
-        時間割
-    </button>
-</div>
-
-    <div class="attendance-legend">
-        <span>● 出席</span>
-        <span>● 遅刻</span>
-        <span>● 欠席</span>
-        <span>● ぴ逃げ</span>
-        <span>● 未判定</span>
-    </div>
-
+    <p id="attendanceTimetableMessage" class="attendance-load-message" role="status" hidden></p>
     <div class="attendance-table">
 
         <div class="attendance-row attendance-days">
@@ -1552,8 +1748,8 @@ Microsoftでログイン
             </div>
 
             <div></div>
-            <div>材料力学A</div>
-            <div>数理・DS・AI</div>
+            <div></div>
+            <div></div>
             <div></div>
             <div></div>
         </div>
@@ -1564,10 +1760,10 @@ Microsoftでログイン
                 <small>10:45–12:25</small>
             </div>
 
-            <div>基礎物理学B</div>
-            <div>哲学A</div>
-            <div>微分積分学A</div>
-            <div>ETC B</div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
             <div></div>
         </div>
 
@@ -1577,11 +1773,11 @@ Microsoftでログイン
                 <small>13:15–14:55</small>
             </div>
 
-            <div>実践基礎A</div>
-            <div>線形代数</div>
             <div></div>
-            <div>微分積分学A</div>
-            <div>熱力学A</div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
         </div>
 
         <div class="attendance-row">
@@ -1591,8 +1787,8 @@ Microsoftでログイン
             </div>
 
             <div></div>
-            <div>基礎製図</div>
-            <div>日本国憲法</div>
+            <div></div>
+            <div></div>
             <div></div>
             <div></div>
         </div>
@@ -1611,6 +1807,117 @@ Microsoftでログイン
         </div>
 
     </div>
+</section>
+
+<section
+    id="attendanceSubjectView"
+    hidden
+>
+    <div class="attendance-header">
+
+        <button
+            type="button"
+            id="attendanceSubjectBackButton"
+        >
+            ‹
+        </button>
+
+        <h2 id="attendanceSubjectTitle">
+            科目詳細
+        </h2>
+
+    </div>
+
+    <p id="attendanceSubjectLoadMessage" class="attendance-load-message" role="status" hidden></p>
+    <button type="button" id="attendanceSubjectRetry" class="tool-button" hidden>再読み込み</button>
+    <div class="attendance-subject-card">
+
+        <div class="attendance-circle">
+            <div
+                id="attendanceCircleValue"
+                class="attendance-circle-value"
+            >
+                0%
+            </div>
+
+            <div class="attendance-circle-label">
+                出席率
+            </div>
+        </div>
+
+        <div class="attendance-line">
+            単位取得ライン
+            <strong>70%</strong>
+        </div>
+
+        <div
+            id="attendanceSubjectMessage"
+            class="attendance-subject-message"
+        >
+            出席状況を確認しています
+        </div>
+
+    </div>
+
+    <div class="attendance-stat-grid">
+
+        <div class="attendance-stat-card">
+            <span>出席</span>
+            <strong id="subjectPresentCount">0</strong>
+        </div>
+
+        <div class="attendance-stat-card">
+            <span>欠席</span>
+            <strong id="subjectAbsentCount">0</strong>
+        </div>
+
+        <div class="attendance-stat-card">
+            <span>遅刻</span>
+            <strong id="subjectLateCount">0</strong>
+        </div>
+
+        <div class="attendance-stat-card">
+            <span>ぴ逃げ</span>
+            <strong id="subjectPinigeCount">0</strong>
+        </div>
+
+        <div class="attendance-stat-card">
+            <span>未判定</span>
+            <strong id="subjectUnknownCount">0</strong>
+        </div>
+
+    </div>
+
+    <section class="attendance-manual-panel" id="attendanceManualPanel">
+        <h3>出席記録の登録・修正</h3>
+        <p>実際の出席状況を確認できる授業だけ登録してください。登録済みの記録は下の一覧から編集できます。</p>
+        <div id="attendanceManualMode">記録を変更するには「編集」、追加するには「新規登録」を押してください。</div>
+        <button type="button" id="attendanceManualStart" style="border:0;border-radius:10px;padding:12px 18px;background:#1677ff;color:white;font-weight:700;cursor:pointer">＋ 新規登録</button>
+        <div id="attendanceManualForm" hidden>
+            <div class="attendance-manual-grid">
+                <div><label for="attendanceManualDate">授業日</label><div id="attendanceManualDateControl" class="attendance-date-control"><span id="attendanceManualDateDisplay" class="attendance-date-text" aria-hidden="true">日付を選択</span><input id="attendanceManualDate" type="date"></div></div>
+                <div><label for="attendanceManualPeriod">授業時間</label><select id="attendanceManualPeriod"></select></div>
+                <div style="grid-column:1/-1"><label for="attendanceManualStatus">出席状況</label>
+                    <select id="attendanceManualStatus">
+                        <option value="present">出席</option><option value="late">遅刻</option>
+                        <option value="absent">欠席</option><option value="pinige">ぴ逃げ</option>
+                        <option value="unknown">未判定</option>
+                    </select>
+                </div>
+            </div>
+            <div class="attendance-manual-actions">
+                <button type="button" id="attendanceManualSave">保存</button>
+                <button type="button" id="attendanceManualCancel">キャンセル</button>
+            </div>
+            <div class="attendance-manual-actions">
+                <button type="button" id="attendanceManualDelete" hidden>この記録を削除</button>
+            </div>
+            <div id="attendanceManualMessage" role="status" aria-live="polite"></div>
+        </div>
+        <h3 style="margin-top:18px">この科目の記録</h3>
+        <div id="attendanceManualList"></div>
+    </section>
+
 </section>
 
 <section
@@ -1712,6 +2019,48 @@ Microsoftでログイン
 
     </div>
 </section>
+
+<dialog id="subjectInputDialog">
+    <div class="dialog-content">
+
+        <h2>授業を設定</h2>
+
+        <input
+            type="text"
+            id="subjectNameInput"
+            placeholder="科目名を入力"
+            autocomplete="off"
+        >
+
+        <div class="subject-input-actions">
+
+            <button
+                type="button"
+                id="subjectDeleteButton"
+            >
+                削除
+            </button>
+
+            <button
+                type="button"
+                id="subjectCancelButton"
+            >
+                キャンセル
+            </button>
+
+            <button
+                type="button"
+                id="subjectSaveButton"
+                class="complete-button"
+            >
+                保存
+            </button>
+
+        </div>
+
+    </div>
+</dialog>
+
 
 <div class="main-days">
 
@@ -1836,10 +2185,14 @@ TOMORROW
 すべての課題
 </h2>
 
+<p class="swipe-help">右へスワイプで提出済み・左へスワイプで削除</p>
 <div
     class="all-list"
     id="allTasks"
 ></div>
+
+<h2 class="section-title">提出済み</h2>
+<div class="all-list" id="completedTasks"></div>
 
 </main>
 
@@ -2014,7 +2367,7 @@ TOMORROW
     class="subject-info"
     id="subjectInfo"
 >
-授業日時を選ぶと、その曜日の科目だけ表示します。
+授業日時を選ぶと、登録した時間割の科目を表示します。
 </div>
 
 </div>
@@ -2046,14 +2399,14 @@ TOMORROW
 <input
     id="deadline"
     type="datetime-local"
-    readonly
+    required
 >
 
 <div
     class="deadline-info"
     id="deadlineInfo"
 >
-授業日時を入力すると、6日後の23:59を提出期限に設定します。
+初期値は授業日の6日後の23:59です。日時は変更できます。
 </div>
 
 </div>
@@ -2105,6 +2458,17 @@ TOMORROW
      設定
 ========================= -->
 
+<dialog id="trashDialog"><div class="dialog-content"><h2>🗑️ ゴミ箱</h2><p>削除した課題は７日間復元できます。復元後は未提出に戻ります。</p><p id="trashStatus" role="status"></p><div id="trashList"></div><button type="button" class="cancel" id="trashCloseButton">閉じる</button></div></dialog>
+<dialog id="attendanceLinkDialog"><div class="dialog-content">
+<h2>自動出席の連携</h2><p>連携情報を自分のショートカットに設定します。再発行すると以前の連携は無効になります。</p>
+<p id="attendanceLinkStatus" role="status"></p>
+<button type="button" class="complete-button" id="attendanceLinkCreate">連携情報を発行・再発行</button>
+<textarea id="attendanceLinkSecret" readonly hidden aria-label="ショートカット用連携情報" style="box-sizing:border-box;width:100%;height:140px;font-size:14px"></textarea>
+<button type="button" class="complete-button" id="attendanceLinkDownload" hidden>連携ファイルを保存</button>
+<p id="attendanceLinkHint" hidden>連携ファイルを保存して、自分のショートカットから読み込ませます。この情報は発行時だけ表示します。他人に送ったり共有用ショートカットに含めたりしないでください。</p>
+<button type="button" class="delete-button" id="attendanceLinkRevoke">連携を解除</button>
+<button type="button" class="cancel" id="attendanceLinkClose">閉じる</button>
+</div></dialog>
 <dialog id="settingsDialog">
 
 <div class="dialog-content">
@@ -2137,8 +2501,7 @@ TOMORROW
     class="complete-button"
     id="timetableSettingsButton"
 >
-    🗓️ 時間割設定
-</button>
+    🗓️ 時間割設定</button>
 
 <button
     type="button"
@@ -2149,24 +2512,14 @@ TOMORROW
 </button>
 
 
-<button
-    type="button"
-    class="complete-button"
-    id="backupButton"
->
-↓ バックアップ
-</button>
+<button type="button" class="complete-button" id="trashButton">🗑️ ゴミ箱</button>
 
 
-<button
-    type="button"
-    class="complete-button"
-    id="restoreButton"
->
-↑ 復元
-</button>
 
 
+
+<button type="button" class="complete-button" id="attendanceLinkButton">自動出席の連携</button>
+<button type="button" class="complete-button" id="classTimeSettingsButton">授業時間設定</button>
 <button
     type="button"
     class="delete-button"
@@ -2376,14 +2729,13 @@ Microsoftを連携
 </dialog>
 
 
-<input
-    type="file"
-    id="restoreFileInput"
-    accept=".json,application/json"
-    hidden
->
 
-<script type="module">
+
+<dialog id="classTimeDialog" aria-labelledby="classTimeTitle"><form id="classTimeForm" class="dialog-content">
+<h2 id="classTimeTitle">授業時間設定</h2><p>1〜5限の開始時刻と、すべての授業に共通する授業時間（分）を入力してください。</p>
+<div id="classTimeFields"></div><p id="classTimeError" role="alert" style="color:#d70015"></p>
+<div class="dialog-buttons"><button type="button" class="cancel" id="classTimeCancel">キャンセル</button><button type="submit" class="save" id="classTimeSave">保存</button></div>
+</form></dialog><script type="module">
 
 import {
     initializeApp
@@ -2410,8 +2762,12 @@ import {
     collection,
     doc,
     getDoc,
+    getDocFromServer,
     getDocs,
+    getDocsFromServer,
     setDoc,
+    deleteDoc,
+    serverTimestamp,
     onSnapshot,
     runTransaction
 }
@@ -2644,44 +3000,15 @@ const weekdays = [
 ];
 
 
-const timetable = {
-
-    0: [
-        "その他"
-    ],
-
-    1: [
-        "基礎物理学B",
-        "実践基礎A"
-    ],
-
-    2: [
-        "材料力学A",
-        "哲学A",
-        "線形代数",
-        "基礎製図"
-    ],
-
-    3: [
-        "数理・データサイエンス・AI入門",
-        "微分積分学A",
-        "日本国憲法"
-    ],
-
-    4: [
-        "微分積分学A",
-        "ETC B"
-    ],
-
-    5: [
-        "熱力学"
-    ],
-
-    6: [
-        "その他"
-    ]
-
-};
+const timetableDays = [null,"mon","tue","wed","thu","fri",null];
+let userTimetableSlots = {};
+let unsubscribeTimetable = null;
+let deadlineManuallyEdited = false;
+let openingTaskDialog = false;
+let activeTaskGestureCount = 0;
+let deferredTaskRender = false;
+const taskActionLocks = new Set();
+const taskCleanupUsers = new Set();
 
 
 /* ========================================
@@ -2689,8 +3016,13 @@ const timetable = {
 ======================================== */
 
 let tasks = [];
+let trashedTasks=[];
+let trashBusy=false;
 
 let currentUser = null;
+let logoutInProgress = false;
+let authSessionGeneration = 0;
+let authInitialized = false;
 
 let editingId = null;
 
@@ -2837,22 +3169,13 @@ const retryButton =
     );
 
 
-const backupButton =
-    document.getElementById(
-        "backupButton"
-    );
 
 
-const restoreButton =
-    document.getElementById(
-        "restoreButton"
-    );
 
 
-const restoreFileInput =
-    document.getElementById(
-        "restoreFileInput"
-    );
+
+
+
 
 
 const taskDialog =
@@ -3187,6 +3510,8 @@ function normalizeTask(task) {
                 task.completed
             ),
 
+        completedAt: Number.isFinite(Number(task.completedAt)) && Number(task.completedAt)>0 ? Number(task.completedAt) : null,
+
         updatedAt:
             Number(
                 task.updatedAt
@@ -3401,6 +3726,7 @@ function applyCloudSnapshot(
 ) {
 
     const nextTasks = [];
+    trashedTasks=[];
 
 
     snapshot.forEach(
@@ -3416,6 +3742,7 @@ function applyCloudSnapshot(
                 true
             ) {
 
+                if(data.name && Number(data.deletedAt)>0)trashedTasks.push({...data,id:documentSnapshot.id});
                 return;
 
             }
@@ -3433,6 +3760,8 @@ function applyCloudSnapshot(
 
     tasks =
         nextTasks;
+    renderTrash();
+    void cleanupTrash();
 
 
     saveUserCache();
@@ -3466,6 +3795,8 @@ function applyCloudSnapshot(
 
 
 async function startRealtimeSync() {
+
+    const syncUid = currentUser?.uid;
 
     if (!currentUser) {
 
@@ -3507,6 +3838,7 @@ async function startRealtimeSync() {
     try {
 
         await ensureNewDatabase();
+        if (!syncUid || logoutInProgress || currentUser?.uid !== syncUid || auth.currentUser?.uid !== syncUid) return;
 
 
         unsubscribeTasks =
@@ -3521,6 +3853,7 @@ async function startRealtimeSync() {
 
                 function(snapshot) {
 
+                    if (logoutInProgress || currentUser?.uid !== syncUid || auth.currentUser?.uid !== syncUid) return;
                     applyCloudSnapshot(
                         snapshot
                     );
@@ -3572,6 +3905,7 @@ async function saveTaskToCloud(
     task
 ) {
 
+    const saveUid = currentUser?.uid;
     if (!currentUser) {
 
         alert(
@@ -3647,6 +3981,8 @@ async function saveTaskToCloud(
         );
 
 
+        if (currentUser?.uid !== saveUid || auth.currentUser?.uid !== saveUid) return false;
+
         if (
             deletedAlready
         ) {
@@ -3695,6 +4031,7 @@ async function saveTaskToCloud(
     }
 
     catch(error) {
+        if (currentUser?.uid !== saveUid || auth.currentUser?.uid !== saveUid) return false;
 
         console.error(
             "課題保存エラー",
@@ -3742,30 +4079,11 @@ async function deleteTaskFromCloud(
 
     try {
 
-        await setDoc(
-
-            doc(
-                userTasksCollection(),
-                String(id)
-            ),
-
-            {
-                id:
-                    String(id),
-
-                deleted:
-                    true,
-
-                deletedAt:
-                    now,
-
-                updatedAt:
-                    now
-            }
-
-        );
-
-
+        const uid=currentUser.uid;
+        await runTransaction(db,async tx=>{
+            const ref=doc(db,"users",uid,"tasks",String(id)),snap=await tx.get(ref);
+            if(snap.exists() && !snap.data().deleted)tx.set(ref,taskTombstone(id,snap.data()));
+        });
         setSyncStatus(
             "synced",
             "✓ 同期済み"
@@ -4553,385 +4871,21 @@ async function revealEmailWithDeviceAuth() {
 ======================================== */
 
 async function logout() {
-
+    if(logoutInProgress)return;
+    logoutInProgress=true;setAuthBusy(true);showSignedOutScreen();
     try {
-
-        if (
-            unsubscribeTasks
-        ) {
-
-            unsubscribeTasks();
-
-            unsubscribeTasks =
-                null;
-
-        }
-
-
-        await signOut(
-            auth
-        );
-
-    }
-
-    catch(error) {
-
-        console.error(
-            "ログアウトエラー",
-            error
-        );
-
-
-        alert(
-            "ログアウトに失敗しました。"
-        );
-
-    }
-
+        await signOut(auth);
+        showSignedOutScreen();
+    }catch(error){
+        console.error("ログアウトエラー",error);
+        logoutInProgress=false;
+        if(auth.currentUser)await activateUserSession(auth.currentUser);else showSignedOutScreen();
+        alert("ログアウトに失敗しました。もう一度お試しください。");
+    }finally{logoutInProgress=false;setAuthBusy(false);}
 }
-
 
 /* ========================================
    バックアップ
-======================================== */
-
-function downloadBackup() {
-
-    if (!currentUser) {
-
-        return;
-
-    }
-
-
-    const backup = {
-
-        version: 2,
-
-        exportedAt:
-            new Date()
-            .toISOString(),
-
-        account:
-            currentUser.email
-            ||
-            "",
-
-        tasks:
-            tasks
-
-    };
-
-
-    const blob =
-        new Blob(
-
-            [
-                JSON.stringify(
-                    backup,
-                    null,
-                    2
-                )
-            ],
-
-            {
-                type:
-                    "application/json"
-            }
-
-        );
-
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const link =
-        document.createElement(
-            "a"
-        );
-
-
-    const date =
-        new Date();
-
-
-    link.href =
-        url;
-
-
-    link.download =
-        "kadai-backup-"
-        +
-        date.getFullYear()
-        +
-        "-"
-        +
-        String(
-            date.getMonth()
-            +
-            1
-        )
-        .padStart(
-            2,
-            "0"
-        )
-        +
-        "-"
-        +
-        String(
-            date.getDate()
-        )
-        .padStart(
-            2,
-            "0"
-        )
-        +
-        ".json";
-
-
-    document.body
-    .appendChild(
-        link
-    );
-
-
-    link.click();
-
-    link.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-}
-
-
-/* ========================================
-   復元
-======================================== */
-
-async function restoreBackup(
-    file
-) {
-
-    if (
-        !file
-        ||
-        !currentUser
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const text =
-            await file.text();
-
-
-        const parsed =
-            JSON.parse(
-                text
-            );
-
-
-        const importedTasks =
-            Array.isArray(
-                parsed
-            )
-            ?
-            parsed
-            :
-            parsed.tasks;
-
-
-        if (
-            !Array.isArray(
-                importedTasks
-            )
-        ) {
-
-            throw new Error(
-                "課題データが見つかりません。"
-            );
-
-        }
-
-
-        const normalized =
-            importedTasks
-            .map(
-                normalizeTask
-            )
-            .filter(
-                function(task) {
-
-                    return (
-                        task.name
-                        &&
-                        task.deadline
-                    );
-
-                }
-            );
-
-
-        const confirmed =
-            confirm(
-                "現在の課題をバックアップ内容で置き換えます。\n\n復元する課題："
-                +
-                normalized.length
-                +
-                "件\n\n続けますか？"
-            );
-
-
-        if (
-            !confirmed
-        ) {
-
-            return;
-
-        }
-
-
-        setSyncStatus(
-            "syncing",
-            "バックアップを復元中..."
-        );
-
-
-        const cloudSnapshot =
-            await getDocs(
-                userTasksCollection()
-            );
-
-
-        const restoreTime =
-            Date.now();
-
-
-        for (
-            const documentSnapshot
-            of
-            cloudSnapshot.docs
-        ) {
-
-            await setDoc(
-
-                documentSnapshot.ref,
-
-                {
-                    id:
-                        documentSnapshot.id,
-
-                    deleted:
-                        true,
-
-                    deletedAt:
-                        restoreTime,
-
-                    updatedAt:
-                        restoreTime
-                }
-
-            );
-
-        }
-
-
-        for (
-            let i = 0;
-            i < normalized.length;
-            i++
-        ) {
-
-            const task =
-                normalized[i];
-
-
-            task.updatedAt =
-                restoreTime
-                +
-                1
-                +
-                i;
-
-
-            await setDoc(
-
-                doc(
-                    userTasksCollection(),
-                    String(
-                        task.id
-                    )
-                ),
-
-                {
-                    ...task,
-                    deleted:
-                        false,
-                    deletedAt:
-                        null
-                }
-
-            );
-
-        }
-
-
-        setSyncStatus(
-            "synced",
-            "✓ 復元完了"
-        );
-
-
-        alert(
-            "バックアップを復元しました。"
-        );
-
-    }
-
-    catch(error) {
-
-        console.error(
-            "復元エラー",
-            error
-        );
-
-
-        setSyncStatus(
-            "error",
-            "復元エラー"
-        );
-
-
-        alert(
-            "バックアップを復元できませんでした。\n\n"
-            +
-            error.message
-        );
-
-    }
-
-    finally {
-
-        restoreFileInput.value =
-            "";
-
-    }
-
-}
-
-
-/* ========================================
-   日付
 ======================================== */
 
 function pad(
@@ -4968,94 +4922,438 @@ function getJapanNow() {
 
 }
 
-function getCurrentClassStartDateTime() {
-
-    var now =
-        getJapanNow();
-
-    var minutes =
-        now.getHours() * 60
-        +
-        now.getMinutes();
-
-
-    if (
-        minutes
-        <
-        10 * 60 + 45
-    ) {
-
-        now.setHours(
-            8,
-            50,
-            0,
-            0
-        );
-
-    }
-
-    else if (
-        minutes
-        <
-        13 * 60 + 15
-    ) {
-
-        now.setHours(
-            10,
-            45,
-            0,
-            0
-        );
-
-    }
-
-    else if (
-        minutes
-        <
-        15 * 60 + 10
-    ) {
-
-        now.setHours(
-            13,
-            15,
-            0,
-            0
-        );
-
-    }
-
-    else if (
-        minutes
-        <
-        17 * 60 + 5
-    ) {
-
-        now.setHours(
-            15,
-            10,
-            0,
-            0
-        );
-
-    }
-
-    else {
-
-        now.setHours(
-            17,
-            5,
-            0,
-            0
-        );
-
-    }
-
-
-    return toDateTimeLocal(
-        now
-    );
-
+/* 登録時間割と課題フォームの連動 */
+function registeredClassAt(date) {
+    if (!classTimesConfigured || Number.isNaN(date.getTime())) return null;
+    const schedule=dateSchedule(academicDate(date));
+    const day = schedule.closed?null:schedule.day;
+    if (!day) return null;
+    const minute = date.getHours()*60+date.getMinutes();
+    const periods=academic?schedule.periods:classTimes;
+    const index = periods.findIndex(period => minute >= clockMinutes(period.start) && minute < clockMinutes(period.start)+period.duration);
+    if (index < 0) return null;
+    const subject = academicNames(academicDate(date))[day+"_"+(index+1)];
+    return typeof subject === "string" && subject.trim() ? {start:periods[index].start,subject,period:index+1} : null;
 }
+function getCurrentClassStartDateTime() {
+    const now = getJapanNow(), current = registeredClassAt(now);
+    if (current) now.setHours(...current.start.split(":").map(Number),0,0);
+    return toDateTimeLocal(now);
+}
+function subjectsForDate(date) {
+    const schedule=dateSchedule(academicDate(date));
+    const day=schedule.closed?null:schedule.day;
+    if (!day) return [];
+    return [...new Set(Array.from({length:5},(_,i)=>academicNames(academicDate(date))[day+"_"+(i+1)]).filter(name=>typeof name === "string" && name.trim()))];
+}
+function updateSubjects(selectedSubject) {
+    subjectInput.replaceChildren();
+    const date = new Date(classDateInput.value);
+    if (!classDateInput.value || Number.isNaN(date.getTime())) {
+        const option = document.createElement("option"); option.value=""; option.textContent="先に授業日時を選択してください";
+        subjectInput.appendChild(option); subjectInfo.textContent="授業日時を選ぶと、登録した時間割の科目を表示します。"; return;
+    }
+    const current = registeredClassAt(date), subjects = subjectsForDate(date);
+    const selection = selectedSubject || current?.subject || "";
+    if (!selection) {
+        const option=document.createElement("option"); option.value=""; option.textContent="科目を選択してください"; option.selected=true; subjectInput.appendChild(option);
+    }
+    if (!subjects.includes("その他")) subjects.push("その他");
+    if (selection && !subjects.includes(selection)) subjects.push(selection);
+    for (const name of subjects) {
+        const option=document.createElement("option"); option.value=name; option.textContent=name; option.selected=name===selection; subjectInput.appendChild(option);
+    }
+    subjectInput.value=selection;
+    subjectInfo.textContent=current && !selectedSubject ? "登録した時間割から、この時間の科目を選択しました。変更もできます。" : "登録した"+weekdays[date.getDay()]+"曜日の科目から選べます。";
+}
+function updateDeadlineInfo() {
+    deadlineInfo.textContent = deadlineInput.value ? "提出期限："+displayDateTime(deadlineInput.value)+"（変更できます）" : "初期値は授業日の6日後の23:59です。日時は変更できます。";
+}
+function calculateDeadline(force = false) {
+    if (deadlineManuallyEdited && !force) { updateDeadlineInfo(); return; }
+    const date = new Date(classDateInput.value);
+    if (!classDateInput.value || Number.isNaN(date.getTime())) { deadlineInput.value=""; updateDeadlineInfo(); return; }
+    date.setDate(date.getDate()+6); date.setHours(23,59,0,0);
+    deadlineInput.value=toDateTimeLocal(date); updateDeadlineInfo();
+}
+/* datetime-localの保存値は、このアプリが表示する日本時間として比較する。 */
+function taskDeadlineTimestamp(value) {
+    if (typeof value !== "string" || !value) return NaN;
+    return Date.parse(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(value) ? value+"+09:00" : value);
+}
+function expiredCompletedTask(task, now = Date.now()) {
+    const deadline = taskDeadlineTimestamp(task.deadline);
+    const completedAt=Number(task.completedAt);
+    const justSubmittedAfterDeadline=Number.isFinite(completedAt) && completedAt>0 && completedAt>=deadline;
+    return task.completed === true && Number.isFinite(deadline) && deadline < now && (!justSubmittedAfterDeadline || now>=completedAt+60000);
+}
+function taskTombstone(id,task=null) {
+    const now=Date.now();return {...(task||{}),id:String(id),deleted:true,deletedAt:now,updatedAt:now,trashExpiresAt:task ? new Date(now+7*86400000) : null};
+}
+async function performTaskSwipe(id, action) {
+    const uid=currentUser?.uid;
+    if (!uid || auth.currentUser?.uid !== uid || !["complete","delete"].includes(action)) return;
+    const lock=uid+"/"+id;
+    if (taskActionLocks.has(lock)) return;
+    taskActionLocks.add(lock);
+    try {
+        let result=null;
+        await runTransaction(db,async tx=>{
+            const ref=doc(db,"users",uid,"tasks",String(id)), snapshot=await tx.get(ref);
+            if (!snapshot.exists() || snapshot.data().deleted) { result={deleted:true}; return; }
+            const latest=snapshot.data();
+            result=action === "delete" ? taskTombstone(id,latest) : {...latest,id:String(id),completed:true,completedAt:latest.completed && Number(latest.completedAt)>0 ? Number(latest.completedAt) : Date.now(),updatedAt:Date.now()};
+            tx.set(ref,result);
+        });
+        if (currentUser?.uid !== uid || auth.currentUser?.uid !== uid) return;
+        tasks=result?.deleted ? tasks.filter(task=>String(task.id)!==String(id)) : tasks.map(task=>String(task.id)===String(id)?normalizeTask(result):task);
+        saveUserCache(); render();
+    } catch(error) {
+        console.error("スワイプ操作の保存に失敗",error);
+        if (auth.currentUser?.uid === uid) alert("操作を保存できませんでした。通信状態を確認して、もう一度お試しください。");
+    } finally { taskActionLocks.delete(lock); void cleanupExpiredCompletedTasks(); }
+}
+async function cleanupExpiredCompletedTasks() {
+    const uid=currentUser?.uid;
+    if (!uid || auth.currentUser?.uid !== uid || !navigator.onLine || taskCleanupUsers.has(uid)) return;
+    const expired=tasks.filter(task=>expiredCompletedTask(task));
+    if (!expired.length) return;
+    taskCleanupUsers.add(uid);
+    let changed=false;
+    try {
+        for (const task of expired) {
+            if (currentUser?.uid !== uid || auth.currentUser?.uid !== uid) break;
+            const lock=uid+"/"+task.id;
+            if (taskActionLocks.has(lock)) continue;
+            taskActionLocks.add(lock);
+            try {
+                let removed=false;
+                await runTransaction(db,async tx=>{
+                    const ref=doc(db,"users",uid,"tasks",String(task.id)),snapshot=await tx.get(ref);
+                    // 別端末で未提出へ戻したり期限を延長した課題は削除しない。
+                    if (!snapshot.exists() || snapshot.data().deleted) { removed=true; return; }
+                    if (!expiredCompletedTask(snapshot.data())) return;
+                    tx.set(ref,taskTombstone(task.id,snapshot.data())); removed=true;
+                });
+                if (removed && currentUser?.uid===uid && auth.currentUser?.uid===uid) {
+                    tasks=tasks.filter(item=>String(item.id)!==String(task.id)); changed=true;
+                }
+            } catch(error) { console.error("提出済み課題の期限後削除に失敗",error); }
+            finally { taskActionLocks.delete(lock); }
+        }
+        if (changed && currentUser?.uid===uid && auth.currentUser?.uid===uid) { saveUserCache(); render(); }
+    } finally { taskCleanupUsers.delete(uid); }
+}
+
+function trashExpired(task,now=Date.now()){
+ return task.deleted===true && Number(task.deletedAt)>0 && now>=Number(task.deletedAt)+7*86400000;
+}
+function renderTrash(){
+ const list=document.getElementById("trashList");list.replaceChildren();
+ const items=trashedTasks.filter(t=>!trashExpired(t)).sort((a,b)=>b.deletedAt-a.deletedAt);
+ document.getElementById("trashStatus").textContent=items.length ? `${items.length}件` : "ゴミ箱は空です";
+ for(const task of items){
+  const row=document.createElement("div");row.style.cssText="padding:12px 0;border-bottom:1px solid #ddd";
+  const title=document.createElement("div");title.textContent=task.name+(task.subject ? "："+task.subject : "");
+  const info=document.createElement("small");info.textContent="自動消去："+new Date(Number(task.deletedAt)+7*86400000).toLocaleString("ja-JP");
+  const button=document.createElement("button");button.type="button";button.className="tool-button";button.textContent="復元";
+  button.onclick=()=>restoreTrashedTask(String(task.id),button);
+  row.append(title,info,button);list.appendChild(row);
+ }
+}
+async function restoreTrashedTask(id,button){
+ const uid=currentUser?.uid;if(!uid || auth.currentUser?.uid!==uid)return;
+ if(!navigator.onLine){alert("復元するにはインターネットに接続してください。");return;}
+ button.disabled=true;
+ try{
+  let restored=null;
+  await runTransaction(db,async tx=>{
+   restored=null;
+   const ref=doc(db,"users",uid,"tasks",id),snap=await tx.get(ref);
+   if(!snap.exists() || !snap.data().deleted || !snap.data().name || trashExpired(snap.data()))return;
+   restored={...snap.data(),id,deleted:false,deletedAt:null,trashExpiresAt:null,completed:false,completedAt:null,updatedAt:Date.now()};tx.set(ref,restored);
+  });
+  if(currentUser?.uid!==uid || auth.currentUser?.uid!==uid)return;
+  if(!restored){alert("この課題は復元済みか、保存期間が終了しています。");return;}
+  trashedTasks=trashedTasks.filter(t=>String(t.id)!==id);tasks=[...tasks.filter(t=>String(t.id)!==id),normalizeTask(restored)];saveUserCache();render();renderTrash();
+ }catch(error){console.error("課題の復元に失敗",error);if(currentUser?.uid===uid)alert("復元できませんでした。通信状態を確認してください。");}
+ finally{button.disabled=false;}
+}
+async function cleanupTrash(){
+ const uid=currentUser?.uid;if(!uid || auth.currentUser?.uid!==uid || !navigator.onLine || trashBusy)return;
+ const expired=trashedTasks.filter(t=>trashExpired(t));if(!expired.length)return;
+ trashBusy=true;
+ try{
+  for(const task of expired){
+   if(currentUser?.uid!==uid || auth.currentUser?.uid!==uid)break;
+   await runTransaction(db,async tx=>{
+    const ref=doc(db,"users",uid,"tasks",String(task.id)),snap=await tx.get(ref);
+    if(snap.exists() && snap.data().name && trashExpired(snap.data()))tx.set(ref,{id:String(task.id),deleted:true,deletedAt:Number(snap.data().deletedAt),updatedAt:Date.now(),trashExpiresAt:new Date(Number(snap.data().deletedAt)+7*86400000)});
+   });
+  }
+ }catch(error){console.error("ゴミ箱の自動消去に失敗",error);}finally{trashBusy=false;}
+}
+document.getElementById("trashButton").onclick=()=>{settingsDialog.close();renderTrash();document.getElementById("trashDialog").showModal();void cleanupTrash();};
+document.getElementById("trashCloseButton").onclick=()=>document.getElementById("trashDialog").close();
+setInterval(()=>{renderTrash();void cleanupTrash();},60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){renderTrash();void cleanupTrash();}});
+
+function horizontalSwipeAction(dx, dy, elapsed, width = 360, recentVelocity = 0) {
+    if (Math.abs(dx) < Math.abs(dy)*1.1) return null;
+    const distance=Math.abs(dx),velocity=Math.max(distance/Math.max(1,elapsed),recentVelocity);
+    const longEnough=distance>=Math.min(52,Math.max(36,width*.12));
+    const quickEnough=distance>=16 && velocity>=.25;
+    return longEnough || quickEnough ? (dx>0 ? "complete" : "delete") : null;
+}
+const pointerEventTime = event => Number.isFinite(event.timeStamp) ? event.timeStamp : Date.now();
+/* タッチ端末はTouch Eventsを主に使い、同時に届くPointer Eventsを二重処理しない。 */
+function bindHorizontalGesture(target, callbacks, capture = false) {
+    let track=null,ignorePointerUntil=0;
+    const directTouch="ontouchstart" in window || typeof window.TouchEvent==="function" || navigator.maxTouchPoints>0;
+    function releaseCapture(id) {
+        try { if(target.hasPointerCapture?.(id))target.releasePointerCapture(id); } catch(error) {}
+    }
+    function cancel() {
+        if(!track)return;
+        const old=track; track=null;
+        if(old.kind==="pointer")releaseCapture(old.id);
+        callbacks.cancel?.(old);
+    }
+    function start(point,event,kind) {
+        if(track) { cancel(); return; }
+        if(callbacks.canStart && !callbacks.canStart(point,event))return;
+        track={...point,kind,horizontal:false,samples:[{x:point.x,time:point.time}]};
+        if(kind==="pointer") { try {target.setPointerCapture?.(point.id);}catch(error){} }
+        callbacks.start?.(track,event);
+    }
+    function info(point) {
+        const dx=point.x-track.x,dy=point.y-track.y;
+        const recent=track.samples.find(sample=>sample.time>=point.time-100 && sample.time<=point.time-8) || track.samples[0];
+        return {...track,dx,dy,elapsed:point.time-track.time,velocity:Math.abs(point.x-recent.x)/Math.max(1,point.time-recent.time)};
+    }
+    function move(point,event) {
+        if(!track || track.id!==point.id)return;
+        const state=info(point);
+        if(!track.horizontal) {
+            if(Math.abs(state.dy)>14 && Math.abs(state.dy)>Math.abs(state.dx)*1.4){cancel();return;}
+            if(Math.abs(state.dx)<6 || Math.abs(state.dx)<Math.abs(state.dy)*1.1)return;
+            track.horizontal=true;
+        }
+        if(event.cancelable!==false)event.preventDefault();
+        callbacks.move?.({...state,horizontal:true},event);
+        track.samples.push({x:point.x,time:point.time});
+        if(track.samples.length>12)track.samples.shift();
+    }
+    function end(point,event) {
+        if(!track || track.id!==point.id)return;
+        const state=info(point),old=track; track=null;
+        if(old.kind==="pointer")releaseCapture(old.id);
+        if((state.horizontal || Math.abs(state.dx)>=6 && Math.abs(state.dx)>=Math.abs(state.dy)*1.1) && event.cancelable!==false)event.preventDefault();
+        callbacks.end?.(state,event);
+    }
+    const pointerPoint=event=>({id:event.pointerId,x:event.clientX,y:event.clientY,time:pointerEventTime(event)});
+    target.addEventListener("pointerdown",event=>{
+        if(event.isPrimary===false || event.button!==0 || event.pointerType==="touch" && directTouch || Date.now()<ignorePointerUntil)return;
+        start(pointerPoint(event),event,"pointer");
+    },capture);
+    target.addEventListener("pointermove",event=>{if(track?.kind==="pointer")move(pointerPoint(event),event);},{capture,passive:false});
+    target.addEventListener("pointerup",event=>{if(track?.kind==="pointer")end(pointerPoint(event),event);},{capture,passive:false});
+    target.addEventListener("pointercancel",event=>{if(track?.kind==="pointer" && track.id===event.pointerId)cancel();},capture);
+    target.addEventListener("lostpointercapture",event=>{if(track?.kind==="pointer" && track.id===event.pointerId)cancel();},capture);
+    function touchPoint(touch,event){return {id:touch.identifier,x:touch.clientX,y:touch.clientY,time:pointerEventTime(event)};}
+    target.addEventListener("touchstart",event=>{
+        ignorePointerUntil=Date.now()+1000;
+        if(event.touches.length!==1){cancel();return;}
+        if(track?.kind==="pointer")cancel();
+        start(touchPoint(event.touches[0],event),event,"touch");
+    },{capture,passive:true});
+    target.addEventListener("touchmove",event=>{
+        if(track?.kind!=="touch")return;
+        if(event.touches.length!==1){cancel();return;}
+        const touch=[...event.touches].find(t=>t.identifier===track.id);
+        if(touch)move(touchPoint(touch,event),event);
+    },{capture,passive:false});
+    target.addEventListener("touchend",event=>{
+        ignorePointerUntil=Date.now()+1000;
+        if(track?.kind!=="touch")return;
+        if(event.touches.length){cancel();return;}
+        const touch=[...event.changedTouches].find(t=>t.identifier===track.id);
+        if(touch)end(touchPoint(touch,event),event);
+    },{capture,passive:false});
+    target.addEventListener("touchcancel",()=>{if(track?.kind==="touch")cancel();},{capture,passive:true});
+}
+function finishTaskGesture() {
+    activeTaskGestureCount=Math.max(0,activeTaskGestureCount-1);
+    Promise.resolve().then(()=>{
+        if(!activeTaskGestureCount && deferredTaskRender){deferredTaskRender=false;renderAllTasks();renderCompletedTasks();}
+    });
+}
+function attachTaskSwipe(item, task) {
+    const wrapper=document.createElement("div"); wrapper.className="task-swipe";
+    const completed=document.createElement("div"),deleted=document.createElement("div");
+    completed.className="task-swipe-action complete"; completed.textContent="提出済み";
+    deleted.className="task-swipe-action delete"; deleted.textContent="削除";
+    completed.setAttribute("aria-hidden","true"); deleted.setAttribute("aria-hidden","true");wrapper.append(completed,deleted,item);
+    let blockedUntil=0,busy=false,horizontal=false;
+    const click=item.onclick;
+    item.onclick=event=>{if(busy || Date.now()<blockedUntil){event.preventDefault();event.stopPropagation();return;}click(event);};
+    item.tabIndex=0;item.setAttribute("role","button");
+    item.addEventListener("keydown",event=>{if(!busy && (event.key==="Enter"||event.key===" ")){event.preventDefault();showTaskDetails(task.id);}});
+    function reset(){item.style.transform="";wrapper.classList.remove("swiping-right","swiping-left");}
+    bindHorizontalGesture(item,{
+        canStart:point=>!busy && !(point.x<=24 && canGoBackInApp()),
+        start(){horizontal=false;activeTaskGestureCount++;},
+        move(state){horizontal=true;item.style.transform="translate3d("+Math.max(-128,Math.min(128,state.dx))+"px,0,0)";wrapper.classList.toggle("swiping-right",state.dx>0);wrapper.classList.toggle("swiping-left",state.dx<0);},
+        end(state){
+            const action=horizontalSwipeAction(state.dx,state.dy,state.elapsed,item.clientWidth,state.velocity);
+            if(horizontal || Math.abs(state.dx)>=6)blockedUntil=Date.now()+800;
+            if(action){
+                busy=true;wrapper.classList.toggle("swiping-right",action==="complete");wrapper.classList.toggle("swiping-left",action==="delete");
+                item.style.transform="translate3d("+(action==="complete"?96:-96)+"px,0,0)";item.setAttribute("aria-busy","true");item.style.opacity=".65";
+                void performTaskSwipe(task.id,action).finally(()=>{busy=false;item.setAttribute("aria-busy","false");item.style.opacity="";reset();});
+            }else reset();
+            finishTaskGesture();
+        },
+        cancel(){if(horizontal)blockedUntil=Date.now()+800;reset();finishTaskGesture();}
+    });
+    return wrapper;
+}
+function openAppDialogs() { return [...document.querySelectorAll("dialog[open]")].filter(dialog=>dialog.open); }
+function backSwipeSurface() {
+    const dialogs=openAppDialogs();
+    if(dialogs.length)return dialogs[dialogs.length-1];
+    if(!attendanceSubjectView.hidden)return attendanceSubjectView;
+    if(!timetableSettingsView.hidden)return timetableSettingsView;
+    if(!attendanceView.hidden)return attendanceView;
+    return null;
+}
+function canGoBackInApp(){return !!backSwipeSurface();}
+function goBackInApp() {
+    const dialogs=openAppDialogs();
+    if(dialogs.length){
+        const dialog=dialogs[dialogs.length-1];if(dialog.id==="classTimeDialog" && classTimeSaving)return false;
+        const buttons={classTimeDialog:"classTimeCancel",taskDialog:"cancelButton",detailDialog:"detailCloseButton",settingsDialog:"settingsCloseButton",attendanceLinkDialog:"attendanceLinkClose",trashDialog:"trashCloseButton",accountInfoDialog:"accountInfoCloseButton",subjectInputDialog:"subjectCancelButton"};
+        const button=document.getElementById(buttons[dialog.id] || "");
+        if(button && typeof button.onclick==="function")button.click();else dialog.close();return true;
+    }
+    if(!attendanceSubjectView.hidden){attendanceSubjectBackButton.click();return true;}
+    if(!timetableSettingsView.hidden){timetableSettingsBackButton.click();return true;}
+    if(!attendanceView.hidden){attendanceBackButton.click();return true;}
+    return false;
+}
+
+let attendanceLinkBusy=false;
+function clearAttendanceLinkSecret(){document.getElementById("attendanceLinkDownload").hidden=true;const el=document.getElementById("attendanceLinkSecret");el.value="";el.hidden=true;document.getElementById("attendanceLinkHint").hidden=true;document.getElementById("attendanceLinkStatus").textContent="";}
+function attendanceLinkRef(uid){return doc(db,"users",uid,"integrations","attendance");}
+function sameAttendanceUser(uid){return !!uid && currentUser?.uid===uid && auth.currentUser?.uid===uid && !logoutInProgress;}
+async function updateAttendanceLink(revoke=false){
+ const uid=currentUser?.uid;if(!sameAttendanceUser(uid) || attendanceLinkBusy)return;
+ if(!navigator.onLine){alert("インターネットに接続してください。");return;}
+ if(!confirm(revoke ? "連携を解除しますか？自動判定が停止します。" : "連携情報を発行しますか？以前の連携情報は使えなくなります。"))return;
+ attendanceLinkBusy=true;clearAttendanceLinkSecret();
+ const create=document.getElementById("attendanceLinkCreate"),disable=document.getElementById("attendanceLinkRevoke");create.disabled=true;disable.disabled=true;
+ try{
+  let token="",data;
+  if(revoke)data={enabled:false,tokenHash:"",expiresAt:0,updatedAt:Date.now()};
+  else{
+   const bytes=new Uint8Array(32);window.crypto.getRandomValues(bytes);token=Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
+   const digest=await window.crypto.subtle.digest("SHA-256",new TextEncoder().encode(token));
+   data={enabled:true,tokenHash:Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,"0")).join(""),expiresAt:Date.now()+180*86400000,updatedAt:Date.now()};
+  }
+  if(!sameAttendanceUser(uid))return;
+  await setDoc(attendanceLinkRef(uid),data);
+  if(!sameAttendanceUser(uid))return;
+  document.getElementById("attendanceLinkStatus").textContent=revoke ? "連携を解除しました" : "連携情報を発行しました。有効期限："+new Date(data.expiresAt).toLocaleDateString("ja-JP");
+  if(!revoke && document.getElementById("attendanceLinkDialog").open){const el=document.getElementById("attendanceLinkSecret");el.value=JSON.stringify({uid,attendanceToken:token},null,2);el.hidden=false;document.getElementById("attendanceLinkDownload").hidden=false;document.getElementById("attendanceLinkHint").hidden=false;}
+ }catch(error){console.error("連携設定の保存に失敗");if(sameAttendanceUser(uid))alert("保存できませんでした。通信状態とアクセス設定を確認してください。");}
+ finally{attendanceLinkBusy=false;create.disabled=false;disable.disabled=false;}
+}
+document.getElementById("attendanceLinkButton").onclick=async()=>{
+ const uid=currentUser?.uid;if(!sameAttendanceUser(uid))return;clearAttendanceLinkSecret();settingsDialog.close();document.getElementById("attendanceLinkDialog").showModal();
+ try{const snap=await getDocFromServer(attendanceLinkRef(uid));if(!sameAttendanceUser(uid))return;const data=snap.exists()?snap.data():null;document.getElementById("attendanceLinkStatus").textContent=data?.enabled && data.expiresAt>Date.now() ? "連携は有効です。有効期限："+new Date(data.expiresAt).toLocaleDateString("ja-JP") : "連携されていません。";}catch(error){if(sameAttendanceUser(uid))document.getElementById("attendanceLinkStatus").textContent="連携状態を取得できませんでした。";}
+};
+document.getElementById("attendanceLinkDownload").onclick=()=>{
+ const text=document.getElementById("attendanceLinkSecret").value;if(!text || !sameAttendanceUser(JSON.parse(text).uid))return;
+ const url=URL.createObjectURL(new Blob([text],{type:"application/json"})),a=document.createElement("a");a.href=url;a.download="kadai-attendance-link.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+document.getElementById("attendanceLinkCreate").onclick=()=>updateAttendanceLink(false);
+document.getElementById("attendanceLinkRevoke").onclick=()=>updateAttendanceLink(true);
+document.getElementById("attendanceLinkClose").onclick=()=>{clearAttendanceLinkSecret();document.getElementById("attendanceLinkDialog").close();};
+document.getElementById("attendanceLinkDialog").addEventListener("close",clearAttendanceLinkSecret);
+
+let appBackPreview=null,appBackSettling=false,appEdgeClickBlockedUntil=0;
+function beginBackPreview() {
+    const surface=backSwipeSurface();
+    if(!surface || appBackSettling || surface.id==="classTimeDialog" && classTimeSaving)return false;
+    const parent=surface===attendanceSubjectView?attendanceView:null;
+    const saved={transform:surface.style.transform,transition:surface.style.transition,boxShadow:surface.style.boxShadow,willChange:surface.style.willChange};
+    appBackPreview={surface,parent,parentWasHidden:parent?.hidden,parentTransform:parent?.style.transform,parentTransition:parent?.style.transition,uid:auth.currentUser?.uid,width:window.innerWidth||surface.clientWidth||360,x:0,saved};
+    surface.style.transition="none";surface.style.willChange="transform";surface.classList.add("app-back-dragging");
+    if(parent){parent.hidden=false;parent.style.transform="translate3d(-28px,0,0)";}
+    return true;
+}
+function moveBackPreview(dx) {
+    const preview=appBackPreview;if(!preview)return;
+    preview.x=Math.max(0,Math.min(preview.width,dx));
+    const progress=preview.x/preview.width;
+    preview.surface.style.transform="translate3d("+preview.x+"px,0,0)";
+    preview.surface.style.boxShadow="-12px 0 32px rgba(0,0,0,"+(.18*(1-progress))+")";
+    if(preview.parent)preview.parent.style.transform="translate3d("+(-28*(1-progress))+"px,0,0)";
+}
+function restoreBackPreview(preview,committed) {
+    const {surface,parent,saved}=preview;
+    surface.classList.remove("app-back-dragging","app-back-settling");
+    Object.assign(surface.style,saved);
+    if(parent){parent.style.transform=preview.parentTransform;parent.style.transition=preview.parentTransition;if(!committed && !logoutInProgress && currentUser?.uid===preview.uid && auth.currentUser?.uid===preview.uid)parent.hidden=preview.parentWasHidden;}
+}
+function animateBackSurface(preview,x,duration) {
+    return new Promise(resolve=>{
+        let finished=false;
+        const finish=()=>{if(finished)return;finished=true;clearTimeout(timer);preview.surface.removeEventListener?.("transitionend",onEnd);resolve();};
+        const onEnd=event=>{if(event.target===preview.surface && event.propertyName==="transform")finish();};
+        const timer=setTimeout(finish,duration+70);
+        preview.surface.addEventListener("transitionend",onEnd);
+        preview.surface.getBoundingClientRect?.();
+        preview.surface.style.transition="transform "+duration+"ms cubic-bezier(.22,.7,.2,1), box-shadow "+duration+"ms ease";
+        const frame=window.requestAnimationFrame ? callback=>window.requestAnimationFrame(callback) : callback=>setTimeout(callback,0);
+        frame(()=>{
+            if(finished)return;
+            preview.surface.style.transform="translate3d("+x+"px,0,0)";
+            preview.surface.style.boxShadow="none";
+            if(preview.parent){preview.parent.style.transition="transform "+duration+"ms cubic-bezier(.22,.7,.2,1)";preview.parent.style.transform= x ? "translate3d(0,0,0)" : "translate3d(-28px,0,0)";}
+        });
+    });
+}
+async function finishBackPreview(commit) {
+    const preview=appBackPreview;if(!preview || appBackSettling)return;
+    appBackPreview=null;appBackSettling=true;
+    const reduced=window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const sameUser=()=>!logoutInProgress && currentUser?.uid===preview.uid && auth.currentUser?.uid===preview.uid;
+    try {
+        preview.surface.classList.add("app-back-settling");
+        if(!reduced)await animateBackSurface(preview,commit?preview.width:0,commit?200:170);
+        const committed=commit && sameUser() && backSwipeSurface()===preview.surface && goBackInApp();
+        restoreBackPreview(preview,committed);
+    }finally{appBackSettling=false;}
+}
+function installAppBackSwipe() {
+    let startingSurface=null;
+    bindHorizontalGesture(document,{
+        canStart:point=>point.x<=24 && !appBackSettling && canGoBackInApp() && !(backSwipeSurface()?.id==="classTimeDialog" && classTimeSaving),
+        start(){startingSurface=backSwipeSurface();},
+        move(state){if(state.dx>0 && backSwipeSurface()===startingSurface){if(!appBackPreview)beginBackPreview();moveBackPreview(state.dx);appEdgeClickBlockedUntil=Date.now()+800;}},
+        end(state,event){
+            const commit=backSwipeSurface()===startingSurface && horizontalSwipeAction(state.dx,state.dy,state.elapsed,window.innerWidth||360,state.velocity)==="complete";
+            if(commit){if(!appBackPreview && !beginBackPreview())return;appEdgeClickBlockedUntil=Date.now()+800;event.stopPropagation();moveBackPreview(state.dx);}
+            void finishBackPreview(commit);
+        },
+        cancel(){void finishBackPreview(false);}
+    },true);
+    document.addEventListener("click",event=>{
+        if((appBackSettling || Date.now()<appEdgeClickBlockedUntil) && event.detail!==0){event.preventDefault();event.stopPropagation();}
+    },true);
+}
+
 
 function startOfDay(
     date
@@ -5238,21 +5536,6 @@ function displayDateTime(
    科目
 ======================================== */
 
-function subjectsForDate(
-    date
-) {
-
-    return (
-        timetable[
-            date.getDay()
-        ]
-        ||
-        []
-    );
-
-}
-
-
 function subjectTextForDate(
     date
 ) {
@@ -5291,210 +5574,6 @@ function subjectTextForDate(
             "・"
         )
     );
-
-}
-
-
-function updateSubjects(
-    selectedSubject
-) {
-
-    subjectInput.innerHTML =
-        "";
-
-
-    if (
-        !classDateInput.value
-    ) {
-
-        const option =
-            document.createElement(
-                "option"
-            );
-
-
-        option.value =
-            "";
-
-
-        option.textContent =
-            "先に授業日時を選択してください";
-
-
-        subjectInput
-        .appendChild(
-            option
-        );
-
-
-        subjectInfo.textContent =
-            "授業日時を選ぶと、その曜日の科目だけ表示します。";
-
-
-        return;
-
-    }
-
-
-    const date =
-        new Date(
-            classDateInput.value
-        );
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    const day =
-        date.getDay();
-
-
-    const subjects =
-        timetable[day]
-        ?
-        timetable[day].slice()
-        :
-        [
-            "その他"
-        ];
-
-
-    if (
-        selectedSubject
-        &&
-        !subjects.includes(
-            selectedSubject
-        )
-    ) {
-
-        subjects.push(
-            selectedSubject
-        );
-
-    }
-
-
-    subjects.forEach(
-        function(subject) {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                subject;
-
-
-            option.textContent =
-                subject;
-
-
-            if (
-                selectedSubject
-                ===
-                subject
-            ) {
-
-                option.selected =
-                    true;
-
-            }
-
-
-            subjectInput
-            .appendChild(
-                option
-            );
-
-        }
-    );
-
-
-    subjectInfo.textContent =
-        weekdays[day]
-        +
-        "曜日の授業のみ表示しています";
-
-}
-
-
-/* ========================================
-   提出期限
-======================================== */
-
-function calculateDeadline() {
-
-    if (
-        !classDateInput.value
-    ) {
-
-        deadlineInput.value =
-            "";
-
-
-        deadlineInfo.textContent =
-            "授業日時を入力すると、6日後の23:59を提出期限に設定します。";
-
-
-        return;
-
-    }
-
-
-    const date =
-        new Date(
-            classDateInput.value
-        );
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    date.setDate(
-        date.getDate()
-        +
-        6
-    );
-
-
-    date.setHours(
-        23,
-        59,
-        0,
-        0
-    );
-
-
-    deadlineInput.value =
-        toDateTimeLocal(
-            date
-        );
-
-
-    deadlineInfo.textContent =
-        "→ 提出期限："
-        +
-        displayDateTime(
-            deadlineInput.value
-        );
 
 }
 
@@ -5539,6 +5618,8 @@ function tasksForDate(
         function(task) {
 
             return (
+                !task.completed
+                &&
                 task.deadline
                 &&
                 task.deadline
@@ -6019,11 +6100,11 @@ function createFutureRow(
     ) {
 
         preview =
-            dayTasks[0].subject
+            dayTasks[0].name
             +
             "："
             +
-            dayTasks[0].name;
+            dayTasks[0].subject;
 
 
         if (
@@ -6108,34 +6189,7 @@ function createFutureRow(
 
         +
 
-        '<span class="badge '
-        +
-        (
-            dayTasks.length
-            ===
-            0
-            ?
-            "zero"
-            :
-            ""
-        )
-        +
-        '">'
-        +
-        (
-            dayTasks.length
-            ===
-            0
-            ?
-            "0"
-            :
-            dayTasks.length
-            +
-            "件"
-        )
-        +
-        "</span>"
-
+        (dayTasks.length ? '<span class="badge">'+dayTasks.length+'件</span>' : "")
         +
 
         '<span class="arrow">›</span>'
@@ -6332,66 +6386,19 @@ function addFutureTask(
    全課題
 ======================================== */
 
-function renderAllTasks() {
-
-    const container =
-        document.getElementById(
-            "allTasks"
-        );
-
-
-    container.innerHTML =
-        "";
-
-
-    if (
-        tasks.length
-        ===
-        0
-    ) {
-
-        container.innerHTML =
-            '<div class="all-task" style="color:#999;">まだ課題が登録されていません</div>';
-
-
-        return;
-
-    }
-
-
-    const sorted =
-        tasks
-        .slice()
-        .sort(
-            function(a,b) {
-
-                return (
-                    new Date(
-                        a.deadline
-                    )
-                    -
-                    new Date(
-                        b.deadline
-                    )
-                );
-
-            }
-        );
-
-
-    sorted.forEach(
-        function(task) {
-
-            addAllTask(
-                container,
-                task
-            );
-
-        }
-    );
-
+function renderTaskList(container, list, emptyMessage) {
+    container.replaceChildren();
+    if (!list.length) { const empty=document.createElement("div"); empty.className="all-task"; empty.style.color="#999"; empty.textContent=emptyMessage; container.appendChild(empty); return; }
+    [...list].sort((a,b)=>taskDeadlineTimestamp(a.deadline)-taskDeadlineTimestamp(b.deadline)).forEach(task=>addAllTask(container,task));
 }
-
+function renderAllTasks() {
+    if(activeTaskGestureCount){deferredTaskRender=true;return;}
+    renderTaskList(document.getElementById("allTasks"),tasks.filter(task=>!task.completed),"未提出の課題はありません");
+}
+function renderCompletedTasks() {
+    if(activeTaskGestureCount){deferredTaskRender=true;return;}
+    renderTaskList(document.getElementById("completedTasks"),tasks.filter(task=>task.completed),"提出済みの課題はありません");
+}
 
 function addAllTask(
     container,
@@ -6456,10 +6463,7 @@ function addAllTask(
 
     };
 
-    container
-    .appendChild(
-        item
-    );
+    container.appendChild(attachTaskSwipe(item, task));
 
 }
 
@@ -6581,7 +6585,7 @@ function showTaskDetails(id) {
 
 }
 
-function openAddDialog() {
+async function openAddDialog() {
 
     if (!currentUser) {
 
@@ -6590,6 +6594,15 @@ function openAddDialog() {
     }
 
 
+    if (openingTaskDialog || taskDialog.open) return;
+    openingTaskDialog = true;
+    const uid = currentUser.uid;
+    try { await Promise.all([loadClassTimes(),loadTimetable()]); }
+    catch(error) { console.error("課題フォーム用の時間割取得に失敗",error); }
+    finally { openingTaskDialog = false; }
+    if (auth.currentUser?.uid !== uid || currentUser?.uid !== uid) return;
+
+    deadlineManuallyEdited = false;
     editingId =
         null;
 
@@ -6608,6 +6621,7 @@ function openAddDialog() {
 
 
     updateSubjects();
+    calculateDeadline(true);
 
 
     document.getElementById(
@@ -6617,8 +6631,7 @@ function openAddDialog() {
         "課題を追加";
 
 
-    deadlineInfo.textContent =
-        "授業日時を入力すると、6日後の23:59を提出期限に設定します。";
+    updateDeadlineInfo();
 
 
     document.getElementById(
@@ -6666,6 +6679,7 @@ function editTask(
     }
 
 
+    const editUid = currentUser?.uid;
     editingId =
         String(
             task.id
@@ -6700,6 +6714,7 @@ function editTask(
         task.name;
 
 
+    deadlineManuallyEdited = true;
     deadlineInput.value =
         task.deadline;
 
@@ -6744,7 +6759,7 @@ function editTask(
 
         +
 
-        '<div class="delete-message" id="deleteMessage">もう一度押すと完全に削除します</div>';
+        '<div class="delete-message" id="deleteMessage">もう一度押すとゴミ箱へ移動します（７日間復元可能）</div>';
 
 
     document.getElementById(
@@ -6752,6 +6767,7 @@ function editTask(
     )
     .onclick =
         async function() {
+            if (!editUid || currentUser?.uid !== editUid || auth.currentUser?.uid !== editUid) return;
 
             const oldTasks =
                 tasks.map(
@@ -6767,6 +6783,7 @@ function editTask(
 
             task.completed =
                 !task.completed;
+            task.completedAt = task.completed ? Date.now() : null;
 
 
             task.updatedAt =
@@ -6787,6 +6804,7 @@ function editTask(
                 );
 
 
+            if (currentUser?.uid !== editUid || auth.currentUser?.uid !== editUid) return;
             if (
                 !success
             ) {
@@ -6876,6 +6894,8 @@ async function deleteTaskNow() {
     }
 
 
+    const deleteUid = currentUser?.uid;
+    if (!deleteUid || auth.currentUser?.uid !== deleteUid) return;
     const deleteId =
         String(
             editingId
@@ -6932,6 +6952,7 @@ async function deleteTaskNow() {
         );
 
 
+    if (currentUser?.uid !== deleteUid || auth.currentUser?.uid !== deleteUid) return;
     if (
         !success
     ) {
@@ -6969,6 +6990,7 @@ async function handleSubmit(
     }
 
 
+    const submitUid = currentUser.uid;
     const name =
         taskNameInput.value
         .trim();
@@ -7013,7 +7035,9 @@ async function handleSubmit(
     }
 
 
-    calculateDeadline();
+    if (!deadlineInput.value || !Number.isFinite(taskDeadlineTimestamp(deadlineInput.value))) {
+        alert("提出期限を正しく入力してください。"); return;
+    }
 
 
     const oldTasks =
@@ -7149,6 +7173,7 @@ async function handleSubmit(
         );
 
 
+    if (currentUser?.uid !== submitUid || auth.currentUser?.uid !== submitUid) return;
     if (
         !success
     ) {
@@ -7256,6 +7281,8 @@ function render() {
 
 
     renderAllTasks();
+    renderCompletedTasks();
+    void cleanupExpiredCompletedTasks();
 
 }
 
@@ -7264,90 +7291,244 @@ function render() {
    ログイン状態
 ======================================== */
 
+const DEFAULT_CLASS_TIMES = ["08:50","10:45","13:15","15:10","17:05"].map(start=>({start,duration:100}));
+/* 表の科目名と科目詳細は同じ既存の欠席回数ルールを使用する。 */
+let attendanceSummaryDocuments=null,attendanceSummaryRevision=0,unsubscribeAttendanceSummary=null;
+function attendanceRisk(stats) {
+    const judged=stats.present+stats.absent+stats.late+stats.pinige;
+    if(!judged)return {key:"no-data",color:"#667085",message:"まだ出席データがありません"};
+    if(stats.absent>=5)return {key:"failed",color:"#dc2626",message:"単位取得ラインを下回っています"};
+    if(stats.absent===4)return {key:"reach",color:"#d99a00",message:"あと1回欠席すると単位取得ラインを下回ります"};
+    return {key:"safe",color:"#1677ff",message:"現在は単位取得ラインを上回っています"};
+}
+function summarizeAttendance(documents,slots=userTimetableSlots) {
+    const result=new Map();
+    for(const subject of Object.values(slots))if(typeof subject==="string" && subject.trim() && !result.has(subject))result.set(subject,{present:0,absent:0,late:0,pinige:0,unknown:0});
+    for(const record of documents || []){
+        const data=record.data,key=data.classKey || record.id;
+        if(typeof key!=="string")continue;
+        const match=/^(\d{4}-\d{2}-\d{2})_(\d{2}:\d{2})$/.exec(key);if(!match)continue;
+        const date=new Date(match[1]+"T12:00:00"),day=timetableDays[date.getDay()],period=recordPeriod(data,match[2],match[1]);
+        if(!day || !period)continue;
+        const subject=slots[day+"_"+period],stats=result.get(subject);if(!stats)continue;
+        const status=["present","absent","late","pinige"].includes(data.status)?data.status:"unknown";
+        stats[status]++;
+    }
+    return result;
+}
+function refreshAttendanceSubjectColors() {
+    const summaries=summarizeAttendance(attendanceSummaryDocuments);
+    document.querySelectorAll("#attendanceView .attendance-subject-cell").forEach(cell=>{
+        const subject=cell.textContent.trim();
+        if(!subject){cell.style.color="";cell.title="";cell.dataset.attendanceRisk="";return;}
+        const stats=summaries.get(subject) || {present:0,absent:0,late:0,pinige:0,unknown:0};
+        const risk=attendanceSummaryDocuments===null?{key:"loading",color:"#667085",message:"出席記録を確認中"}:attendanceRisk(stats);
+        cell.style.color=risk.color;cell.dataset.attendanceRisk=risk.key;
+        cell.title=subject+"："+risk.message;
+        cell.setAttribute?.("aria-label",cell.title);
+    });
+}
+async function readAttendanceDocuments(user,isCurrent=()=>auth.currentUser?.uid===user.uid && !logoutInProgress) {
+    const ref=collection(db,"users",user.uid,"attendanceClasses");
+    try {
+        const snapshot=await getDocsFromServer(ref);
+        return snapshot.docs.map(snap=>({id:snap.id,data:snap.data()}));
+    }catch(sdkError){
+        if(!isCurrent())throw new Error("アカウントが変更されました。");
+        const token=await user.getIdToken(),documents=[];
+        const base="https://firestore.googleapis.com/v1/projects/"+encodeURIComponent(firebaseApp.options.projectId)+"/databases/(default)/documents/users/"+encodeURIComponent(user.uid)+"/attendanceClasses";
+        let pageToken="";
+        do {
+            if(!isCurrent())throw new Error("アカウントが変更されました。");
+            const response=await fetch(base+"?pageSize=1000"+(pageToken?"&pageToken="+encodeURIComponent(pageToken):""),{headers:{Authorization:"Bearer "+token},cache:"no-store"});
+            if(!response.ok)throw new Error("出席記録を取得できませんでした（HTTP "+response.status+"）");
+            const result=await response.json();
+            for(const item of result.documents || []){
+                const unpack=name=>{const field=item.fields?.[name] || {};return field.stringValue ?? field.integerValue ?? field.doubleValue ?? field.booleanValue ?? null;};
+                documents.push({id:item.name.split("/").pop(),data:{classKey:unpack("classKey"),status:unpack("status"),period:Number(unpack("period"))}});
+            }
+            pageToken=result.nextPageToken || "";
+        }while(pageToken);
+        return documents;
+    }
+}
+async function loadAttendanceSummary(user) {
+    if(!user || logoutInProgress)return;
+    const revision=attendanceSummaryRevision;
+    try {
+        const documents=await readAttendanceDocuments(user);
+        if(auth.currentUser?.uid!==user.uid || logoutInProgress || revision!==attendanceSummaryRevision)return;
+        attendanceSummaryDocuments=documents;attendanceSummaryRevision++;refreshAttendanceSubjectColors();
+    }catch(error){if(auth.currentUser?.uid===user.uid && !logoutInProgress)console.error("出席表の色分けを取得できませんでした",error);}
+}
+function startAttendanceSummarySync(user) {
+    unsubscribeAttendanceSummary=onSnapshot(collection(db,"users",user.uid,"attendanceClasses"),snapshot=>{
+        if(auth.currentUser?.uid!==user.uid || logoutInProgress)return;
+        attendanceSummaryDocuments=snapshot.docs.map(snap=>({id:snap.id,data:snap.data()}));
+        attendanceSummaryRevision++;refreshAttendanceSubjectColors();
+    },error=>{console.error("出席表の同期に失敗",error);void loadAttendanceSummary(user);});
+}
+/* ログアウトはモーダルを含む画面状態を先に解除し、Firebaseの完了を待つ。 */
+function setAuthBusy(busy) {
+    googleLoginButton.disabled=busy;microsoftLoginButton.disabled=busy;logoutButton.disabled=busy;
+    const message=document.getElementById("authMessage");message.textContent=busy?"ログアウトしています…":"";message.hidden=!busy;
+}
+function finishAuthStartup() {
+    authInitialized=true;
+    document.getElementById("authLoading").hidden=true;
+}
+function showAuthStartupError(error) {
+    if(authInitialized)return;
+    console.error("ログイン状態の確認に失敗",error);
+    document.getElementById("authLoadingMessage").textContent="ログイン状態を確認できませんでした。通信状態を確認し、再読み込みしてください。";
+    document.getElementById("authStartupRetry").hidden=false;
+}
+function showSignedOutScreen() {
+    finishAuthStartup();
+    authSessionGeneration++;
+    currentUser=null;tasks=[];trashedTasks=[];renderTrash();
+    if(unsubscribeTasks){unsubscribeTasks();unsubscribeTasks=null;}
+    document.querySelectorAll("dialog[open]").forEach(dialog=>dialog.close());
+    settingsDialog.close();
+    resetClassTimeSession(null);
+    authGate.hidden=false;appContent.hidden=true;addButton.hidden=true;
+    document.getElementById("userName").textContent="";
+    document.getElementById("accountEmail").textContent="";
+    render();window.scrollTo?.({top:0,behavior:"auto"});
+}
+async function activateUserSession(user) {
+    finishAuthStartup();
+    const generation=++authSessionGeneration;
+    currentUser=user;tasks=[];trashedTasks=[];renderTrash();
+    if(unsubscribeTasks){unsubscribeTasks();unsubscribeTasks=null;}
+    resetClassTimeSession(user);
+    authGate.hidden=true;appContent.hidden=false;addButton.hidden=false;
+    userName.textContent=user.displayName || user.email || "ログイン中";
+    updateAccountInfo();loadUserCache();render();
+    await startRealtimeSync();
+    if(logoutInProgress || generation!==authSessionGeneration || auth.currentUser?.uid!==user.uid)return;
+    await saveAttendanceFromUrl(user);
+}
+
+let classTimes=DEFAULT_CLASS_TIMES.map(p=>({...p})), classTimeHistory=[], classTimesConfigured=false;
+let classTimeOwner=null, classTimeContinue=false, classTimeSaving=false, unsubscribeClassTimes=null;
+const classTimeDialog=document.getElementById("classTimeDialog"), classTimeForm=document.getElementById("classTimeForm"), classTimeError=document.getElementById("classTimeError");
+const clockMinutes=t=>Number(t.slice(0,2))*60+Number(t.slice(3));
+const minutesClock=n=>String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
+function validClassTimes(a) {
+ return Array.isArray(a)&&a.length===5&&a.every((p,i)=>p&&/^([01]\d|2[0-3]):[0-5]\d$/.test(p.start)&&Number.isInteger(p.duration)&&p.duration>0&&clockMinutes(p.start)+p.duration<1440&&(!i||clockMinutes(p.start)>=clockMinutes(a[i-1].start)+a[i-1].duration));
+}
+function applyClassTimes(data) {
+ classTimesConfigured=validClassTimes(data?.periods);
+ classTimes=(classTimesConfigured?data.periods:DEFAULT_CLASS_TIMES).map(p=>({...p}));
+ classTimeHistory=Array.isArray(data?.history)?data.history.filter(h=>validClassTimes(h.periods)):[];
+ document.querySelectorAll("#attendanceView .attendance-period small, #timetableSettingsView .attendance-period small").forEach((el,i)=>{const p=classTimes[i%5];el.textContent=classTimesConfigured ? p.start+"–"+minutesClock(clockMinutes(p.start)+p.duration) : "未設定";});
+ refreshAttendanceSubjectColors();
+}
+const classTimeRef=uid=>doc(db,"users",uid,"settings","classTimes");
+async function loadClassTimes() {
+ const uid=auth.currentUser?.uid;if(!uid)throw new Error("ログインしてください。");
+ const snap=await getDocFromServer(classTimeRef(uid));
+ if(logoutInProgress || auth.currentUser?.uid!==uid)throw new Error("アカウントが変更されました。");
+ applyClassTimes(snap.exists()?snap.data():null);
+}
+function recordPeriod(data,time,date) {
+ if(Number.isInteger(data.period)&&data.period>=1&&data.period<=5)return data.period;
+ const past=classTimeHistory.find(h=>date<=h.throughDate);
+ return (past?past.periods:classTimes).findIndex(p=>p.start===time)+1;
+}
+async function showTimetableSettings() {
+ const uid=auth.currentUser?.uid;await loadTimetable();if(!uid || logoutInProgress || auth.currentUser?.uid!==uid)return;
+ attendanceView.hidden=true; attendanceSubjectView.hidden=true;
+ document.body.classList.remove("attendance-open");
+ timetableSettingsView.hidden=false;document.body.classList.add("timetable-settings-open");
+}
+async function openClassTimeSettings(next) {
+ if(logoutInProgress)return;
+ try {
+ await loadClassTimes();settingsDialog.close();
+ if(next&&classTimesConfigured){await showTimetableSettings();return;}
+ classTimeOwner=auth.currentUser.uid;classTimeContinue=next;classTimeError.textContent="";
+ const commonDuration=classTimes.every(p=>p.duration===classTimes[0].duration)?classTimes[0].duration:"";
+ document.getElementById("classTimeFields").innerHTML=
+ `<fieldset style="border:1px solid #ddd;border-radius:12px;margin:12px 0;padding:12px"><legend>全限共通</legend><label for="classDuration">授業時間（分）</label><input id="classDuration" type="number" required min="1" max="1439" step="1" value="${commonDuration}" aria-describedby="classDurationHint"><p id="classDurationHint" style="font-size:13px;color:#667085;margin-bottom:0">1〜5限すべてに同じ授業時間を適用します。</p></fieldset>`+
+ classTimes.map((p,i)=>`<fieldset style="border:1px solid #ddd;border-radius:12px;margin:12px 0;padding:12px"><legend>${i+1}限</legend><label for="classStart${i}">開始時刻</label><input id="classStart${i}" type="time" required value="${p.start}"></fieldset>`).join("");
+ document.getElementById("classTimeSave").textContent=next?"保存して時間割へ":"保存";classTimeDialog.showModal();
+ }catch(e){if(!logoutInProgress && auth.currentUser)alert("授業時間設定を読み込めませんでした。通信状態を確認して再試行してください。\n"+e.message);}
+}
+document.getElementById("classTimeSettingsButton").onclick=()=>openClassTimeSettings(false);
+document.getElementById("classTimeCancel").onclick=()=>{if(!classTimeSaving)classTimeDialog.close();};
+classTimeDialog.addEventListener("cancel",e=>{if(classTimeSaving)e.preventDefault();});
+classTimeForm.onsubmit=async e=>{
+ e.preventDefault();if(classTimeSaving||!classTimeForm.reportValidity())return;
+ const uid=classTimeOwner;if(!uid||auth.currentUser?.uid!==uid)return;
+ const duration=Number(document.getElementById("classDuration").value);
+ const periods=classTimes.map((_,i)=>({start:document.getElementById("classStart"+i).value,duration}));
+ if(!validClassTimes(periods)){classTimeError.textContent="授業時間は正の整数で入力し、1〜5限が重ならず同日中に終了するようにしてください。";return;}
+ if(!navigator.onLine){classTimeError.textContent="オンラインで保存してください。入力内容はそのまま再試行できます。";return;}
+ classTimeSaving=true;document.getElementById("classTimeSave").disabled=true;
+ try {
+ let saved;
+ // 時刻変更前に既存記録の限を確定する。状態・手動ロックは変更しない。
+ const existing = await getDocsFromServer(collection(db,"users",uid,"attendanceClasses"));
+ const untagged = existing.docs.filter(d=>!Number.isInteger(d.data().period));
+ if(untagged.length>450)throw new Error("出席記録が多いため時間設定を変更できません。管理者にご相談ください。");
+ await runTransaction(db,async tx=>{
+ if(auth.currentUser?.uid!==uid)throw new Error("アカウントが変更されました。");
+ const ref=classTimeRef(uid),snap=await tx.get(ref),old=snap.exists()?snap.data():null;
+ const records=await Promise.all(untagged.map(d=>tx.get(d.ref)));
+ const previous=validClassTimes(old?.periods)?old.periods:DEFAULT_CLASS_TIMES;
+ const history=Array.isArray(old?.history)?old.history.filter(h=>validClassTimes(h.periods)):[];
+ for(const record of records){
+ if(!record.exists()||Number.isInteger(record.data().period))continue;
+ const data=record.data(),parts=(data.classKey||record.id).split("_"),past=history.find(h=>parts[0]<=h.throughDate);
+ const period=(past?past.periods:previous).findIndex(p=>p.start===parts[1])+1;
+ if(period)tx.set(record.ref,{period},{merge:true});
+ }
+ if(JSON.stringify(previous)!==JSON.stringify(periods)){
+ const d=new Date(),throughDate=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+ history.push({throughDate,periods:previous});history.sort((a,b)=>a.throughDate.localeCompare(b.throughDate));
+ }
+ saved={periods,history};tx.set(ref,{...saved,updatedAt:serverTimestamp()},{merge:true});
+ });
+ if(logoutInProgress || auth.currentUser?.uid!==uid)return;applyClassTimes(saved);classTimeDialog.close();
+ if(classTimeContinue)await showTimetableSettings();
+ }catch(error){classTimeError.textContent="保存に失敗しました。入力内容を確認して再試行してください。 "+error.message;console.error(error);}
+ finally{classTimeSaving=false;document.getElementById("classTimeSave").disabled=false;}
+};
+function resetClassTimeSession(user) {
+ clearAttendanceLinkSecret();document.getElementById("attendanceLinkDialog").close();
+ if(unsubscribeAttendanceSummary)unsubscribeAttendanceSummary();unsubscribeAttendanceSummary=null;attendanceSummaryDocuments=null;attendanceSummaryRevision++;
+ document.getElementById("taskDialog").close(); document.getElementById("detailDialog").close();
+ editingId=null; deleteConfirmMode=false;
+ if(unsubscribeTimetable)unsubscribeTimetable(); unsubscribeTimetable=null;
+ if(unsubscribeClassTimes)unsubscribeClassTimes();unsubscribeClassTimes=null;classTimeOwner=null;classTimeDialog.close();applyClassTimes(null);
+ applyTimetableSlots({});
+ attendanceSubjectRequest++;
+ attendanceManualSubject=""; attendanceManualSlots=[]; attendanceManualDocs=new Map();
+ document.getElementById("attendanceManualList").replaceChildren();
+ attendanceManualSetMode("view");
+ ["timetableSettingsView","attendanceView","attendanceSubjectView"].forEach(id=>document.getElementById(id).hidden=true);
+ document.body.classList.remove("timetable-settings-open","attendance-open");
+ if(user)startAttendanceSummarySync(user);
+ if(user)unsubscribeTimetable=onSnapshot(doc(db,"users",user.uid,"settings","timetable"),snap=>{
+    if(!logoutInProgress && auth.currentUser?.uid===user.uid)receiveTimetable(snap.exists()?snap.data():{});
+ },error=>console.error("時間割同期エラー",error));
+ if(user)unsubscribeClassTimes=onSnapshot(classTimeRef(user.uid),snap=>{if(!logoutInProgress && auth.currentUser?.uid===user.uid)applyClassTimes(snap.exists()?snap.data():null);},error=>console.error("授業時間同期エラー",error));
+}
+
 onAuthStateChanged(
 
     auth,
-
     async function(user) {
-
-        if (
-            unsubscribeTasks
-        ) {
-
-            unsubscribeTasks();
-
-            unsubscribeTasks =
-                null;
-
-        }
-
-
-        if (!user) {
-
-            currentUser =
-                null;
-
-
-            tasks =
-                [];
-
-
-            authGate.hidden =
-                false;
-
-
-            appContent.hidden =
-                true;
-
-
-            addButton.hidden =
-                true;
-
-
-            return;
-
-        }
-
-
-        currentUser =
-            user;
-
-
-        authGate.hidden =
-            true;
-
-
-        appContent.hidden =
-            false;
-
-
-        addButton.hidden =
-            false;
-
-
-        userName.textContent =
-            user.displayName
-            ||
-            user.email
-            ||
-            "ログイン中";
-
-        updateAccountInfo();
-
-        loadUserCache();
-
-        render();
-
-
-        await startRealtimeSync();
-
-    await saveAttendanceFromUrl(
-        user
+        if(logoutInProgress){if(!user)showSignedOutScreen();return;}
+        if(!user){showSignedOutScreen();return;}
+        if(auth.currentUser?.uid!==user.uid)return;
+        await activateUserSession(user);
+    },
+    showAuthStartupError
 );
-
-    }
-
-);
+document.getElementById("authStartupRetry").onclick=()=>window.location.reload();
 
 /* ========================================
    イベント
@@ -7375,9 +7556,223 @@ const attendanceBackButton =
         "attendanceBackButton"
     );
 
-attendanceButton.onclick =
+const timetableSettingsButton =
+    document.getElementById(
+        "timetableSettingsButton"
+    );
+
+const timetableSettingsView =
+    document.getElementById(
+        "timetableSettingsView"
+    );
+
+const timetableSettingsBackButton =
+    document.getElementById(
+        "timetableSettingsBackButton"
+    );
+
+timetableSettingsButton.onclick = () => openClassTimeSettings(true);
+
+timetableSettingsBackButton.onclick =
     function() {
 
+        timetableSettingsView.hidden =
+            true;
+
+        document.body.classList.remove(
+            "timetable-settings-open"
+        );
+    };
+
+    const subjectInputDialog =
+    document.getElementById(
+        "subjectInputDialog"
+    );
+
+const subjectNameInput =
+    document.getElementById(
+        "subjectNameInput"
+    );
+
+const subjectSaveButton =
+    document.getElementById(
+        "subjectSaveButton"
+    );
+
+const subjectCancelButton =
+    document.getElementById(
+        "subjectCancelButton"
+    );
+
+const subjectDeleteButton =
+    document.getElementById(
+        "subjectDeleteButton"
+    );
+
+let selectedTimetableCell = null;
+
+
+/* 時間割のマスを押したとき */
+document
+    .querySelectorAll(".timetable-cell")
+    .forEach(function(cell) {
+
+        cell.onclick = function() {
+
+            selectedTimetableCell = cell;
+
+            subjectNameInput.value =
+                cell.textContent.trim();
+
+            subjectInputDialog.showModal();
+
+            subjectNameInput.focus();
+        };
+
+    });
+
+/* 保存 */
+subjectSaveButton.onclick =
+    async function() {
+
+        if (!selectedTimetableCell) {
+            return;
+        }
+
+        selectedTimetableCell.textContent =
+            subjectNameInput.value.trim();
+
+        await saveTimetable();
+
+        subjectInputDialog.close();
+    };
+
+
+/* 削除 */
+subjectDeleteButton.onclick =
+    async function() {
+
+        if (!selectedTimetableCell) {
+            return;
+        }
+
+        selectedTimetableCell.textContent = "";
+
+        await saveTimetable();
+
+        subjectInputDialog.close();
+    };
+
+
+/* キャンセル */
+subjectCancelButton.onclick =
+    function() {
+
+        subjectInputDialog.close();
+
+    };
+
+    /* ========================================
+   時間割をFirestoreへ保存
+======================================== */
+
+async function saveTimetable() {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+        return;
+    }
+
+    const timetableData = {};
+
+    document
+        .querySelectorAll(".timetable-cell")
+        .forEach(function(cell) {
+
+            timetableData[cell.dataset.slot] =
+                cell.textContent.trim();
+
+        });
+
+    const timetableRef = doc(
+        db,
+        "users",
+        user.uid,
+        "settings",
+        "timetable"
+    );
+
+   try {
+
+    await setDoc(
+        timetableRef,
+        {
+            slots: timetableData
+        }
+    );
+    if (auth.currentUser?.uid === user.uid) applyTimetableSlots(timetableData);
+
+} catch (error) {
+
+    alert(
+        "時間割の保存に失敗しました\n\n" +
+        error.message
+    );
+
+    console.error(
+        "時間割保存エラー:",
+        error
+    );
+}
+}
+
+
+/* ========================================
+   時間割をFirestoreから読み込み
+======================================== */
+
+function applyTimetableSlots(slots) {
+    userTimetableSlots = {...slots};
+    document.querySelectorAll(".timetable-cell").forEach(cell => {
+        const name = slots[cell.dataset.slot];
+        cell.textContent = typeof name === "string" ? name : "";
+    });
+    const days = ["mon","tue","wed","thu","fri"];
+    document.querySelectorAll("#attendanceView .attendance-row:not(.attendance-days)").forEach((row,periodIndex) => {
+        days.forEach((day,dayIndex) => {
+            const cell = row.children[dayIndex+1];
+            if (!cell) return;
+            const slot = day+"_"+(periodIndex+1), name = slots[slot];
+            cell.textContent = typeof name === "string" ? name : "";
+            cell.dataset.slot = slot;
+            cell.classList.add("attendance-subject-cell");
+        });
+    });
+    const message = document.getElementById("attendanceTimetableMessage");
+    const hasSubjects = Object.values(slots).some(name => typeof name === "string" && name.trim());
+    message.textContent = hasSubjects ? "" : "時間割は未設定です。「設定 → 時間割設定」から授業時間と科目を登録してください。";
+    message.hidden = hasSubjects;
+    refreshAttendanceSubjectColors();
+    render();
+}
+async function loadTimetable() {
+    const user = auth.currentUser;
+    if (!user) { applyTimetableSlots({}); return; }
+    const snapshot = await getDocFromServer(doc(db,"users",user.uid,"settings","timetable"));
+    if (logoutInProgress || auth.currentUser?.uid !== user.uid) return;
+    applyTimetableSlots(snapshot.exists() ? snapshot.data().slots || {} : {});
+}
+
+attendanceButton.onclick =
+    async function() {
+
+        const viewUid = auth.currentUser?.uid;
+        try { await loadClassTimes(); await loadTimetable(); }
+        catch(error) { if(!logoutInProgress && auth.currentUser?.uid===viewUid)alert("出席画面を読み込めませんでした。再試行してください。"); return; }
+
+        if (!viewUid || auth.currentUser?.uid !== viewUid || logoutInProgress) return;
+        void loadAttendanceSummary(auth.currentUser);
         attendanceView.hidden =
             false;
 
@@ -7385,7 +7780,6 @@ attendanceButton.onclick =
             "attendance-open"
         );
     };
-
 attendanceBackButton.onclick =
     function() {
 
@@ -7396,6 +7790,476 @@ attendanceBackButton.onclick =
             "attendance-open"
         );
     };
+
+const attendanceSubjectView =
+    document.getElementById(
+        "attendanceSubjectView"
+    );
+
+const attendanceSubjectBackButton =
+    document.getElementById(
+        "attendanceSubjectBackButton"
+    );
+
+const attendanceSubjectTitle =
+    document.getElementById(
+        "attendanceSubjectTitle"
+    );
+
+
+let attendanceSubjectRequest = 0;
+function subjectLoadStatus(message, retry = false) {
+    const status = document.getElementById("attendanceSubjectLoadMessage");
+    status.textContent = message;
+    status.hidden = !message;
+    document.getElementById("attendanceSubjectRetry").hidden = !retry;
+}
+async function openAttendanceSubject(subjectName) {
+    const uid = auth.currentUser?.uid;
+    if (!uid || logoutInProgress) return;
+    const request = ++attendanceSubjectRequest;
+    attendanceSubjectTitle.textContent = subjectName;
+    attendanceView.hidden = true;
+    attendanceSubjectView.hidden = false;
+    subjectLoadStatus("出席記録を読み込んでいます…");
+    document.getElementById("attendanceManualPanel").hidden = true;
+    ["subjectPresentCount","subjectAbsentCount","subjectLateCount","subjectPinigeCount","subjectUnknownCount"].forEach(id => document.getElementById(id).textContent = "—");
+    document.getElementById("attendanceCircleValue").textContent = "—";
+    document.querySelector(".attendance-circle").style.background = "#e8eef7";
+    document.getElementById("attendanceSubjectMessage").textContent = "出席状況を確認しています";
+    try {
+        await loadSubjectAttendance(subjectName,request);
+        if (auth.currentUser?.uid !== uid || request !== attendanceSubjectRequest) return;
+        subjectLoadStatus("");
+        document.getElementById("attendanceManualPanel").hidden = false;
+    } catch(error) {
+        if (auth.currentUser?.uid !== uid || request !== attendanceSubjectRequest) return;
+        subjectLoadStatus("出席記録を読み込めませんでした。通信状態を確認し、再読み込みしてください。",true);
+        document.getElementById("attendanceSubjectMessage").textContent = "出席状況を取得できませんでした";
+        console.error("出席記録読み込みエラー",error);
+    }
+}
+attendanceView.addEventListener("click",event => {
+    const cell = event.target.closest(".attendance-subject-cell");
+    const subjectName = cell?.textContent.trim();
+    if (subjectName) openAttendanceSubject(subjectName);
+});
+document.getElementById("attendanceSubjectRetry").onclick = () => openAttendanceSubject(attendanceSubjectTitle.textContent);
+
+/* 科目詳細から時間割へ戻る */
+attendanceSubjectBackButton.onclick =
+    function() {
+
+        attendanceSubjectRequest++;
+        attendanceSubjectView.hidden = true;
+        attendanceView.hidden = false;
+    };
+    
+    async function loadSubjectAttendance(
+    subjectName, request = attendanceSubjectRequest
+) {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+        return;
+    }
+    attendanceManualSubject = subjectName;
+
+    /* この科目が入っている時間割枠を取得 */
+
+    const subjectSlots = [];
+
+    document
+        .querySelectorAll(".timetable-cell")
+        .forEach(function(cell) {
+
+            if (
+                cell.textContent.trim() ===
+                subjectName
+            ) {
+                subjectSlots.push(
+                    cell.dataset.slot
+                );
+            }
+
+        });
+
+
+    /* 出席記録を取得 */
+
+    const summaryRevision=attendanceSummaryRevision;
+    const attendanceDocuments=await readAttendanceDocuments(user,()=>auth.currentUser?.uid===user.uid && request===attendanceSubjectRequest && !logoutInProgress);
+    if(auth.currentUser?.uid!==user.uid || request!==attendanceSubjectRequest || logoutInProgress)return;
+    if(summaryRevision===attendanceSummaryRevision){attendanceSummaryDocuments=attendanceDocuments;attendanceSummaryRevision++;refreshAttendanceSubjectColors();}
+    let present = 0;
+    let absent = 0;
+    let late = 0;
+    let pinige = 0;
+    let unknown = 0;
+
+
+    const dayNames = {
+        1: "mon",
+        2: "tue",
+        3: "wed",
+        4: "thu",
+        5: "fri"
+    };
+
+
+
+
+    attendanceDocuments.forEach(function(record) {
+
+        const data = record.data;
+
+        const classKey =
+            data.classKey ||
+            record.id;
+
+        const parts =
+            classKey.split("_");
+
+        if (parts.length < 2) {
+            return;
+        }
+
+        const dateText =
+            parts[0];
+
+        const startTime =
+            parts[1];
+
+        const date =
+            new Date(
+                dateText + "T00:00:00"
+            );
+
+        const day =
+            (academic?dateSchedule(dateText).day:dayNames[date.getDay()]);
+
+        const period =
+            recordPeriod(data,startTime,dateText);
+
+        if (!day || !period) {
+            return;
+        }
+
+        const slot =
+            day + "_" + period;
+
+
+        /* 押した科目の授業だけ集計 */
+
+        if (
+            (!academic && !subjectSlots.includes(slot)) || !recordForSubject(data,classKey,subjectName)
+        ) {
+            return;
+        }
+
+
+        switch (data.status) {
+
+            case "present":
+                present++;
+                break;
+
+            case "absent":
+                absent++;
+                break;
+
+            case "late":
+                late++;
+                break;
+
+            case "pinige":
+                pinige++;
+                break;
+
+            default:
+                unknown++;
+                break;
+        }
+
+    });
+
+
+    renderAttendanceManual(subjectName, subjectSlots, attendanceDocuments);
+
+    /* 数字を画面に反映 */
+
+    document.getElementById(
+        "subjectPresentCount"
+    ).textContent = present;
+
+    document.getElementById(
+        "subjectAbsentCount"
+    ).textContent = absent;
+
+    document.getElementById(
+        "subjectLateCount"
+    ).textContent = late;
+
+    document.getElementById(
+        "subjectPinigeCount"
+    ).textContent = pinige;
+
+    document.getElementById(
+        "subjectUnknownCount"
+    ).textContent = unknown;
+
+/* ========================================
+   出席率・円グラフ
+======================================== */
+
+const judgedTotal =
+    present +
+    absent +
+    late +
+    pinige;
+
+let attendanceRate = 0;
+
+if (judgedTotal > 0) {
+
+    attendanceRate =
+        Math.round(
+            (present / judgedTotal) * 100
+        );
+
+}
+
+const circle =
+    document.querySelector(
+        ".attendance-circle"
+    );
+
+const circleValue =
+    document.getElementById(
+        "attendanceCircleValue"
+    );
+
+circleValue.textContent =
+    attendanceRate + "%";
+
+const degree =
+    attendanceRate * 3.6;
+
+circle.style.background =
+    `conic-gradient(
+        #1677ff 0deg,
+        #1677ff ${degree}deg,
+        #e8eef7 ${degree}deg,
+        #e8eef7 360deg
+    )`;
+
+
+/* ========================================
+   欠席回数による警告
+======================================== */
+
+const message =
+    document.getElementById(
+        "attendanceSubjectMessage"
+    );
+
+const risk=attendanceRisk({present,absent,late,pinige,unknown});
+message.textContent=risk.message;
+message.style.color=risk.color;
+
+}
+
+
+/* 出席記録の手動登録・修正（ログイン中のユーザーのみ） */
+let attendanceManualSubject = "";
+let attendanceManualSlots = [];
+let attendanceManualDocs = new Map();
+const attendanceManualTimes = {includes:t=>classTimes.some(p=>p.start===t),indexOf:t=>classTimes.findIndex(p=>p.start===t)};
+const attendanceManualDays = ["", "mon", "tue", "wed", "thu", "fri", ""];
+const attendanceManualLabels = {present:"出席", late:"遅刻", absent:"欠席", pinige:"ぴ逃げ", unknown:"未判定"};
+const attendanceManualDate = document.getElementById("attendanceManualDate");
+const attendanceManualPeriod = document.getElementById("attendanceManualPeriod");
+const attendanceManualStatus = document.getElementById("attendanceManualStatus");
+const attendanceManualDelete = document.getElementById("attendanceManualDelete");
+const attendanceManualMessage = document.getElementById("attendanceManualMessage");
+
+const attendanceManualForm = document.getElementById("attendanceManualForm");
+const attendanceManualMode = document.getElementById("attendanceManualMode");
+const attendanceManualStart = document.getElementById("attendanceManualStart");
+const attendanceManualSave = document.getElementById("attendanceManualSave");
+let attendanceManualEditingKey = null;
+let attendanceManualFormMode = "view"; // view / create / edit
+function updateAttendanceManualDateDisplay() {
+    const value=attendanceManualDate.value;
+    document.getElementById("attendanceManualDateDisplay").textContent=/^\d{4}-\d{2}-\d{2}$/.test(value)?value.replace(/-/g,"/"):"日付を選択";
+    document.getElementById("attendanceManualDateControl").classList.toggle("is-disabled",attendanceManualDate.disabled);
+}
+function attendanceManualSetMode(mode, key = null) {
+    attendanceManualFormMode = mode;
+    attendanceManualEditingKey = mode === "edit" ? key : null;
+    attendanceManualForm.hidden = mode === "view";
+    attendanceManualStart.hidden = mode !== "view";
+    attendanceManualDate.disabled = mode === "edit";
+    attendanceManualPeriod.disabled = mode === "edit";
+    updateAttendanceManualDateDisplay();
+    attendanceManualDelete.hidden = mode !== "edit";
+    attendanceManualSave.textContent = mode === "edit" ? "変更を保存" : "新規登録する";
+    attendanceManualMode.textContent = mode === "edit"
+        ? "編集中：" + key.replace("_", " ") + "（日時は変更できません）"
+        : mode === "create" ? "新しい出席記録を登録" 
+        : "記録を変更するには「編集」、追加するには「新規登録」を押してください。";
+    attendanceManualMessage.textContent = "";
+}
+attendanceManualStart.onclick = () => {
+    attendanceManualDate.value = attendanceManualDate.max;
+    attendanceManualStatus.value = "present";
+    attendanceManualSetMode("create");
+    attendanceManualSyncForm();
+};
+document.getElementById("attendanceManualCancel").onclick = () => attendanceManualSetMode("view");
+function attendanceManualKey() {
+    const day = attendanceManualDate.value;
+    const time = attendanceManualPeriod.value;
+    if (attendanceManualFormMode === "edit" && attendanceManualEditingKey === day+"_"+time) return attendanceManualEditingKey;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !attendanceManualTimes.includes(time)) return null;
+    const date = new Date(day + "T12:00:00");
+    if (Number.isNaN(date.getTime()) ||
+        date.getFullYear() !== Number(day.slice(0,4)) ||
+        date.getMonth()+1 !== Number(day.slice(5,7)) ||
+        date.getDate() !== Number(day.slice(8,10))) return null;
+    const slot = attendanceManualDays[date.getDay()] + "_" + (attendanceManualTimes.indexOf(time)+1);
+    if (academic ? !recordForSubject({period:attendanceManualTimes.indexOf(time)+1},day+"_"+time,attendanceManualSubject) : !attendanceManualSlots.includes(slot)) return null;
+    const now = new Date();
+    if (date > now) return null;
+    return day + "_" + time;
+}
+function attendanceManualSyncForm() {
+    if (attendanceManualFormMode === "view") return;
+    const key = attendanceManualKey();
+    if (attendanceManualFormMode === "edit") return;
+    const existing = key && attendanceManualDocs.has(key);
+    attendanceManualMessage.textContent = !key
+        ? "この科目の授業がある曜日・時間と日付を合わせてください。"
+        : existing ? "この日時には既に記録があります。下の一覧の「編集」を使ってください。" : "";
+}
+function renderAttendanceManual(subjectName, slots, docs) {
+    attendanceManualSubject = subjectName;
+    attendanceManualSlots = slots;
+    attendanceManualDocs = new Map();
+    const list = document.getElementById("attendanceManualList");
+    list.replaceChildren();
+    attendanceManualPeriod.replaceChildren();
+    const periodNumbers = [...new Set(slots.map(slot => Number(slot.split("_")[1])))].sort((a,b)=>a-b);
+    for (const n of periodNumbers) {
+        const opt = document.createElement("option");
+        opt.value = classTimes[n-1].start;
+        opt.textContent = n + "コマ（" + opt.value + "）";
+        attendanceManualPeriod.appendChild(opt);
+    }
+    const today = new Date();
+    attendanceManualDate.value = [today.getFullYear(),String(today.getMonth()+1).padStart(2,"0"),String(today.getDate()).padStart(2,"0")].join("-");
+    attendanceManualDate.max = attendanceManualDate.value;
+    const matched = [];
+    for (const record of docs) {
+        const key = record.data.classKey || record.id;
+        const match = /^(\d{4}-\d{2}-\d{2})_(\d{2}:\d{2})$/.exec(key);
+        if (!match) continue;
+        const date = new Date(match[1]+"T12:00:00");
+        const period = recordPeriod(record.data,match[2],match[1]);
+        const slot = attendanceManualDays[date.getDay()] + "_" + period;
+        if ((!academic && !slots.includes(slot)) || !recordForSubject(record.data,key,subjectName)) continue;
+        attendanceManualDocs.set(key, record.data);
+        matched.push({key, status:record.data.status});
+    }
+    matched.sort((a,b)=>b.key.localeCompare(a.key));
+    if (!matched.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "まだ記録がありません。";
+        list.appendChild(empty);
+    }
+    for (const item of matched) {
+        const row = document.createElement("div");
+        row.className = "attendance-manual-row";
+        const label = document.createElement("span");
+        label.className="attendance-record-label";
+        for(const value of [item.key.split("_")[0],item.key.split("_")[1],attendanceManualLabels[item.status]||"未判定"]){const part=document.createElement("span");part.textContent=value;label.append(part);}
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.textContent = "編集";
+        edit.onclick = () => {
+            const parts = item.key.split("_");
+            attendanceManualDate.value = parts[0];
+            if (![...attendanceManualPeriod.options].some(o=>o.value===parts[1])) { const o=document.createElement("option"); o.value=parts[1]; o.textContent=parts[1]+"（記録時）"; attendanceManualPeriod.appendChild(o); }
+            attendanceManualPeriod.value = parts[1];
+            attendanceManualStatus.value = item.status || "unknown";
+            attendanceManualSetMode("edit", item.key);
+            document.getElementById("attendanceManualPanel").scrollIntoView({behavior:"smooth",block:"start"});
+        };
+        row.append(label,edit);
+        list.appendChild(row);
+    }
+    attendanceManualSetMode("view");
+}
+attendanceManualDate.addEventListener("input",updateAttendanceManualDateDisplay);
+attendanceManualDate.addEventListener("change",()=>{updateAttendanceManualDateDisplay();attendanceManualSyncForm();});
+attendanceManualDate.addEventListener("click",()=>{
+    if(!attendanceManualDate.disabled && typeof attendanceManualDate.showPicker==="function"){
+        try{attendanceManualDate.showPicker();}catch(error){}
+    }
+});
+attendanceManualPeriod.addEventListener("change", attendanceManualSyncForm);
+
+attendanceManualSave.onclick = async () => {
+    const user = auth.currentUser;
+    if (!user || !attendanceManualSubject || attendanceManualFormMode === "view") return;
+    const key = attendanceManualKey();
+    if (!key) { alert("この科目の授業日・時間を正しく選んでください。未来の日付は登録できません。"); return; }
+    const status = attendanceManualStatus.value;
+    if (!Object.hasOwn(attendanceManualLabels,status)) return;
+    if (attendanceManualFormMode === "edit" && (key !== attendanceManualEditingKey || !attendanceManualDocs.has(key))) {
+        alert("編集対象が変わりました。もう一度一覧から選び直してください。"); return;
+    }
+    if (attendanceManualFormMode === "create" && attendanceManualDocs.has(key)) {
+        alert("この日時には既に記録があります。一覧の「編集」から変更してください。"); return;
+    }
+    const verb = attendanceManualFormMode === "edit" ? "変更" : "新規登録";
+    if (!confirm(key.replace("_"," ") + " の記録を「" + attendanceManualLabels[status] + "」として" + verb + "しますか？")) return;
+    attendanceManualSave.disabled = true;
+    try {
+        // 登録直前にサーバーの存在状態も確認し、別端末との競合を防ぐ。
+        const ref = doc(db,"users",user.uid,"attendanceClasses",key);
+        const current = await getDoc(ref);
+        if (attendanceManualFormMode === "create" && current.exists()) {
+            alert("既に登録済みの記録です。画面を更新して編集してください。");
+            await loadSubjectAttendance(attendanceManualSubject);
+            return;
+        }
+        if (attendanceManualFormMode === "edit" && !current.exists()) {
+            alert("この記録は既に削除されています。画面を更新してください。");
+            await loadSubjectAttendance(attendanceManualSubject);
+            return;
+        }
+        // 手動確定フラグ。Apps Script側はこのフラグがtrueの記録を更新しない。
+        await setDoc(ref, {period: attendanceManualFormMode === "edit" ? recordPeriod(attendanceManualDocs.get(key),key.split("_")[1],key.split("_")[0]) : attendanceManualTimes.indexOf(key.split("_")[1])+1, classKey:key,status:status,source:"manual",manualLocked:true,manualUpdatedAt:serverTimestamp()}, {merge:true});
+        await loadSubjectAttendance(attendanceManualSubject);
+    } catch (error) {
+        alert("保存に失敗しました：" + (error.message || String(error)));
+    } finally { attendanceManualSave.disabled = false; }
+};
+attendanceManualDelete.onclick = async () => {
+    const user = auth.currentUser;
+    const key = attendanceManualKey();
+    if (!user || attendanceManualFormMode !== "edit" || !key || key !== attendanceManualEditingKey || !attendanceManualDocs.has(key)) return;
+    if (!confirm(key.replace("_"," ") + " の記録を削除しますか？この操作は元に戻せません。")) return;
+    attendanceManualDelete.disabled = true;
+    try {
+        await deleteDoc(doc(db,"users",user.uid,"attendanceClasses",key));
+        await loadSubjectAttendance(attendanceManualSubject);
+    } catch (error) {
+        alert("削除に失敗しました：" + (error.message || String(error)));
+    } finally { attendanceManualDelete.disabled = false; }
+};
 
 /* 設定を開く */
 settingsButton.onclick =
@@ -7520,34 +8384,6 @@ retryButton.onclick =
     };
 
 
-/* バックアップ */
-backupButton.onclick =
-    downloadBackup;
-
-
-/* 復元 */
-restoreButton.onclick =
-    function() {
-
-        restoreFileInput.click();
-
-    };
-
-
-restoreFileInput.onchange =
-    async function() {
-
-        const file =
-            restoreFileInput.files[0];
-
-
-        await restoreBackup(
-            file
-        );
-
-    };
-
-
 /* 課題編集画面を閉じる */
 document.getElementById(
     "cancelButton"
@@ -7621,6 +8457,11 @@ classDateInput.onchange =
     };
 
 
+deadlineInput.oninput = deadlineInput.onchange = function() {
+    deadlineManuallyEdited = true;
+    updateDeadlineInfo();
+};
+
 /* 課題保存 */
 taskForm.onsubmit =
     handleSubmit;
@@ -7659,6 +8500,8 @@ window.addEventListener(
     }
 );
 
+installAppBackSwipe();
+
 /* ========================================
    時計
 ======================================== */
@@ -7670,6 +8513,7 @@ setInterval(
     render,
     60000
 );
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden)render(); });
 
 
 /* ========================================
@@ -7689,7 +8533,7 @@ if (
             navigator
             .serviceWorker
             .register(
-                "./sw.js"
+                "./sw.js", {updateViaCache:"none"}
             )
             .then(
                 function() {
@@ -7715,6 +8559,59 @@ if (
     );
 
 }
+
+/* v19: academic calendar and date-specific timetable. */
+var academic=null, academicOwner=null, selectedQuarter=1, chartMode=false;
+function academicDate(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function quarterOn(date){if(!academic)return 0;return academic.starts.findIndex((s,i)=>date>=s && date<(academic.starts[i+1]||academic.end))+1;}
+function halfOf(q){return q<=2?'H1':'H2';}
+function activeCourses(q=selectedQuarter){if(!academic)return {};return {...academic.courses[halfOf(q)],...academic.courses['Q'+q]};}
+function courseIdentity(c){return c?c.scope+'|'+c.name:'';}
+function selectedCourse(name){return Object.values(activeCourses()).find(c=>c.name===name);}
+function dateSchedule(date){if(!academic)return {q:0,day:timetableDays[new Date(date+'T12:00:00').getDay()],periods:[],closed:false};const q=quarterOn(date),change=academic?.changes[date];return {q,day:change?.day||timetableDays[new Date(date+'T12:00:00').getDay()],periods:change?.periods||classTimes,closed:change?.day==='off'};}
+function courseForRecord(data,key){const [date,time]=key.split('_'),s=dateSchedule(date);if(!s.q||s.closed)return null;const n=Number(data.period)||s.periods.findIndex(p=>p.start===time)+1;return activeCourses(s.q)[s.day+'_'+n]||null;}
+function recordForSubject(data,key,name){if(!academic)return true;return courseIdentity(courseForRecord(data,key))===courseIdentity(selectedCourse(name));}
+function academicNames(date){if(!academic)return userTimetableSlots;const s=dateSchedule(date);if(!s.q||s.closed)return {};const out={};for(const [slot,c] of Object.entries(activeCourses(s.q)))out[slot]=c.name;return out;}
+const originalApplySlots=applyTimetableSlots;
+function applyAcademic(){if(!academic)return;const slots={};for(const [s,c]of Object.entries(activeCourses()))slots[s]=c.name;originalApplySlots(slots);document.querySelectorAll('.quarter-select').forEach(x=>x.value=String(selectedQuarter));paintAcademicCharts();}
+function receiveTimetable(data){const uid=auth.currentUser?.uid;if(academicOwner!==uid){academic=null;academicOwner=uid;selectedQuarter=1;chartMode=false;}const first=!academic;try{academic=data?.academicJson?JSON.parse(data.academicJson):null;}catch(e){academic=null;alert('学期設定を読み込めません。時間割の保存を中止して再読み込みしてください。');}if(academic){if(first)selectedQuarter=Number(academic.viewQuarter)||quarterOn(academicDate(new Date()))||1;applyAcademic();}else originalApplySlots(data?.slots||{});}
+async function persistAcademic(next=academic){next.viewQuarter=selectedQuarter;const user=auth.currentUser;if(!user)throw Error('ログインしてください');const uid=user.uid;await setDoc(doc(db,'users',uid,'settings','timetable'),{academicJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;academic=next;academicOwner=uid;applyAcademic();}
+const originalResetSession=resetClassTimeSession;
+resetClassTimeSession=function(user){academic=null;academicOwner=null;chartMode=false;selectedQuarter=1;originalResetSession(user);};
+loadTimetable=async function(){const u=auth.currentUser;if(!u)return;const snap=await getDocFromServer(doc(db,'users',u.uid,'settings','timetable'));if(auth.currentUser?.uid===u.uid&&!logoutInProgress)receiveTimetable(snap.exists()?snap.data():{});};
+function academicDialog(title){const d=document.createElement('dialog');d.className='academic-dialog';const h=document.createElement('h3');h.textContent=title;d.append(h);document.body.append(d);d.addEventListener('close',()=>d.remove());return d;}
+function field(d,label,type,value){const l=document.createElement('label');l.textContent=label;const i=document.createElement('input');i.type=type;i.value=value;l.append(i);d.append(l);return i;}
+function action(d,label,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;d.append(b);return b;}
+function openAcademicSettings(){const d=academicDialog('年度・学期設定');const year=Number(academic?.year)||new Date().getFullYear();const y=field(d,'年度','number',year);const starts=[0,1,2,3].map((n)=>field(d,(n+1)+'クオーター開始日','date',academic?.starts[n]||year+'-'+['04-01','06-01','10-01','12-01'][n]));const end=field(d,'4クオーター終了日の翌日','date',academic?.end||(year+1)+'-04-01');y.onchange=()=>{const saved=academic?.year===+y.value?academic:academic?.archives?.[y.value];starts.forEach((x,i)=>x.value=saved?.starts[i]||y.value+'-'+['04-01','06-01','10-01','12-01'][i]);end.value=saved?.end||(+y.value+1)+'-04-01';};const note=document.createElement('p');note.textContent='開始日は大学の実際の日程に合わせてください。設定した日付で過去の記録も振り分けます。初回は現在の時間割を選択中の半期の14回科目として引き継ぎます。年度を変えると年度別の時間割に切り替わります。以前の年度は同じ年度を指定すると戻せます。';d.append(note);
+action(d,'保存',async()=>{const dates=starts.map(x=>x.value);if(!dates.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))||!end.value||![...dates,end.value].every((x,i,a)=>!i||x>a[i-1])||!Number.isInteger(+y.value)||+y.value<2000||+y.value>2200){alert('日付を開始順に入力してください');return;}const archives=JSON.parse(JSON.stringify(academic?.archives||{}));if(academic&&academic.year!==+y.value){const saved=JSON.parse(JSON.stringify(academic));delete saved.archives;archives[academic.year]=saved;}let next=academic&&academic.year===+y.value?JSON.parse(JSON.stringify(academic)):archives[y.value]?JSON.parse(JSON.stringify(archives[y.value])):{year:+y.value,courses:{H1:{},H2:{},Q1:{},Q2:{},Q3:{},Q4:{}},changes:{}};if(!academic)for(const [slot,name]of Object.entries(userTimetableSlots))if(name)next.courses[halfOf(selectedQuarter)][slot]={name,scope:halfOf(selectedQuarter),total:14,allowed:4};next.archives=archives;next.starts=dates;next.end=end.value;next.viewQuarter=selectedQuarter;try{await persistAcademic(next);d.close();}catch(e){alert('保存できませんでした：'+e.message);}});action(d,'閉じる',()=>d.close());d.showModal();}
+function switchQuarter(q){selectedQuarter=Number(q);attendanceSubjectRequest++;attendanceSubjectView.hidden=true;if(academic){applyAcademic();}else{document.querySelectorAll('.quarter-select').forEach(x=>x.value=String(selectedQuarter));}}
+for(const view of [attendanceView,timetableSettingsView]){const bar=document.createElement('div');bar.className='academic-toolbar';const sel=document.createElement('select');sel.className='quarter-select';sel.setAttribute('aria-label','表示クオーター');for(let q=1;q<=4;q++){const o=document.createElement('option');o.value=q;o.textContent=(q<=2?'前期':'後期')+' '+q+'Q';sel.append(o);}sel.onchange=()=>switchQuarter(sel.value);bar.append(sel);action(bar,'学期設定',openAcademicSettings);action(bar,'日課変更',openDayChange);if(view===attendanceView)action(bar,'出席率',()=>{chartMode=!chartMode;paintAcademicCharts();});view.querySelector('.attendance-header')?.prepend(bar);if(!bar.isConnected)view.prepend(bar);}
+const chartPanel=document.createElement('div');chartPanel.className='academic-charts';chartPanel.hidden=true;attendanceView.append(chartPanel);
+function paintAcademicCharts(){const table=attendanceView.querySelector('.attendance-table');if(table)table.hidden=chartMode;chartPanel.hidden=!chartMode;if(!chartMode)return;chartPanel.replaceChildren();if(attendanceSummaryDocuments===null){chartPanel.textContent='出席記録を読み込んでいます…';return;}const sums=summarizeAttendance(attendanceSummaryDocuments);for(const [name,s]of sums){const b=document.createElement('button');b.className='academic-chart';const count=s.present+s.absent+s.late+s.pinige;const rate=count?Math.round(100*s.present/count):0;const circle=document.createElement('span');circle.className='academic-ring';circle.style.background='conic-gradient('+attendanceRisk(s).color+' '+rate+'%,#e8eef7 0)';const text=document.createElement('span');text.textContent=count?rate+'%':'—';circle.append(text);const label=document.createElement('strong');label.textContent=name;const info=document.createElement('small');const c=selectedCourse(name);info.textContent='出席 '+s.present+' / 判定済み '+count+(c?'・全'+c.total+'回':'')+'・未判定 '+s.unknown;b.append(circle,label,info);b.onclick=()=>openAttendanceSubject(name);chartPanel.append(b);}if(!sums.size)chartPanel.textContent='時間割設定から科目を登録してください。';}
+const baseSummarize=summarizeAttendance;
+summarizeAttendance=function(documents,slots=userTimetableSlots){if(!academic)return baseSummarize(documents,slots);const result=new Map();for(const c of Object.values(activeCourses()))if(!result.has(c.name))result.set(c.name,{present:0,absent:0,late:0,pinige:0,unknown:0,allowed:c.allowed});for(const r of documents||[]){const key=r.data.classKey||r.id,c=courseForRecord(r.data,key);if(!c||courseIdentity(c)!==courseIdentity(selectedCourse(c.name)))continue;const stats=result.get(c.name);if(stats)stats[['present','absent','late','pinige'].includes(r.data.status)?r.data.status:'unknown']++;}return result;};
+const baseRisk=attendanceRisk;
+attendanceRisk=function(stats){if(!academic)return baseRisk(stats);const allowed=stats.allowed??selectedCourse(attendanceManualSubject)?.allowed??4;if(stats.absent>allowed)return {key:'failed',color:'#dc2626',message:'欠席許容回数を超えています'};if(stats.absent===allowed)return {key:'reach',color:'#d99a00',message:'あと1回欠席すると許容回数を超えます'};return {key:'safe',color:'#1677ff',message:'欠席 '+stats.absent+'回 / 許容 '+allowed+'回'};};
+const baseRefreshColors=refreshAttendanceSubjectColors;
+refreshAttendanceSubjectColors=function(){baseRefreshColors();if(typeof chartPanel!=='undefined')paintAcademicCharts();};
+for(const cell of document.querySelectorAll('.timetable-cell'))cell.onclick=()=>{selectedTimetableCell=cell;if(!academic){openAcademicSettings();return;}const c=activeCourses()[cell.dataset.slot];subjectNameInput.value=c?.name||'';scopeInput.value=c?.scope||'Q'+selectedQuarter;totalInput.value=c?.total||7;allowedInput.value=c?.allowed??2;subjectInputDialog.showModal();};
+const scopeLabel=document.createElement('label');scopeLabel.textContent='開講期間';const scopeInput=document.createElement('select');for(const s of ['H1','H2','Q1','Q2','Q3','Q4']){const o=document.createElement('option');o.value=s;o.textContent={H1:'前期を通して（1・2Q）',H2:'後期を通して（3・4Q）',Q1:'1Qのみ',Q2:'2Qのみ',Q3:'3Qのみ',Q4:'4Qのみ'}[s];scopeInput.append(o);}scopeLabel.append(scopeInput);subjectNameInput.after(scopeLabel);const totalInput=field(subjectInputDialog,'授業回数','number',7),allowedInput=field(subjectInputDialog,'欠席の許容回数','number',2);scopeInput.onchange=()=>{totalInput.value=scopeInput.value[0]==='H'?14:7;allowedInput.value=scopeInput.value[0]==='H'?4:2;};
+subjectSaveButton.onclick=async()=>{if(!selectedTimetableCell||!academic)return;const name=subjectNameInput.value.trim(),scope=scopeInput.value,total=+totalInput.value,allowed=+allowedInput.value;if(!name||!Number.isInteger(total)||total<1||total>100||!Number.isInteger(allowed)||allowed<0||allowed>=total){alert('科目名・授業回数・欠席許容回数を確認してください');return;}if(!(scope===halfOf(selectedQuarter)||scope==='Q'+selectedQuarter)){alert('選択中のクオーターに対応する期間を選んでください');return;}const next=JSON.parse(JSON.stringify(academic)),slot=selectedTimetableCell.dataset.slot;const others=scope[0]==='H'?(selectedQuarter<=2?['Q1','Q2']:['Q3','Q4']):[halfOf(selectedQuarter)];if(others.some(s=>next.courses[s][slot])&&!confirm('同じ枠の半期科目またはクオーター科目を置き換えますか？'))return;others.forEach(s=>delete next.courses[s][slot]);for(const slots of Object.values(next.courses))for(const c of Object.values(slots))if(c.scope===scope&&c.name===name){c.total=total;c.allowed=allowed;}next.courses[scope][slot]={name,scope,total,allowed};try{await persistAcademic(next);subjectInputDialog.close();}catch(e){alert('保存できませんでした：'+e.message);}};
+subjectDeleteButton.onclick=async()=>{if(!academic||!selectedTimetableCell)return;const c=activeCourses()[selectedTimetableCell.dataset.slot];if(!c)return;const next=JSON.parse(JSON.stringify(academic));delete next.courses[c.scope][selectedTimetableCell.dataset.slot];try{await persistAcademic(next);subjectInputDialog.close();}catch(e){alert('削除できませんでした：'+e.message);}};
+function openDayChange(){if(!academic){openAcademicSettings();return;}const d=academicDialog('日課変更');const date=field(d,'対象日','date',academicDate(new Date()));const label=document.createElement('label');label.textContent='使う時間割';const sel=document.createElement('select');for(const [v,t]of Object.entries({mon:'月曜日',tue:'火曜日',wed:'水曜日',thu:'木曜日',fri:'金曜日',off:'休講日'})){const o=document.createElement('option');o.value=v;o.textContent=t;sel.append(o);}label.append(sel);d.append(label);const starts=classTimes.map((p,i)=>field(d,(i+1)+'限 開始時刻','time',p.start));const duration=field(d,'共通の授業時間（分）','number',classTimes[0].duration);function fill(){const c=academic.changes[date.value];sel.value=c?.day||timetableDays[new Date(date.value+'T12:00:00').getDay()]||'mon';starts.forEach((x,i)=>x.value=(c?.periods||classTimes)[i].start);duration.value=(c?.periods||classTimes)[0].duration;}date.onchange=fill;fill();action(d,'この日の変更を保存',async()=>{const periods=starts.map(x=>({start:x.value,duration:+duration.value}));if(!quarterOn(date.value)||!validClassTimes(periods)){alert('学期内の日付と、重ならない授業時間を指定してください');return;}const next=JSON.parse(JSON.stringify(academic));next.changes[date.value]={day:sel.value,periods};try{await persistAcademic(next);d.close();}catch(e){alert(e.message);}});action(d,'この日の変更を解除',async()=>{const next=JSON.parse(JSON.stringify(academic));delete next.changes[date.value];try{await persistAcademic(next);d.close();}catch(e){alert(e.message);}});action(d,'閉じる',()=>d.close());d.showModal();}
+/* Pull down at the top, with an explicit threshold and no open form. */
+let pullStart=null,pullDistance=0;const pullHint=document.createElement('div');pullHint.className='pull-hint';pullHint.hidden=true;pullHint.textContent='離して再読み込み';document.body.append(pullHint);
+document.addEventListener('touchstart',e=>{pullStart=null;pullDistance=0;if(document.querySelector('dialog[open]')||e.touches.length!==1||e.target.closest('input,textarea,select,button'))return;let node=e.target;while(node&&node!==document.body){if(node.scrollTop>0)return;node=node.parentElement;}if(window.scrollY>0)return;pullStart={x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});
+document.addEventListener('touchmove',e=>{if(!pullStart)return;pullDistance=e.touches[0].clientY-pullStart.y;if(Math.abs(e.touches[0].clientX-pullStart.x)>40){pullStart=null;pullHint.hidden=true;return;}pullHint.hidden=pullDistance<100;},{passive:true});
+document.addEventListener('touchend',()=>{const refresh=pullStart&&pullDistance>=100;pullStart=null;pullHint.hidden=true;if(refresh&&!document.querySelector('dialog[open]'))window.location.reload();});
+
+// Recorded dates use the periods configured for that day, including manual input.
+const baseRecordPeriod=recordPeriod;
+recordPeriod=function(data,time,date){if(academic?.changes[date]?.periods){return Number(data?.period)||academic.changes[date].periods.findIndex(p=>p.start===time)+1;}return baseRecordPeriod(data,time,date);};
+function manualPeriods(){return academic?dateSchedule(attendanceManualDate.value).periods:classTimes;}
+attendanceManualTimes.includes=t=>manualPeriods().some(p=>p.start===t);
+attendanceManualTimes.indexOf=t=>manualPeriods().findIndex(p=>p.start===t);
+attendanceManualDate.addEventListener('change',()=>{if(attendanceManualFormMode==='edit')return;const previous=attendanceManualPeriod.value;attendanceManualPeriod.replaceChildren();manualPeriods().forEach((p,i)=>{const o=document.createElement('option');o.value=p.start;o.textContent=(i+1)+'コマ（'+p.start+'）';attendanceManualPeriod.append(o);});if(manualPeriods().some(p=>p.start===previous))attendanceManualPeriod.value=previous;attendanceManualSyncForm();});
 
 </script>
 
