@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v23</title>
+<title>課題管理 v24</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1620,16 +1620,27 @@ html[data-pull-phase="loading"] #pullRefreshSpinner{animation:pull-refresh-spin 
 html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cubic-bezier(.22,.7,.2,1)}
 @keyframes pull-refresh-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){html[data-pull-phase="returning"] body> :not(script):not(style):not(dialog):not(#pullRefreshChrome),html[data-pull-phase="returning"] #pullRefreshChrome{transition:none}}
-</style><script>
-try{const marker=JSON.parse(sessionStorage.getItem('kadai-pull-refresh')||'null');sessionStorage.removeItem('kadai-pull-refresh');if(marker&&Date.now()-marker.at>=0&&Date.now()-marker.at<30000){window.__pullResume=true;document.documentElement.dataset.pullPhase='loading';document.documentElement.style.setProperty('--pull-offset',Math.round((window.visualViewport?.height||innerHeight)/3)+'px');}}catch(error){}
-window.addEventListener('load',()=>{setTimeout(()=>{if(window.__pullResume){window.__pullResume=false;document.documentElement.dataset.pullPhase='returning';document.documentElement.style.setProperty('--pull-offset','0px');setTimeout(()=>{document.documentElement.dataset.pullPhase='idle';},320);}},12000);});
-</script>
-</head>
+</style>
+<style>
+#timetableSettingsBackButton{display:none!important}
+#timetableSettingsView>.academic-toolbar{display:none!important}
+#timetableSettingsView>.attendance-header{display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:5px;padding:12px 8px}
+#timetableSettingsView>.attendance-header h2{grid-column:2;grid-row:1;white-space:nowrap;font-size:clamp(20px,5vw,27px);margin:0;text-align:center}
+#timetableSettingsView .wizard-quarter-toolbar{grid-column:1;grid-row:1;display:flex;min-width:0}
+#timetableSettingsView .wizard-quarter-toolbar select{width:auto!important;max-width:100%;min-width:0;font-size:11px;padding:7px 2px;border:1px solid #d5dceb;border-radius:8px;background:white}
+.timetable-cell.quarter-selected{background:#b7ff54!important;box-shadow:inset 0 0 0 3px #80df18!important;color:#183400!important}
+.timetable-cell.online-selected{background:#ff8d94!important;box-shadow:inset 0 0 0 3px #ff4051!important;color:#60000a!important}
+#wizardLegend,#timetableWizardNotice{font-size:13px;line-height:1.6;color:#526070;margin:10px 12px}
+.wizard-actions{position:sticky;bottom:0;display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;padding:14px 10px max(14px,env(safe-area-inset-bottom));background:#f4f5f7;z-index:3}
+.wizard-actions button{border:1px solid #d5dceb;border-radius:10px;padding:12px 14px;background:white;color:#344054}
+#timetableWizardSave{order:3;background:#1677ff;color:white;border-color:#1677ff;font-weight:700;margin-left:auto}
+.wizard-actions button:disabled{opacity:.55}
+</style></head>
 
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v23・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v24・2026/10/29</div>
 
 
 <header>
@@ -8670,7 +8681,7 @@ function openDayChange(){
  async function save(remove){const user=auth.currentUser;if(!user)return;const uid=user.uid;if(!/^\d{4}-\d{2}-\d{2}$/.test(date.value)){alert('日付を選択してください');return;}const next=JSON.parse(JSON.stringify(standaloneDayChanges));next[date.value]={day:remove?'default':sel.value};try{await setDoc(doc(db,'users',uid,'settings','timetable'),{dayChangesJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;standaloneDayChanges=next;render();refreshAttendanceSubjectColors();if(attendanceManualSubject&&!attendanceSubjectView.hidden)await loadSubjectAttendance(attendanceManualSubject);d.close();}catch(e){alert('保存できませんでした：'+e.message);}}
  action(d,'保存',()=>save(false));action(d,'この日の変更を解除',()=>save(true));action(d,'閉じる',()=>d.close());d.showModal();
 }
-/* v23 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
+/* v24 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
 const pullRefresh = (()=>{
  const root=document.documentElement;
  const chrome=document.getElementById('pullRefreshChrome');
@@ -8687,7 +8698,7 @@ const pullRefresh = (()=>{
   timer=setTimeout(()=>{setPhase('idle');root.style.removeProperty('--pull-offset');spinner.style.removeProperty('--pull-turn');},320);
  }
  function canStart(target){
-  if(phase!=='idle'||document.querySelector('dialog[open]')||target.closest('input,textarea,select,button,[contenteditable="true"]'))return false;
+  if(phase!=='idle'||(typeof timetableWizard!=='undefined'&&timetableWizard?.dirty)||(!attendanceSubjectView.hidden&&!attendanceManualForm.hidden)||document.querySelector('dialog[open]')||target.closest('input,textarea,select,button,[contenteditable="true"]'))return false;
   if(Math.max(window.scrollY||0,document.documentElement.scrollTop||0)>1)return false;
   for(let n=target;n&&n!==document.body;n=n.parentElement)if(n.scrollTop>1)return false;
   return true;
@@ -8719,9 +8730,9 @@ const pullRefresh = (()=>{
   if(document.querySelector('dialog[open]')){settle();return;}
   setOffset(limit());setPhase('loading');label.textContent='読み込み中';
   if(navigator.onLine===false){label.textContent='オフライン';timer=setTimeout(settle,500);return;}
-  try{sessionStorage.setItem('kadai-pull-refresh',JSON.stringify({at:Date.now()}));}catch(error){}
+  
   // Paint the spinning/held state before beginning the page reload.
-  timer=setTimeout(()=>{window.location.reload();},100);
+  timer=setTimeout(async()=>{try{await refreshCurrentScreen();settle();}catch(error){label.textContent='更新できませんでした';timer=setTimeout(settle,900);}},100);
  }
  document.addEventListener('touchstart',start,{passive:true});
  document.addEventListener('touchmove',move,{passive:false});
@@ -8734,6 +8745,133 @@ const pullRefresh = (()=>{
  window.__finishPullRefresh=()=>{if(window.__pullResume){window.__pullResume=false;requestAnimationFrame(()=>requestAnimationFrame(settle));}};
  return {start,move,end,settle,get phase(){return phase;},get offset(){return offset;},limit};
 })();
+
+/* v24: staged timetable editing and in-place refresh. */
+var timetableWizard=null;
+function cloneAcademic(value){return JSON.parse(JSON.stringify(value));}
+function wizardCourseKey(c){return c.scope+'|'+c.name;}
+function beginTimetableWizard(){
+ if(!academic)return;
+ const courses=cloneAcademic(activeCourses());
+ timetableWizard={uid:auth.currentUser?.uid,q:selectedQuarter,stage:'subjects',courses,original:cloneAcademic(courses),baseline:JSON.stringify(academic),dirty:false,saving:false};
+ renderTimetableWizard();
+}
+const wizardQuarterBar=timetableSettingsView.querySelector('.academic-toolbar');if(wizardQuarterBar){wizardQuarterBar.classList.add('wizard-quarter-toolbar');timetableSettingsView.querySelector('.attendance-header').prepend(wizardQuarterBar);}
+const wizardNotice=document.createElement('p');wizardNotice.id='timetableWizardNotice';wizardNotice.setAttribute('role','status');
+const wizardActions=document.createElement('div');wizardActions.className='wizard-actions';
+const wizardPrevious=action(wizardActions,'前の設定へ',()=>{if(!timetableWizard||timetableWizard.saving)return;timetableWizard.stage=timetableWizard.stage==='online'?'quarter':'subjects';renderTimetableWizard();});
+const wizardSave=action(wizardActions,'保存',()=>saveTimetableWizard());wizardSave.id='timetableWizardSave';
+const wizardClose=action(wizardActions,'閉じる',()=>timetableSettingsBackButton.click());
+timetableSettingsView.append(wizardNotice,wizardActions);
+function renderTimetableWizard(){
+ const w=timetableWizard;if(!w)return;
+ const labels={subjects:'① 科目を入力して保存してください。',quarter:'② このQだけの7回科目をタップして緑色にしてください。選ばなかった科目は半期14回です。',online:'③ オンライン科目をタップして赤色にしてください。'};
+ wizardNotice.textContent=labels[w.stage];wizardSave.textContent=w.saving?'保存中…':w.stage==='subjects'?'保存してクオーター選択へ':w.stage==='quarter'?'保存してオンライン選択へ':'保存して完了';
+ wizardSave.disabled=w.saving;wizardPrevious.hidden=w.stage==='subjects';wizardPrevious.disabled=w.saving;wizardClose.disabled=w.saving;
+ document.querySelectorAll('#timetableSettingsView .quarter-select').forEach(x=>{x.value=String(w.q);x.disabled=w.saving;});
+ document.querySelectorAll('.timetable-cell').forEach(cell=>{
+  const c=w.courses[cell.dataset.slot];cell.textContent=c?.name||'';
+  cell.classList.toggle('quarter-selected',!!c&&w.stage==='quarter'&&c.scope==='Q'+w.q);
+  cell.classList.toggle('online-selected',!!c&&w.stage==='online'&&c.online===true);
+  cell.setAttribute('aria-pressed',String(!!c&&(w.stage==='quarter'?c.scope==='Q'+w.q:w.stage==='online'?c.online===true:false)));
+  cell.disabled=w.saving;
+ });
+}
+function toggleWizardCourse(slot){
+ const w=timetableWizard,c=w?.courses[slot];if(!w||w.saving||!c)return;
+ if(w.stage==='quarter'){
+  // Shared semester classes carried to Q2/Q4 retain their classification.
+  if(w.q%2===0&&w.original[slot]?.scope===halfOf(w.q)){wizardNotice.textContent='持ち越しの半期科目です。開講期間の変更は1Q・3Qで行ってください。';return;}
+  const previous=wizardCourseKey(c),newScope=c.scope==='Q'+w.q?halfOf(w.q):'Q'+w.q;
+  for(const item of Object.values(w.courses))if(wizardCourseKey(item)===previous){item.scope=newScope;item.total=newScope[0]==='Q'?7:14;item.allowed=newScope[0]==='Q'?2:4;}
+ }else if(w.stage==='online'){
+  const key=wizardCourseKey(c),value=!c.online;for(const item of Object.values(w.courses))if(wizardCourseKey(item)===key)item.online=value;
+ }
+ w.dirty=true;renderTimetableWizard();
+}
+for(const cell of document.querySelectorAll('.timetable-cell'))cell.onclick=()=>{
+ const w=timetableWizard;if(!w||w.saving)return;
+ if(w.stage!=='subjects'){toggleWizardCourse(cell.dataset.slot);return;}
+ selectedTimetableCell=cell;subjectNameInput.value=w.courses[cell.dataset.slot]?.name||'';
+ scopeLabel.hidden=true;totalInput.parentElement.hidden=true;allowedInput.parentElement.hidden=true;
+ subjectInputDialog.showModal();subjectNameInput.focus?.();
+};
+subjectSaveButton.onclick=()=>{
+ const w=timetableWizard;if(!w||!selectedTimetableCell||w.saving)return;
+ const name=subjectNameInput.value.trim();if(!name){alert('科目名を入力してください');return;}
+ const slot=selectedTimetableCell.dataset.slot,old=w.courses[slot];
+ w.courses[slot]=old?{...old,name}:{name,scope:halfOf(w.q),total:14,allowed:4,online:false};
+ w.dirty=true;subjectInputDialog.close();renderTimetableWizard();
+};
+subjectDeleteButton.onclick=()=>{if(!timetableWizard||!selectedTimetableCell||timetableWizard.saving)return;delete timetableWizard.courses[selectedTimetableCell.dataset.slot];timetableWizard.dirty=true;subjectInputDialog.close();renderTimetableWizard();};
+function wizardNextAcademic(w,base){
+ const next=cloneAcademic(base),half=halfOf(w.q),q='Q'+w.q;
+ for(const [slot,c]of Object.entries(w.original))delete next.courses[c.scope][slot];
+ for(const [slot,c]of Object.entries(w.courses)){
+  const scope=c.scope===q?q:half;
+  next.courses[scope][slot]={name:c.name,scope,total:scope===q?7:14,allowed:scope===q?2:4,online:!!c.online};
+ }
+ next.viewQuarter=w.q;return next;
+}
+async function saveTimetableWizard(){
+ const w=timetableWizard,user=auth.currentUser;if(!w||w.saving||!user||user.uid!==w.uid||!academic)return;
+ if(!navigator.onLine){wizardNotice.textContent='保存にはインターネット接続が必要です。入力内容は残っています。';return;}
+ w.saving=true;renderTimetableWizard();
+ try{
+  const next=wizardNextAcademic(w,academic);
+  const ref=doc(db,'users',user.uid,'settings','timetable');
+  await runTransaction(db,async tx=>{
+   const snap=await tx.get(ref),current=snap.exists()?snap.data():{};
+   const raw=current.academicJson?JSON.stringify(JSON.parse(current.academicJson)):null;
+   if(raw!==w.baseline)throw Error('別の画面で時間割が変更されています。入力内容は残しています。閉じて最新の時間割を読み直してください。');
+   if(logoutInProgress||auth.currentUser?.uid!==w.uid)throw Error('ログイン状態が変わりました。');
+   tx.set(ref,{academicJson:JSON.stringify(next)},{merge:true});
+  });
+  if(auth.currentUser?.uid!==w.uid||timetableWizard!==w||logoutInProgress)return;
+  academic=next;w.baseline=JSON.stringify(next);w.original=cloneAcademic(w.courses);w.dirty=false;w.saving=false;
+  if(w.stage==='subjects')w.stage='quarter';else if(w.stage==='quarter')w.stage='online';else{
+   timetableWizard=null;applyAcademic();timetableSettingsView.hidden=true;document.body.classList.remove('timetable-settings-open');return;
+  }
+  applyAcademic();renderTimetableWizard();
+ }catch(error){if(timetableWizard===w){w.saving=false;renderTimetableWizard();wizardNotice.textContent='保存できませんでした。'+error.message;}}
+}
+const onlineCourseNotice=document.createElement('p');onlineCourseNotice.className='attendance-load-message';onlineCourseNotice.hidden=true;attendanceSubjectTitle.after(onlineCourseNotice);
+const beforeOnlineSubjectOpen=openAttendanceSubject;
+openAttendanceSubject=async function(name){onlineCourseNotice.hidden=!selectedCourse(name)?.online;onlineCourseNotice.textContent=onlineCourseNotice.hidden?'':'オンライン科目：GPSで出席・欠席を決めず、受講状況を手動で登録してください。';await beforeOnlineSubjectOpen(name);};
+const beforeWizardShow=showTimetableSettings;
+showTimetableSettings=async function(){await beforeWizardShow();if(timetableSettingsView.hidden)return;if(!academic){openAcademicSettings();const d=document.querySelector('.academic-dialog[open]');d?.addEventListener('close',()=>{if(academic)beginTimetableWizard();else timetableSettingsBackButton.click();},{once:true});return;}beginTimetableWizard();};
+const beforeWizardSwitch=switchQuarter;
+switchQuarter=function(q){
+ if(timetableWizard&&!timetableSettingsView.hidden){
+  if(timetableWizard.saving){renderTimetableWizard();return;}
+  if(timetableWizard.dirty&&!confirm('未保存の変更を破棄してQを切り替えますか？')){renderTimetableWizard();return;}
+  timetableWizard=null;beforeWizardSwitch(q);beginTimetableWizard();return;
+ }
+ beforeWizardSwitch(q);
+};
+const beforeWizardReceive=receiveTimetable;
+receiveTimetable=function(data){beforeWizardReceive(data);if(timetableWizard&&timetableWizard.uid===auth.currentUser?.uid&&!timetableSettingsView.hidden)renderTimetableWizard();};
+const beforeWizardBack=timetableSettingsBackButton.onclick;
+timetableSettingsBackButton.onclick=function(){if(timetableWizard?.saving)return;if(timetableWizard?.dirty&&!confirm('未保存の変更を破棄して閉じますか？'))return;timetableWizard=null;beforeWizardBack();};
+const beforeWizardReset=resetClassTimeSession;
+resetClassTimeSession=function(user){timetableWizard=null;beforeWizardReset(user);};
+async function refreshCurrentScreen(){
+ const user=auth.currentUser;if(!user||logoutInProgress)return;
+ const uid=user.uid,isCurrent=()=>auth.currentUser?.uid===uid&&!logoutInProgress;
+ if(!attendanceSubjectView.hidden){
+  const subject=attendanceManualSubject;await loadSubjectAttendance(subject);return;
+ }
+ if(!attendanceView.hidden){
+  await Promise.all([loadTimetable(),loadClassTimes()]);if(!isCurrent())return;
+  const records=await readAttendanceDocuments(user,isCurrent);if(!isCurrent())return;
+  attendanceSummaryDocuments=records;attendanceSummaryRevision++;refreshAttendanceSubjectColors();return;
+ }
+ if(!timetableSettingsView.hidden){
+  if(timetableWizard?.dirty)return;
+  await Promise.all([loadTimetable(),loadClassTimes()]);if(isCurrent())beginTimetableWizard();return;
+ }
+ const snapshot=await getDocsFromServer(userTasksCollection());if(isCurrent())applyCloudSnapshot(snapshot);
+}
 
 // Recorded dates use the periods configured for that day, including manual input.
 const baseRecordPeriod=recordPeriod;
