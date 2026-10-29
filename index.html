@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v25</title>
+<title>課題管理 v26</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1635,12 +1635,15 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 .wizard-actions button{border:1px solid #d5dceb;border-radius:10px;padding:12px 14px;background:white;color:#344054}
 #timetableWizardSave{order:3;background:#1677ff;color:white;border-color:#1677ff;font-weight:700;margin-left:auto}
 .wizard-actions button:disabled{opacity:.55}
+</style><style>
+#attendanceChartToggle{grid-column:3;grid-row:1;justify-self:end;background:white;border:1px solid #d5dceb;border-radius:9px;padding:8px 5px;font-size:12px;color:#234;white-space:nowrap}
+#attendanceView .academic-toolbar #dayChangeButton{font-size:11px;padding:5px;justify-self:auto}
 </style></head>
 
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v25・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v26・2026/10/29</div>
 
 
 <header>
@@ -8681,7 +8684,7 @@ function openDayChange(){
  async function save(remove){const user=auth.currentUser;if(!user)return;const uid=user.uid;if(!/^\d{4}-\d{2}-\d{2}$/.test(date.value)){alert('日付を選択してください');return;}const next=JSON.parse(JSON.stringify(standaloneDayChanges));next[date.value]={day:remove?'default':sel.value};try{await setDoc(doc(db,'users',uid,'settings','timetable'),{dayChangesJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;standaloneDayChanges=next;render();refreshAttendanceSubjectColors();if(attendanceManualSubject&&!attendanceSubjectView.hidden)await loadSubjectAttendance(attendanceManualSubject);d.close();}catch(e){alert('保存できませんでした：'+e.message);}}
  action(d,'保存',()=>save(false));action(d,'この日の変更を解除',()=>save(true));action(d,'閉じる',()=>d.close());d.showModal();
 }
-/* v25 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
+/* v26 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
 const pullRefresh = (()=>{
  const root=document.documentElement;
  const chrome=document.getElementById('pullRefreshChrome');
@@ -8746,7 +8749,7 @@ const pullRefresh = (()=>{
  return {start,move,end,settle,get phase(){return phase;},get offset(){return offset;},limit};
 })();
 
-/* v25: staged timetable editing and in-place refresh. */
+/* v26: staged timetable editing and in-place refresh. */
 var timetableWizard=null;
 function cloneAcademic(value){return JSON.parse(JSON.stringify(value));}
 function wizardCourseKey(c){return c.scope+'|'+c.name;}
@@ -8872,6 +8875,73 @@ async function refreshCurrentScreen(){
  }
  const snapshot=await getDocsFromServer(userTasksCollection());if(isCurrent())applyCloudSnapshot(snapshot);
 }
+
+/* v26 course load: seven/fourteen weeks multiplied by weekly slots. */
+function courseLoad(course,model=academic){
+ if(!course)return {total:0,allowed:0,weeklySlots:0};
+ const count=Object.values(model?.courses?.[course.scope]||{}).filter(c=>c.name===course.name).length||1;
+ return {weeklySlots:count,total:(course.scope[0]==='Q'?7:14)*count,allowed:(course.scope[0]==='Q'?2:4)*count};
+}
+const beforeLoadSelectedCourse=selectedCourse;
+selectedCourse=function(name){const course=beforeLoadSelectedCourse(name);return course?{...course,...courseLoad(course)}:course;};
+const beforeLoadSummary=summarizeAttendance;
+summarizeAttendance=function(...args){const result=beforeLoadSummary(...args);if(academic)for(const [name,stats]of result){const c=selectedCourse(name);if(c)Object.assign(stats,courseLoad(c));}return result;};
+function normalizeCourseLoads(model){for(const slots of Object.values(model.courses||{}))for(const course of Object.values(slots))Object.assign(course,courseLoad(course,model));return model;}
+const beforeLoadWizardNext=wizardNextAcademic;
+wizardNextAcademic=function(...args){return normalizeCourseLoads(beforeLoadWizardNext(...args));};
+const oldManualRender=renderAttendanceManual;
+const courseLoadNotice=document.createElement('p');courseLoadNotice.className='attendance-load-message';attendanceSubjectTitle.after(courseLoadNotice);
+renderAttendanceManual=function(name,...args){oldManualRender(name,...args);const c=selectedCourse(name);courseLoadNotice.textContent=c?'全'+c.total+'回（週'+c.weeklySlots+'コマ）・欠席許容'+c.allowed+'回':'';};
+const swapHeader=attendanceView.querySelector('.attendance-header'),swapBar=swapHeader.querySelector('.academic-toolbar');
+const dayChangeControl=document.getElementById('dayChangeButton'),chartControl=document.getElementById('attendanceChartToggle');
+if(swapBar&&dayChangeControl&&chartControl){swapBar.append(dayChangeControl);swapHeader.append(chartControl);}
+onlineCourseNotice.textContent='';
+openAttendanceSubject=async function(name){onlineCourseNotice.hidden=!selectedCourse(name)?.online;onlineCourseNotice.textContent=onlineCourseNotice.hidden?'':'オンライン科目は自動で出席登録します。受講できなかった日は手動で変更してください。';await beforeOnlineSubjectOpen(name);};
+function autoAttendanceManual(data){return data?.manualLocked===true||data?.source==='manual';}
+function courseRunFirst(courses,day,period){const course=courses[day+'_'+period];if(!course)return period;let first=period;while(first>1&&courseIdentity(courses[day+'_'+(first-1)])===courseIdentity(course))first--;return first;}
+async function writeDefaultAttendance(user,date,period,first,course,periods){
+ const uid=user.uid,key=date+'_'+periods[period-1].start,sourceKey=first<period?date+'_'+periods[first-1].start:null;
+ const targetRef=doc(db,'users',uid,'attendanceClasses',key),sourceRef=sourceKey?doc(db,'users',uid,'attendanceClasses',sourceKey):null;
+ await runTransaction(db,async tx=>{
+  const target=await tx.get(targetRef),source=sourceRef?await tx.get(sourceRef):null;
+  if(auth.currentUser?.uid!==uid||logoutInProgress)throw Error('ACCOUNT_CHANGED');
+  const old=target.exists()?target.data():{};if(autoAttendanceManual(old))return;
+  let status='present',reason='online_default_present',kind='online_auto';
+  if(sourceRef){const firstData=source?.exists()?source.data():null;status=firstData&&['present','late','absent','pinige'].includes(firstData.status)?firstData.status:'unknown';reason=status==='unknown'?'awaiting_first_period':'consecutive_first_period';kind='consecutive_auto';}
+  else if(!course.online)return;
+  if(old.status===status&&old.source===kind&&(!sourceKey||old.inheritedFromKey===sourceKey))return;
+  tx.set(targetRef,{classKey:key,period,status,source:kind,manualLocked:false,decisionReason:reason,inheritedFromKey:sourceKey||'',updatedAt:serverTimestamp()},{merge:true});
+ });
+}
+var automaticAttendanceBusy=false;
+async function fillDueAutomaticAttendance(){
+ const user=auth.currentUser;if(!user||logoutInProgress||!academic||!classTimesConfigured||automaticAttendanceBusy||navigator.onLine===false)return;
+ automaticAttendanceBusy=true;
+ try{
+  const now=new Date();
+  for(let ago=1;ago>=0;ago--){
+   const localDate=new Date(now);localDate.setDate(localDate.getDate()-ago);const date=academicDate(localDate),schedule=dateSchedule(date);
+   if(!schedule.q||schedule.closed||!schedule.day)continue;
+   const courses=activeCourses(schedule.q),periods=schedule.periods;
+   for(let period=1;period<=periods.length;period++){
+    if(auth.currentUser?.uid!==user.uid||logoutInProgress)return;
+    const course=courses[schedule.day+'_'+period];if(!course||new Date(date+'T'+periods[period-1].start+':00').getTime()>now.getTime())continue;
+    const first=courseRunFirst(courses,schedule.day,period);if(course.online||first<period)await writeDefaultAttendance(user,date,period,first,course,periods);
+   }
+  }
+ }catch(error){console.error('自動出席の補完に失敗しました。次回に再試行します。');}
+ finally{automaticAttendanceBusy=false;}
+}
+const beforeAutomaticReceive=receiveTimetable;
+receiveTimetable=function(data){beforeAutomaticReceive(data);void fillDueAutomaticAttendance();};
+const beforeAutomaticClassTimes=applyClassTimes;
+applyClassTimes=function(data){beforeAutomaticClassTimes(data);void fillDueAutomaticAttendance();};
+const beforeAutomaticManualSave=attendanceManualSave.onclick;
+attendanceManualSave.onclick=async()=>{await beforeAutomaticManualSave();await fillDueAutomaticAttendance();if(auth.currentUser&&attendanceManualSubject&&!attendanceSubjectView.hidden)await loadSubjectAttendance(attendanceManualSubject);};
+const beforeAutomaticRefresh=refreshCurrentScreen;
+refreshCurrentScreen=async function(){await fillDueAutomaticAttendance();await beforeAutomaticRefresh();};
+setInterval(()=>{if(!document.hidden)void fillDueAutomaticAttendance();},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void fillDueAutomaticAttendance();});
 
 // Recorded dates use the periods configured for that day, including manual input.
 const baseRecordPeriod=recordPeriod;
