@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v21</title>
+<title>課題管理 v22</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1598,11 +1598,16 @@ body.timetable-settings-open #timetableSettingsView {
 .slot-ring{display:grid;place-items:center;width:clamp(36px,10vw,65px);height:clamp(36px,10vw,65px);border-radius:50%;margin:0 auto 5px;pointer-events:none}
 .slot-ring>span{display:grid;place-items:center;width:76%;height:76%;background:white;border-radius:50%;font-size:clamp(10px,2.8vw,16px);color:#25364b}
 .slot-course-name{display:block;overflow-wrap:anywhere;font-size:clamp(9px,2.6vw,13px);line-height:1.3;pointer-events:none}
+</style><style>
+/* Fill the available course column without changing the timetable grid. */
+#attendanceView .attendance-subject-cell.has-chart{padding:3px!important;container-type:inline-size}
+#attendanceView .slot-ring{width:100%;max-width:none;height:auto;aspect-ratio:1/1;margin:auto}
+#attendanceView .slot-ring>span{font-size:clamp(12px,4vw,27px);font-weight:700}
 </style></head>
 
 
 <body>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v21・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v22・2026/10/29</div>
 
 
 <header>
@@ -8573,7 +8578,7 @@ if (
 }
 
 /* v19: academic calendar and date-specific timetable. */
-var academic=null, academicOwner=null, selectedQuarter=1, chartMode=false, standaloneDayChanges={};
+var academic=null, academicOwner=null, selectedQuarter=3, chartMode=false, standaloneDayChanges={}, legacyTimetableSlots={}, legacyQuarter=3;
 function academicDate(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
 function quarterOn(date){if(!academic)return 0;return academic.starts.findIndex((s,i)=>date>=s && date<(academic.starts[i+1]||academic.end))+1;}
 function halfOf(q){return q<=2?'H1':'H2';}
@@ -8583,20 +8588,21 @@ function selectedCourse(name){return Object.values(activeCourses()).find(c=>c.na
 function dateSchedule(date){const stored=standaloneDayChanges?.[date];const change=stored?.day==='default'?null:stored||academic?.changes?.[date];if(!academic)return {q:0,day:change?.day||timetableDays[new Date(date+'T12:00:00').getDay()],periods:[],closed:change?.day==='off'};const q=quarterOn(date);return {q,day:change?.day||timetableDays[new Date(date+'T12:00:00').getDay()],periods:change?.periods||classTimes,closed:change?.day==='off'};}
 function courseForRecord(data,key){const [date,time]=key.split('_'),s=dateSchedule(date);if(!s.q||s.closed)return null;const n=Number(data.period)||s.periods.findIndex(p=>p.start===time)+1;return activeCourses(s.q)[s.day+'_'+n]||null;}
 function recordForSubject(data,key,name){if(!academic)return true;return courseIdentity(courseForRecord(data,key))===courseIdentity(selectedCourse(name));}
-function academicNames(date){if(!academic)return userTimetableSlots;const s=dateSchedule(date);if(!s.q||s.closed)return {};const out={};for(const [slot,c] of Object.entries(activeCourses(s.q)))out[slot]=c.name;return out;}
+function academicNames(date){if(!academic)return legacyTimetableSlots||userTimetableSlots;const s=dateSchedule(date);if(!s.q||s.closed)return {};const out={};for(const [slot,c] of Object.entries(activeCourses(s.q)))out[slot]=c.name;return out;}
 const originalApplySlots=applyTimetableSlots;
 function applyAcademic(){if(!academic)return;const slots={};for(const [s,c]of Object.entries(activeCourses()))slots[s]=c.name;originalApplySlots(slots);document.querySelectorAll('.quarter-select').forEach(x=>x.value=String(selectedQuarter));paintAcademicCharts();}
-function receiveTimetable(data){const uid=auth.currentUser?.uid;if(academicOwner!==uid){academic=null;academicOwner=uid;selectedQuarter=1;chartMode=false;}try{standaloneDayChanges=JSON.parse(data?.dayChangesJson||'{}');}catch(e){standaloneDayChanges={};}const first=!academic;try{academic=data?.academicJson?JSON.parse(data.academicJson):null;}catch(e){academic=null;alert('学期設定を読み込めません。時間割の保存を中止して再読み込みしてください。');}if(academic){if(first)selectedQuarter=Number(academic.viewQuarter)||quarterOn(academicDate(new Date()))||1;applyAcademic();}else originalApplySlots(data?.slots||{});}
+function receiveTimetable(data){const uid=auth.currentUser?.uid;if(academicOwner!==uid){academic=null;academicOwner=uid;selectedQuarter=3;chartMode=false;}try{standaloneDayChanges=JSON.parse(data?.dayChangesJson||'{}');}catch(e){standaloneDayChanges={};}const first=!academic;try{academic=data?.academicJson?JSON.parse(data.academicJson):null;}catch(e){academic=null;alert('学期設定を読み込めません。時間割の保存を中止して再読み込みしてください。');}if(academic){if(first)selectedQuarter=Number(academic.viewQuarter)||quarterOn(academicDate(new Date()))||1;applyAcademic();}else{legacyTimetableSlots={...(data?.slots||{})};legacyQuarter=Number(data?.legacyQuarter)||3;applyLegacyQuarter();}}
 async function persistAcademic(next=academic){next.viewQuarter=selectedQuarter;const user=auth.currentUser;if(!user)throw Error('ログインしてください');const uid=user.uid;await setDoc(doc(db,'users',uid,'settings','timetable'),{academicJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;academic=next;academicOwner=uid;applyAcademic();}
 const originalResetSession=resetClassTimeSession;
-resetClassTimeSession=function(user){academic=null;standaloneDayChanges={};academicOwner=null;chartMode=false;selectedQuarter=1;originalResetSession(user);};
+resetClassTimeSession=function(user){academic=null;standaloneDayChanges={};academicOwner=null;chartMode=false;selectedQuarter=3;legacyTimetableSlots={};legacyQuarter=3;originalResetSession(user);};
 loadTimetable=async function(){const u=auth.currentUser;if(!u)return;const snap=await getDocFromServer(doc(db,'users',u.uid,'settings','timetable'));if(auth.currentUser?.uid===u.uid&&!logoutInProgress)receiveTimetable(snap.exists()?snap.data():{});};
 function academicDialog(title){const d=document.createElement('dialog');d.className='academic-dialog';const h=document.createElement('h3');h.textContent=title;d.append(h);document.body.append(d);d.addEventListener('close',()=>d.remove());return d;}
 function field(d,label,type,value){const l=document.createElement('label');l.textContent=label;const i=document.createElement('input');i.type=type;i.value=value;l.append(i);d.append(l);return i;}
 function action(d,label,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;d.append(b);return b;}
-function openAcademicSettings(){const d=academicDialog('年度・学期設定');const year=Number(academic?.year)||new Date().getFullYear();const y=field(d,'年度','number',year);const starts=[0,1,2,3].map((n)=>field(d,(n+1)+'クオーター開始日','date',academic?.starts[n]||year+'-'+['04-01','06-01','10-01','12-01'][n]));const end=field(d,'4クオーター終了日の翌日','date',academic?.end||(year+1)+'-04-01');y.onchange=()=>{const saved=academic?.year===+y.value?academic:academic?.archives?.[y.value];starts.forEach((x,i)=>x.value=saved?.starts[i]||y.value+'-'+['04-01','06-01','10-01','12-01'][i]);end.value=saved?.end||(+y.value+1)+'-04-01';};const note=document.createElement('p');note.textContent='開始日は大学の実際の日程に合わせてください。設定した日付で過去の記録も振り分けます。初回は現在の時間割を選択中の半期の14回科目として引き継ぎます。年度を変えると年度別の時間割に切り替わります。以前の年度は同じ年度を指定すると戻せます。';d.append(note);
-action(d,'保存',async()=>{const dates=starts.map(x=>x.value);if(!dates.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))||!end.value||![...dates,end.value].every((x,i,a)=>!i||x>a[i-1])||!Number.isInteger(+y.value)||+y.value<2000||+y.value>2200){alert('日付を開始順に入力してください');return;}const archives=JSON.parse(JSON.stringify(academic?.archives||{}));if(academic&&academic.year!==+y.value){const saved=JSON.parse(JSON.stringify(academic));delete saved.archives;archives[academic.year]=saved;}let next=academic&&academic.year===+y.value?JSON.parse(JSON.stringify(academic)):archives[y.value]?JSON.parse(JSON.stringify(archives[y.value])):{year:+y.value,courses:{H1:{},H2:{},Q1:{},Q2:{},Q3:{},Q4:{}},changes:{}};if(!academic)for(const [slot,name]of Object.entries(userTimetableSlots))if(name)next.courses[halfOf(selectedQuarter)][slot]={name,scope:halfOf(selectedQuarter),total:14,allowed:4};next.archives=archives;next.starts=dates;next.end=end.value;next.viewQuarter=selectedQuarter;try{await persistAcademic(next);d.close();}catch(e){alert('保存できませんでした：'+e.message);}});action(d,'閉じる',()=>d.close());d.showModal();}
-function switchQuarter(q){selectedQuarter=Number(q);attendanceSubjectRequest++;attendanceSubjectView.hidden=true;if(academic){applyAcademic();}else{document.querySelectorAll('.quarter-select').forEach(x=>x.value=String(selectedQuarter));}}
+function openAcademicSettings(){const d=academicDialog('年度・学期設定');const year=Number(academic?.year)||new Date().getFullYear();const y=field(d,'年度','number',year);const starts=[0,1,2,3].map((n)=>field(d,(n+1)+'クオーター開始日','date',academic?.starts[n]||year+'-'+['04-01','06-01','10-01','12-01'][n]));const end=field(d,'4クオーター終了日の翌日','date',academic?.end||(year+1)+'-04-01');y.onchange=()=>{const saved=academic?.year===+y.value?academic:academic?.archives?.[y.value];starts.forEach((x,i)=>x.value=saved?.starts[i]||y.value+'-'+['04-01','06-01','10-01','12-01'][i]);end.value=saved?.end||(+y.value+1)+'-04-01';};const note=document.createElement('p');note.textContent='開始日は大学の実際の日程に合わせてください。設定した日付で過去の記録も振り分けます。初回は既存の時間割を後期3Qの科目として引き継ぎます。14回科目は時間割設定で「後期を通して」に変更できます。年度を変えると年度別の時間割に切り替わります。以前の年度は同じ年度を指定すると戻せます。';d.append(note);
+action(d,'保存',async()=>{const dates=starts.map(x=>x.value);if(!dates.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))||!end.value||![...dates,end.value].every((x,i,a)=>!i||x>a[i-1])||!Number.isInteger(+y.value)||+y.value<2000||+y.value>2200){alert('日付を開始順に入力してください');return;}const archives=JSON.parse(JSON.stringify(academic?.archives||{}));if(academic&&academic.year!==+y.value){const saved=JSON.parse(JSON.stringify(academic));delete saved.archives;archives[academic.year]=saved;}let next=academic&&academic.year===+y.value?JSON.parse(JSON.stringify(academic)):archives[y.value]?JSON.parse(JSON.stringify(archives[y.value])):{year:+y.value,courses:{H1:{},H2:{},Q1:{},Q2:{},Q3:{},Q4:{}},changes:{}};if(!academic)for(const [slot,name]of Object.entries(legacyTimetableSlots))if(name)next.courses["Q"+legacyQuarter][slot]={name,scope:"Q"+legacyQuarter,total:7,allowed:2};next.archives=archives;next.starts=dates;next.end=end.value;next.viewQuarter=selectedQuarter;try{await persistAcademic(next);d.close();}catch(e){alert('保存できませんでした：'+e.message);}});action(d,'閉じる',()=>d.close());d.showModal();}
+function applyLegacyQuarter(){originalApplySlots(selectedQuarter===legacyQuarter?legacyTimetableSlots:{});document.querySelectorAll('.quarter-select').forEach(x=>x.value=String(selectedQuarter));paintAcademicCharts();}
+function switchQuarter(q){if(![1,2,3,4].includes(Number(q)))return;selectedQuarter=Number(q);attendanceSubjectRequest++;attendanceSubjectView.hidden=true;if(academic){applyAcademic();}else{applyLegacyQuarter();}}
 for(const view of [attendanceView,timetableSettingsView]){
  const bar=document.createElement('div');bar.className='academic-toolbar';
  const sel=document.createElement('select');sel.className='quarter-select';sel.setAttribute('aria-label','表示クオーター');
@@ -8612,12 +8618,12 @@ function paintAcademicCharts(){
  document.querySelectorAll('#attendanceView .attendance-subject-cell').forEach(cell=>{
   const name=cell.dataset.subject??cell.textContent.trim();cell.dataset.subject=name;
   cell.replaceChildren();cell.classList.toggle('has-chart',!!name&&chartMode);if(!name)return;
-  if(!chartMode){cell.textContent=name;return;}
+  if(!chartMode){cell.textContent=name;cell.setAttribute('aria-label',name);return;}
   const stats=sums.get(name)||{present:0,absent:0,late:0,pinige:0,unknown:0};const total=stats.present+stats.absent+stats.late+stats.pinige;
   const rate=total?Math.round(stats.present*100/total):0;
   const circle=document.createElement('span');circle.className='slot-ring';circle.style.background='conic-gradient('+attendanceRisk(stats).color+' '+rate+'%,#e3e9f3 0)';
   const value=document.createElement('span');value.textContent=attendanceSummaryDocuments===null?'…':total?rate+'%':'—';circle.append(value);
-  const label=document.createElement('span');label.className='slot-course-name';label.textContent=name;cell.append(circle,label);
+  cell.setAttribute('aria-label',name+'：'+(total?rate+'%':'記録なし'));cell.append(circle);
  });
 }
 const baseSummarize=summarizeAttendance;
