@@ -1,27 +1,26 @@
-var CACHE_NAME = "kadai-manager-v19";
-var APP_FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
-self.addEventListener("install", function(event) {
-    event.waitUntil(caches.open(CACHE_NAME).then(function(cache) { return cache.addAll(APP_FILES); }));
-    self.skipWaiting();
-});
-self.addEventListener("activate", function(event) {
-    event.waitUntil(caches.keys().then(function(names) {
-        return Promise.all(names.filter(function(name) {
-            return name.indexOf("kadai-manager-") === 0 && name !== CACHE_NAME;
-        }).map(function(name) { return caches.delete(name); }));
-    }).then(function() { return self.clients.claim(); }));
-});
-self.addEventListener("fetch", function(event) {
-    // Cache only public static files, never authentication, Firestore, or location requests.
-    if(event.request.method !== "GET") return;
-    var url = new URL(event.request.url);
-    var publicFiles = APP_FILES.map(function(path) { return new URL(path, self.registration.scope).href; });
-    if(url.origin !== self.location.origin || url.search || event.request.headers.has("Authorization") || publicFiles.indexOf(url.href) === -1) return;
-    event.respondWith(fetch(event.request).then(function(response) {
-        if(response.ok && response.type === "basic") {
-            var copy = response.clone();
-            return caches.open(CACHE_NAME).then(function(cache) { return cache.put(event.request, copy); }).catch(function() {}).then(function() { return response; });
-        }
-        return response;
-    }).catch(function() { return caches.match(event.request); }));
+const CACHE_NAME="kadai-manager-v20";
+const PUBLIC_PATHS=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
+self.addEventListener("install",event=>{event.waitUntil(self.skipWaiting());});
+self.addEventListener("activate",event=>{event.waitUntil((async()=>{
+ const names=await caches.keys();
+ await Promise.all(names.filter(name=>name.startsWith("kadai-manager-")&&name!==CACHE_NAME).map(name=>caches.delete(name)));
+ await self.clients.claim();
+})());});
+self.addEventListener("fetch",event=>{
+ const request=event.request;if(request.method!=="GET"||request.headers.has("Authorization"))return;
+ const url=new URL(request.url);if(url.origin!==self.location.origin)return;
+ const allowed=PUBLIC_PATHS.map(path=>new URL(path,self.registration.scope).pathname);
+ if(!allowed.includes(url.pathname))return;
+ event.respondWith((async()=>{
+  const cache=await caches.open(CACHE_NAME);
+  try{
+   const response=await fetch(request,{cache:"no-store"});
+   if(response.ok&&response.type==="basic"&&!url.search)await cache.put(request,response.clone()).catch(()=>{});
+   return response;
+  }catch(error){
+   // Only this build's cache may be used. Never fall back to another build.
+   const saved=await cache.match(request);if(saved)return saved;
+   return new Response("接続できません。通信状態を確認して再読み込みしてください。",{status:503,headers:{"Content-Type":"text/plain; charset=utf-8"}});
+  }
+ })());
 });
