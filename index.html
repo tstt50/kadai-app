@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v24</title>
+<title>課題管理 v25</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1640,7 +1640,7 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v24・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v25・2026/10/29</div>
 
 
 <header>
@@ -8681,7 +8681,7 @@ function openDayChange(){
  async function save(remove){const user=auth.currentUser;if(!user)return;const uid=user.uid;if(!/^\d{4}-\d{2}-\d{2}$/.test(date.value)){alert('日付を選択してください');return;}const next=JSON.parse(JSON.stringify(standaloneDayChanges));next[date.value]={day:remove?'default':sel.value};try{await setDoc(doc(db,'users',uid,'settings','timetable'),{dayChangesJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;standaloneDayChanges=next;render();refreshAttendanceSubjectColors();if(attendanceManualSubject&&!attendanceSubjectView.hidden)await loadSubjectAttendance(attendanceManualSubject);d.close();}catch(e){alert('保存できませんでした：'+e.message);}}
  action(d,'保存',()=>save(false));action(d,'この日の変更を解除',()=>save(true));action(d,'閉じる',()=>d.close());d.showModal();
 }
-/* v24 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
+/* v25 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
 const pullRefresh = (()=>{
  const root=document.documentElement;
  const chrome=document.getElementById('pullRefreshChrome');
@@ -8746,14 +8746,14 @@ const pullRefresh = (()=>{
  return {start,move,end,settle,get phase(){return phase;},get offset(){return offset;},limit};
 })();
 
-/* v24: staged timetable editing and in-place refresh. */
+/* v25: staged timetable editing and in-place refresh. */
 var timetableWizard=null;
 function cloneAcademic(value){return JSON.parse(JSON.stringify(value));}
 function wizardCourseKey(c){return c.scope+'|'+c.name;}
 function beginTimetableWizard(){
  if(!academic)return;
  const courses=cloneAcademic(activeCourses());
- timetableWizard={uid:auth.currentUser?.uid,q:selectedQuarter,stage:'subjects',courses,original:cloneAcademic(courses),baseline:JSON.stringify(academic),dirty:false,saving:false};
+ timetableWizard={uid:auth.currentUser?.uid,q:selectedQuarter,stage:'subjects',courses,quarterChoices:Object.fromEntries(Object.entries(courses).map(([slot,c])=>[slot,c.quarterSelectionConfirmed===true&&c.scope==='Q'+selectedQuarter])),original:cloneAcademic(courses),baseline:JSON.stringify(academic),dirty:false,saving:false};
  renderTimetableWizard();
 }
 const wizardQuarterBar=timetableSettingsView.querySelector('.academic-toolbar');if(wizardQuarterBar){wizardQuarterBar.classList.add('wizard-quarter-toolbar');timetableSettingsView.querySelector('.attendance-header').prepend(wizardQuarterBar);}
@@ -8771,9 +8771,9 @@ function renderTimetableWizard(){
  document.querySelectorAll('#timetableSettingsView .quarter-select').forEach(x=>{x.value=String(w.q);x.disabled=w.saving;});
  document.querySelectorAll('.timetable-cell').forEach(cell=>{
   const c=w.courses[cell.dataset.slot];cell.textContent=c?.name||'';
-  cell.classList.toggle('quarter-selected',!!c&&w.stage==='quarter'&&c.scope==='Q'+w.q);
+  cell.classList.toggle('quarter-selected',!!c&&w.stage==='quarter'&&w.quarterChoices[cell.dataset.slot]===true);
   cell.classList.toggle('online-selected',!!c&&w.stage==='online'&&c.online===true);
-  cell.setAttribute('aria-pressed',String(!!c&&(w.stage==='quarter'?c.scope==='Q'+w.q:w.stage==='online'?c.online===true:false)));
+  cell.setAttribute('aria-pressed',String(!!c&&(w.stage==='quarter'?w.quarterChoices[cell.dataset.slot]===true:w.stage==='online'?c.online===true:false)));
   cell.disabled=w.saving;
  });
 }
@@ -8782,8 +8782,8 @@ function toggleWizardCourse(slot){
  if(w.stage==='quarter'){
   // Shared semester classes carried to Q2/Q4 retain their classification.
   if(w.q%2===0&&w.original[slot]?.scope===halfOf(w.q)){wizardNotice.textContent='持ち越しの半期科目です。開講期間の変更は1Q・3Qで行ってください。';return;}
-  const previous=wizardCourseKey(c),newScope=c.scope==='Q'+w.q?halfOf(w.q):'Q'+w.q;
-  for(const item of Object.values(w.courses))if(wizardCourseKey(item)===previous){item.scope=newScope;item.total=newScope[0]==='Q'?7:14;item.allowed=newScope[0]==='Q'?2:4;}
+  const previous=wizardCourseKey(c),selected=!w.quarterChoices[slot];
+  for(const [key,item]of Object.entries(w.courses))if(wizardCourseKey(item)===previous)w.quarterChoices[key]=selected;
  }else if(w.stage==='online'){
   const key=wizardCourseKey(c),value=!c.online;for(const item of Object.values(w.courses))if(wizardCourseKey(item)===key)item.online=value;
  }
@@ -8808,8 +8808,8 @@ function wizardNextAcademic(w,base){
  const next=cloneAcademic(base),half=halfOf(w.q),q='Q'+w.q;
  for(const [slot,c]of Object.entries(w.original))delete next.courses[c.scope][slot];
  for(const [slot,c]of Object.entries(w.courses)){
-  const scope=c.scope===q?q:half;
-  next.courses[scope][slot]={name:c.name,scope,total:scope===q?7:14,allowed:scope===q?2:4,online:!!c.online};
+  const scope=w.stage==='quarter'?(w.quarterChoices[slot]===true?q:half):(c.scope===q?q:half);
+  next.courses[scope][slot]={name:c.name,scope,total:scope===q?7:14,allowed:scope===q?2:4,online:!!c.online,quarterSelectionConfirmed:w.stage==='quarter'||c.quarterSelectionConfirmed===true};
  }
  next.viewQuarter=w.q;return next;
 }
@@ -8828,7 +8828,7 @@ async function saveTimetableWizard(){
    tx.set(ref,{academicJson:JSON.stringify(next)},{merge:true});
   });
   if(auth.currentUser?.uid!==w.uid||timetableWizard!==w||logoutInProgress)return;
-  academic=next;w.baseline=JSON.stringify(next);w.original=cloneAcademic(w.courses);w.dirty=false;w.saving=false;
+  academic=next;w.baseline=JSON.stringify(next);for(const slot of Object.keys(w.courses)){const scope=w.stage==='quarter'?(w.quarterChoices[slot]?'Q'+w.q:halfOf(w.q)):w.courses[slot].scope;w.courses[slot]=cloneAcademic(next.courses[scope][slot]);}w.original=cloneAcademic(w.courses);w.dirty=false;w.saving=false;
   if(w.stage==='subjects')w.stage='quarter';else if(w.stage==='quarter')w.stage='online';else{
    timetableWizard=null;applyAcademic();timetableSettingsView.hidden=true;document.body.classList.remove('timetable-settings-open');return;
   }

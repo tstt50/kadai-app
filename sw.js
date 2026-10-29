@@ -1,4 +1,4 @@
-const CACHE_NAME="kadai-manager-v24";
+const CACHE_NAME="kadai-manager-v25";
 const PUBLIC_PATHS=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
 self.addEventListener("install",event=>{event.waitUntil(self.skipWaiting());});
 self.addEventListener("activate",event=>{event.waitUntil((async()=>{
