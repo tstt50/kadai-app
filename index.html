@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v22</title>
+<title>課題管理 v23</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1603,11 +1603,33 @@ body.timetable-settings-open #timetableSettingsView {
 #attendanceView .attendance-subject-cell.has-chart{padding:3px!important;container-type:inline-size}
 #attendanceView .slot-ring{width:100%;max-width:none;height:auto;aspect-ratio:1/1;margin:auto}
 #attendanceView .slot-ring>span{font-size:clamp(12px,4vw,27px);font-weight:700}
-</style></head>
+</style><style>
+html{--pull-offset:0px;overscroll-behavior-y:none}
+body{overscroll-behavior-y:none}
+html[data-pull-phase="pulling"] body> :not(script):not(style):not(dialog):not(#pullRefreshChrome),
+html[data-pull-phase="armed"] body> :not(script):not(style):not(dialog):not(#pullRefreshChrome),
+html[data-pull-phase="loading"] body> :not(script):not(style):not(dialog):not(#pullRefreshChrome),
+html[data-pull-phase="returning"] body> :not(script):not(style):not(dialog):not(#pullRefreshChrome){translate:0 var(--pull-offset);will-change:translate}
+html[data-pull-phase="loading"] body,html[data-pull-phase="armed"] body,html[data-pull-phase="pulling"] body{overflow:hidden}
+html[data-pull-phase="returning"] body> :not(script):not(style):not(dialog):not(#pullRefreshChrome){transition:translate 300ms cubic-bezier(.22,.7,.2,1)}
+#pullRefreshChrome{position:fixed;inset:0 0 auto;height:var(--pull-offset);z-index:1000000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#f4f5f7;overflow:hidden;pointer-events:none;padding:0;box-sizing:border-box}
+#pullRefreshSpinner{flex-shrink:0;width:30px;height:30px;border:3px solid #d7dee8;border-top-color:#64748b;border-radius:50%;transform:rotate(var(--pull-turn,0deg))}
+#pullRefreshLabel{font-size:12px;color:#64748b;white-space:nowrap}
+html[data-pull-phase="idle"] #pullRefreshChrome{visibility:hidden}
+html[data-pull-phase="loading"] #pullRefreshSpinner{animation:pull-refresh-spin 700ms linear infinite}
+html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cubic-bezier(.22,.7,.2,1)}
+@keyframes pull-refresh-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){html[data-pull-phase="returning"] body> :not(script):not(style):not(dialog):not(#pullRefreshChrome),html[data-pull-phase="returning"] #pullRefreshChrome{transition:none}}
+</style><script>
+try{const marker=JSON.parse(sessionStorage.getItem('kadai-pull-refresh')||'null');sessionStorage.removeItem('kadai-pull-refresh');if(marker&&Date.now()-marker.at>=0&&Date.now()-marker.at<30000){window.__pullResume=true;document.documentElement.dataset.pullPhase='loading';document.documentElement.style.setProperty('--pull-offset',Math.round((window.visualViewport?.height||innerHeight)/3)+'px');}}catch(error){}
+window.addEventListener('load',()=>{setTimeout(()=>{if(window.__pullResume){window.__pullResume=false;document.documentElement.dataset.pullPhase='returning';document.documentElement.style.setProperty('--pull-offset','0px');setTimeout(()=>{document.documentElement.dataset.pullPhase='idle';},320);}},12000);});
+</script>
+</head>
 
 
 <body>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v22・2026/10/29</div>
+<div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v23・2026/10/29</div>
 
 
 <header>
@@ -3783,6 +3805,7 @@ function applyCloudSnapshot(
     saveUserCache();
 
     render();
+    window.__finishPullRefresh?.();
 
 
     if (
@@ -7394,6 +7417,7 @@ function finishAuthStartup() {
     document.getElementById("authLoading").hidden=true;
 }
 function showAuthStartupError(error) {
+    window.__finishPullRefresh?.();
     if(authInitialized)return;
     console.error("ログイン状態の確認に失敗",error);
     document.getElementById("authLoadingMessage").textContent="ログイン状態を確認できませんでした。通信状態を確認し、再読み込みしてください。";
@@ -7410,7 +7434,7 @@ function showSignedOutScreen() {
     authGate.hidden=false;appContent.hidden=true;addButton.hidden=true;
     document.getElementById("userName").textContent="";
     document.getElementById("accountEmail").textContent="";
-    render();window.scrollTo?.({top:0,behavior:"auto"});
+    render();window.scrollTo?.({top:0,behavior:"auto"});window.__finishPullRefresh?.();
 }
 async function activateUserSession(user) {
     finishAuthStartup();
@@ -8646,11 +8670,70 @@ function openDayChange(){
  async function save(remove){const user=auth.currentUser;if(!user)return;const uid=user.uid;if(!/^\d{4}-\d{2}-\d{2}$/.test(date.value)){alert('日付を選択してください');return;}const next=JSON.parse(JSON.stringify(standaloneDayChanges));next[date.value]={day:remove?'default':sel.value};try{await setDoc(doc(db,'users',uid,'settings','timetable'),{dayChangesJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;standaloneDayChanges=next;render();refreshAttendanceSubjectColors();if(attendanceManualSubject&&!attendanceSubjectView.hidden)await loadSubjectAttendance(attendanceManualSubject);d.close();}catch(e){alert('保存できませんでした：'+e.message);}}
  action(d,'保存',()=>save(false));action(d,'この日の変更を解除',()=>save(true));action(d,'閉じる',()=>d.close());d.showModal();
 }
-/* Pull down at the top, with an explicit threshold and no open form. */
-let pullStart=null,pullDistance=0;const pullHint=document.createElement('div');pullHint.className='pull-hint';pullHint.hidden=true;pullHint.textContent='離して再読み込み';document.body.append(pullHint);
-document.addEventListener('touchstart',e=>{pullStart=null;pullDistance=0;if(document.querySelector('dialog[open]')||e.touches.length!==1||e.target.closest('input,textarea,select,button'))return;let node=e.target;while(node&&node!==document.body){if(node.scrollTop>0)return;node=node.parentElement;}if(window.scrollY>0)return;pullStart={x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});
-document.addEventListener('touchmove',e=>{if(!pullStart)return;pullDistance=e.touches[0].clientY-pullStart.y;if(Math.abs(e.touches[0].clientX-pullStart.x)>40){pullStart=null;pullHint.hidden=true;return;}pullHint.hidden=pullDistance<100;},{passive:true});
-document.addEventListener('touchend',()=>{const refresh=pullStart&&pullDistance>=100;pullStart=null;pullHint.hidden=true;if(refresh&&!document.querySelector('dialog[open]'))window.location.reload();});
+/* v23 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
+const pullRefresh = (()=>{
+ const root=document.documentElement;
+ const chrome=document.getElementById('pullRefreshChrome');
+ const spinner=document.getElementById('pullRefreshSpinner');
+ const label=document.getElementById('pullRefreshLabel');
+ let gesture=null,offset=0,phase=window.__pullResume?'loading':'idle',timer=null;
+ const viewport=()=>window.visualViewport?.height||window.innerHeight||document.documentElement.clientHeight||600;
+ const limit=()=>Math.round(viewport()/3);
+ const setOffset=value=>{offset=Math.max(0,Math.min(limit(),value));root.style.setProperty('--pull-offset',offset+'px');};
+ const setPhase=next=>{phase=next;root.dataset.pullPhase=next;chrome.setAttribute('aria-hidden',next==='idle'?'true':'false');};
+ function settle(){
+  if(phase==='idle'||phase==='returning')return;
+  clearTimeout(timer);gesture=null;setPhase('returning');setOffset(0);
+  timer=setTimeout(()=>{setPhase('idle');root.style.removeProperty('--pull-offset');spinner.style.removeProperty('--pull-turn');},320);
+ }
+ function canStart(target){
+  if(phase!=='idle'||document.querySelector('dialog[open]')||target.closest('input,textarea,select,button,[contenteditable="true"]'))return false;
+  if(Math.max(window.scrollY||0,document.documentElement.scrollTop||0)>1)return false;
+  for(let n=target;n&&n!==document.body;n=n.parentElement)if(n.scrollTop>1)return false;
+  return true;
+ }
+ function start(e){
+  if(e.touches.length!==1||!canStart(e.target))return;
+  const t=e.touches[0];if(t.clientX<28)return; // Leave the left edge for app back navigation.
+  gesture={x:t.clientX,y:t.clientY,locked:false};
+ }
+ function move(e){
+  if(!gesture)return;
+  if(e.touches.length!==1){gesture=null;settle();return;}
+  const dx=e.touches[0].clientX-gesture.x,dy=e.touches[0].clientY-gesture.y;
+  if(!gesture.locked){
+   if(Math.abs(dx)<8&&Math.abs(dy)<8)return;
+   if(dy<=0||Math.abs(dx)>dy*.8){gesture=null;return;}
+   if(!e.cancelable){gesture=null;return;}
+   gesture.locked=true;setPhase('pulling');
+  }
+  if(!e.cancelable){gesture=null;settle();return;}
+  e.preventDefault();setOffset(dy);
+  spinner.style.setProperty('--pull-turn',Math.max(0,offset/limit())*300+'deg');
+  label.textContent=offset>=limit()?'離して再読み込み':'下に引いて再読み込み';
+  setPhase(offset>=limit()?'armed':'pulling');
+ }
+ function end(){
+  if(!gesture)return;const ready=gesture.locked&&phase==='armed';gesture=null;
+  if(!ready){settle();return;}
+  if(document.querySelector('dialog[open]')){settle();return;}
+  setOffset(limit());setPhase('loading');label.textContent='読み込み中';
+  if(navigator.onLine===false){label.textContent='オフライン';timer=setTimeout(settle,500);return;}
+  try{sessionStorage.setItem('kadai-pull-refresh',JSON.stringify({at:Date.now()}));}catch(error){}
+  // Paint the spinning/held state before beginning the page reload.
+  timer=setTimeout(()=>{window.location.reload();},100);
+ }
+ document.addEventListener('touchstart',start,{passive:true});
+ document.addEventListener('touchmove',move,{passive:false});
+ document.addEventListener('touchend',end,{passive:true});
+ document.addEventListener('touchcancel',()=>{if(gesture){gesture=null;settle();}},{passive:true});
+ window.addEventListener('resize',()=>{if(phase==='loading')setOffset(limit());else if(gesture){gesture=null;settle();}});
+ document.addEventListener('click',e=>{if(phase!=='idle'&&phase!=='returning'){e.preventDefault();e.stopPropagation();}},{capture:true});
+ window.addEventListener('pageshow',e=>{if(e.persisted){gesture=null;settle();}});
+ if(window.__pullResume){setOffset(limit());setPhase('loading');label.textContent='読み込み中';timer=setTimeout(settle,10000);}
+ window.__finishPullRefresh=()=>{if(window.__pullResume){window.__pullResume=false;requestAnimationFrame(()=>requestAnimationFrame(settle));}};
+ return {start,move,end,settle,get phase(){return phase;},get offset(){return offset;},limit};
+})();
 
 // Recorded dates use the periods configured for that day, including manual input.
 const baseRecordPeriod=recordPeriod;
