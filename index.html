@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v26</title>
+<title>課題管理 v27</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1643,7 +1643,7 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v26・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v27・2026/10/29</div>
 
 
 <header>
@@ -1923,10 +1923,7 @@ Microsoftでログイン
             <strong id="subjectAbsentCount">0</strong>
         </div>
 
-        <div class="attendance-stat-card">
-            <span>遅刻</span>
-            <strong id="subjectLateCount">0</strong>
-        </div>
+        <span id="subjectLateCount" hidden aria-hidden="true">0</span>
 
         <div class="attendance-stat-card">
             <span>ぴ逃げ</span>
@@ -1951,7 +1948,7 @@ Microsoftでログイン
                 <div><label for="attendanceManualPeriod">授業時間</label><select id="attendanceManualPeriod"></select></div>
                 <div style="grid-column:1/-1"><label for="attendanceManualStatus">出席状況</label>
                     <select id="attendanceManualStatus">
-                        <option value="present">出席</option><option value="late">遅刻</option>
+                        <option value="present">出席</option>
                         <option value="absent">欠席</option><option value="pinige">ぴ逃げ</option>
                         <option value="unknown">未判定</option>
                     </select>
@@ -7347,13 +7344,7 @@ function render() {
 const DEFAULT_CLASS_TIMES = ["08:50","10:45","13:15","15:10","17:05"].map(start=>({start,duration:100}));
 /* 表の科目名と科目詳細は同じ既存の欠席回数ルールを使用する。 */
 let attendanceSummaryDocuments=null,attendanceSummaryRevision=0,unsubscribeAttendanceSummary=null;
-function attendanceRisk(stats) {
-    const judged=stats.present+stats.absent+stats.late+stats.pinige;
-    if(!judged)return {key:"no-data",color:"#667085",message:"まだ出席データがありません"};
-    if(stats.absent>=5)return {key:"failed",color:"#dc2626",message:"単位取得ラインを下回っています"};
-    if(stats.absent===4)return {key:"reach",color:"#d99a00",message:"あと1回欠席すると単位取得ラインを下回ります"};
-    return {key:"safe",color:"#1677ff",message:"現在は単位取得ラインを上回っています"};
-}
+function attendanceRisk(stats){return percentageAttendanceRisk(stats); }
 function summarizeAttendance(documents,slots=userTimetableSlots) {
     const result=new Map();
     for(const subject of Object.values(slots))if(typeof subject==="string" && subject.trim() && !result.has(subject))result.set(subject,{present:0,absent:0,late:0,pinige:0,unknown:0});
@@ -8025,7 +8016,7 @@ attendanceSubjectBackButton.onclick =
                 break;
 
             case "late":
-                late++;
+                present++;
                 break;
 
             case "pinige":
@@ -8080,8 +8071,8 @@ if (judgedTotal > 0) {
 
     attendanceRate =
         Math.round(
-            (present / judgedTotal) * 100
-        );
+            (present / judgedTotal) * 1000
+        ) / 10;
 
 }
 
@@ -8122,6 +8113,7 @@ const message =
 const risk=attendanceRisk({present,absent,late,pinige,unknown});
 message.textContent=risk.message;
 message.style.color=risk.color;
+circle.style.background=`conic-gradient(${risk.color} 0deg,${risk.color} ${degree}deg,#e8eef7 ${degree}deg,#e8eef7 360deg)`;
 
 }
 
@@ -8132,7 +8124,7 @@ let attendanceManualSlots = [];
 let attendanceManualDocs = new Map();
 const attendanceManualTimes = {includes:t=>classTimes.some(p=>p.start===t),indexOf:t=>classTimes.findIndex(p=>p.start===t)};
 const attendanceManualDays = ["", "mon", "tue", "wed", "thu", "fri", ""];
-const attendanceManualLabels = {present:"出席", late:"遅刻", absent:"欠席", pinige:"ぴ逃げ", unknown:"未判定"};
+const attendanceManualLabels = {present:"出席", late:"出席", absent:"欠席", pinige:"ぴ逃げ", unknown:"未判定"};
 const attendanceManualDate = document.getElementById("attendanceManualDate");
 const attendanceManualPeriod = document.getElementById("attendanceManualPeriod");
 const attendanceManualStatus = document.getElementById("attendanceManualStatus");
@@ -8270,7 +8262,7 @@ attendanceManualSave.onclick = async () => {
     if (!user || !attendanceManualSubject || attendanceManualFormMode === "view") return;
     const key = attendanceManualKey();
     if (!key) { alert("この科目の授業日・時間を正しく選んでください。未来の日付は登録できません。"); return; }
-    const status = attendanceManualStatus.value;
+    const status = attendanceManualStatus.value==="late"?"present":attendanceManualStatus.value;
     if (!Object.hasOwn(attendanceManualLabels,status)) return;
     if (attendanceManualFormMode === "edit" && (key !== attendanceManualEditingKey || !attendanceManualDocs.has(key))) {
         alert("編集対象が変わりました。もう一度一覧から選び直してください。"); return;
@@ -8637,8 +8629,9 @@ loadTimetable=async function(){const u=auth.currentUser;if(!u)return;const snap=
 function academicDialog(title){const d=document.createElement('dialog');d.className='academic-dialog';const h=document.createElement('h3');h.textContent=title;d.append(h);document.body.append(d);d.addEventListener('close',()=>d.remove());return d;}
 function field(d,label,type,value){const l=document.createElement('label');l.textContent=label;const i=document.createElement('input');i.type=type;i.value=value;l.append(i);d.append(l);return i;}
 function action(d,label,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;d.append(b);return b;}
-function openAcademicSettings(){const d=academicDialog('年度・学期設定');const year=Number(academic?.year)||new Date().getFullYear();const y=field(d,'年度','number',year);const starts=[0,1,2,3].map((n)=>field(d,(n+1)+'クオーター開始日','date',academic?.starts[n]||year+'-'+['04-01','06-01','10-01','12-01'][n]));const end=field(d,'4クオーター終了日の翌日','date',academic?.end||(year+1)+'-04-01');y.onchange=()=>{const saved=academic?.year===+y.value?academic:academic?.archives?.[y.value];starts.forEach((x,i)=>x.value=saved?.starts[i]||y.value+'-'+['04-01','06-01','10-01','12-01'][i]);end.value=saved?.end||(+y.value+1)+'-04-01';};const note=document.createElement('p');note.textContent='開始日は大学の実際の日程に合わせてください。設定した日付で過去の記録も振り分けます。初回は既存の時間割を後期3Qの科目として引き継ぎます。14回科目は時間割設定で「後期を通して」に変更できます。年度を変えると年度別の時間割に切り替わります。以前の年度は同じ年度を指定すると戻せます。';d.append(note);
-action(d,'保存',async()=>{const dates=starts.map(x=>x.value);if(!dates.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))||!end.value||![...dates,end.value].every((x,i,a)=>!i||x>a[i-1])||!Number.isInteger(+y.value)||+y.value<2000||+y.value>2200){alert('日付を開始順に入力してください');return;}const archives=JSON.parse(JSON.stringify(academic?.archives||{}));if(academic&&academic.year!==+y.value){const saved=JSON.parse(JSON.stringify(academic));delete saved.archives;archives[academic.year]=saved;}let next=academic&&academic.year===+y.value?JSON.parse(JSON.stringify(academic)):archives[y.value]?JSON.parse(JSON.stringify(archives[y.value])):{year:+y.value,courses:{H1:{},H2:{},Q1:{},Q2:{},Q3:{},Q4:{}},changes:{}};if(!academic)for(const [slot,name]of Object.entries(legacyTimetableSlots))if(name)next.courses["Q"+legacyQuarter][slot]={name,scope:"Q"+legacyQuarter,total:7,allowed:2};next.archives=archives;next.starts=dates;next.end=end.value;next.viewQuarter=selectedQuarter;try{await persistAcademic(next);d.close();}catch(e){alert('保存できませんでした：'+e.message);}});action(d,'閉じる',()=>d.close());d.showModal();}
+function openAcademicSettings(){const d=academicDialog('年度・学期設定');const year=Number(academic?.year)||new Date().getFullYear();const y=field(d,'年度','number',year);const starts=[0,1,2,3].map((n)=>field(d,(n+1)+'クオーター開始日','date',academic?.starts[n]||year+'-'+['04-01','06-01','10-01','12-01'][n]));const end=field(d,'4クオーター終了日の翌日','date',academic?.end||(year+1)+'-04-01');y.onchange=()=>{const saved=academic?.year===+y.value?academic:academic?.archives?.[y.value];starts.forEach((x,i)=>x.value=saved?.starts[i]||y.value+'-'+['04-01','06-01','10-01','12-01'][i]);end.value=saved?.end||(+y.value+1)+'-04-01';threshold.value=saved?.attendanceThreshold??70;};const threshold=field(d,'単位取得ライン（出席率％）','number',academic?.attendanceThreshold??70);threshold.min='1';threshold.max='100';threshold.step='0.1';
+const note=document.createElement('p');note.textContent='開始日は大学の実際の日程に合わせてください。設定した日付で過去の記録も振り分けます。初回は既存の時間割を後期3Qの科目として引き継ぎます。14回科目は時間割設定で「後期を通して」に変更できます。年度を変えると年度別の時間割に切り替わります。以前の年度は同じ年度を指定すると戻せます。';d.append(note);
+action(d,'保存',async()=>{const dates=starts.map(x=>x.value);if(!Number.isFinite(+threshold.value)||+threshold.value<1||+threshold.value>100||!dates.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))||!end.value||![...dates,end.value].every((x,i,a)=>!i||x>a[i-1])||!Number.isInteger(+y.value)||+y.value<2000||+y.value>2200){alert('日付を開始順に入力してください');return;}const archives=JSON.parse(JSON.stringify(academic?.archives||{}));if(academic&&academic.year!==+y.value){const saved=JSON.parse(JSON.stringify(academic));delete saved.archives;archives[academic.year]=saved;}let next=academic&&academic.year===+y.value?JSON.parse(JSON.stringify(academic)):archives[y.value]?JSON.parse(JSON.stringify(archives[y.value])):{year:+y.value,courses:{H1:{},H2:{},Q1:{},Q2:{},Q3:{},Q4:{}},changes:{}};if(!academic)for(const [slot,name]of Object.entries(legacyTimetableSlots))if(name)next.courses["Q"+legacyQuarter][slot]={name,scope:"Q"+legacyQuarter,total:7,allowed:2};next.attendanceThreshold=+threshold.value;next.archives=archives;next.starts=dates;next.end=end.value;next.viewQuarter=selectedQuarter;try{await persistAcademic(next);d.close();}catch(e){alert('保存できませんでした：'+e.message);}});action(d,'閉じる',()=>d.close());d.showModal();}
 function applyLegacyQuarter(){originalApplySlots(selectedQuarter===legacyQuarter?legacyTimetableSlots:{});document.querySelectorAll('.quarter-select').forEach(x=>x.value=String(selectedQuarter));paintAcademicCharts();}
 function switchQuarter(q){if(![1,2,3,4].includes(Number(q)))return;selectedQuarter=Number(q);attendanceSubjectRequest++;attendanceSubjectView.hidden=true;if(academic){applyAcademic();}else{applyLegacyQuarter();}}
 for(const view of [attendanceView,timetableSettingsView]){
@@ -8658,7 +8651,7 @@ function paintAcademicCharts(){
   cell.replaceChildren();cell.classList.toggle('has-chart',!!name&&chartMode);if(!name)return;
   if(!chartMode){cell.textContent=name;cell.setAttribute('aria-label',name);return;}
   const stats=sums.get(name)||{present:0,absent:0,late:0,pinige:0,unknown:0};const total=stats.present+stats.absent+stats.late+stats.pinige;
-  const rate=total?Math.round(stats.present*100/total):0;
+  const rate=total?Math.round(stats.present*1000/total)/10:0;
   const circle=document.createElement('span');circle.className='slot-ring';circle.style.background='conic-gradient('+attendanceRisk(stats).color+' '+rate+'%,#e3e9f3 0)';
   const value=document.createElement('span');value.textContent=attendanceSummaryDocuments===null?'…':total?rate+'%':'—';circle.append(value);
   cell.setAttribute('aria-label',name+'：'+(total?rate+'%':'記録なし'));cell.append(circle);
@@ -8667,7 +8660,7 @@ function paintAcademicCharts(){
 const baseSummarize=summarizeAttendance;
 summarizeAttendance=function(documents,slots=userTimetableSlots){if(!academic)return baseSummarize(documents,slots);const result=new Map();for(const c of Object.values(activeCourses()))if(!result.has(c.name))result.set(c.name,{present:0,absent:0,late:0,pinige:0,unknown:0,allowed:c.allowed});for(const r of documents||[]){const key=r.data.classKey||r.id,c=courseForRecord(r.data,key);if(!c||courseIdentity(c)!==courseIdentity(selectedCourse(c.name)))continue;const stats=result.get(c.name);if(stats)stats[['present','absent','late','pinige'].includes(r.data.status)?r.data.status:'unknown']++;}return result;};
 const baseRisk=attendanceRisk;
-attendanceRisk=function(stats){if(!academic)return baseRisk(stats);const allowed=stats.allowed??selectedCourse(attendanceManualSubject)?.allowed??4;if(stats.absent>allowed)return {key:'failed',color:'#dc2626',message:'欠席許容回数を超えています'};if(stats.absent===allowed)return {key:'reach',color:'#d99a00',message:'あと1回欠席すると許容回数を超えます'};return {key:'safe',color:'#1677ff',message:'欠席 '+stats.absent+'回 / 許容 '+allowed+'回'};};
+attendanceRisk=function(stats){return percentageAttendanceRisk(stats);};
 const baseRefreshColors=refreshAttendanceSubjectColors;
 refreshAttendanceSubjectColors=function(){baseRefreshColors();paintAcademicCharts();};
 for(const cell of document.querySelectorAll('.timetable-cell'))cell.onclick=()=>{selectedTimetableCell=cell;if(!academic){openAcademicSettings();return;}const c=activeCourses()[cell.dataset.slot];subjectNameInput.value=c?.name||'';scopeInput.value=c?.scope||'Q'+selectedQuarter;totalInput.value=c?.total||7;allowedInput.value=c?.allowed??2;subjectInputDialog.showModal();};
@@ -8684,7 +8677,7 @@ function openDayChange(){
  async function save(remove){const user=auth.currentUser;if(!user)return;const uid=user.uid;if(!/^\d{4}-\d{2}-\d{2}$/.test(date.value)){alert('日付を選択してください');return;}const next=JSON.parse(JSON.stringify(standaloneDayChanges));next[date.value]={day:remove?'default':sel.value};try{await setDoc(doc(db,'users',uid,'settings','timetable'),{dayChangesJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;standaloneDayChanges=next;render();refreshAttendanceSubjectColors();if(attendanceManualSubject&&!attendanceSubjectView.hidden)await loadSubjectAttendance(attendanceManualSubject);d.close();}catch(e){alert('保存できませんでした：'+e.message);}}
  action(d,'保存',()=>save(false));action(d,'この日の変更を解除',()=>save(true));action(d,'閉じる',()=>d.close());d.showModal();
 }
-/* v26 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
+/* v27 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
 const pullRefresh = (()=>{
  const root=document.documentElement;
  const chrome=document.getElementById('pullRefreshChrome');
@@ -8749,7 +8742,7 @@ const pullRefresh = (()=>{
  return {start,move,end,settle,get phase(){return phase;},get offset(){return offset;},limit};
 })();
 
-/* v26: staged timetable editing and in-place refresh. */
+/* v27: staged timetable editing and in-place refresh. */
 var timetableWizard=null;
 function cloneAcademic(value){return JSON.parse(JSON.stringify(value));}
 function wizardCourseKey(c){return c.scope+'|'+c.name;}
@@ -8876,7 +8869,7 @@ async function refreshCurrentScreen(){
  const snapshot=await getDocsFromServer(userTasksCollection());if(isCurrent())applyCloudSnapshot(snapshot);
 }
 
-/* v26 course load: seven/fourteen weeks multiplied by weekly slots. */
+/* v27 course load: seven/fourteen weeks multiplied by weekly slots. */
 function courseLoad(course,model=academic){
  if(!course)return {total:0,allowed:0,weeklySlots:0};
  const count=Object.values(model?.courses?.[course.scope]||{}).filter(c=>c.name===course.name).length||1;
@@ -8891,7 +8884,7 @@ const beforeLoadWizardNext=wizardNextAcademic;
 wizardNextAcademic=function(...args){return normalizeCourseLoads(beforeLoadWizardNext(...args));};
 const oldManualRender=renderAttendanceManual;
 const courseLoadNotice=document.createElement('p');courseLoadNotice.className='attendance-load-message';attendanceSubjectTitle.after(courseLoadNotice);
-renderAttendanceManual=function(name,...args){oldManualRender(name,...args);const c=selectedCourse(name);courseLoadNotice.textContent=c?'全'+c.total+'回（週'+c.weeklySlots+'コマ）・欠席許容'+c.allowed+'回':'';};
+renderAttendanceManual=function(name,...args){oldManualRender(name,...args);const c=selectedCourse(name);courseLoadNotice.textContent=c?'全'+c.total+'回（週'+c.weeklySlots+'コマ）':'';};
 const swapHeader=attendanceView.querySelector('.attendance-header'),swapBar=swapHeader.querySelector('.academic-toolbar');
 const dayChangeControl=document.getElementById('dayChangeButton'),chartControl=document.getElementById('attendanceChartToggle');
 if(swapBar&&dayChangeControl&&chartControl){swapBar.append(dayChangeControl);swapHeader.append(chartControl);}
@@ -8907,7 +8900,7 @@ async function writeDefaultAttendance(user,date,period,first,course,periods){
   if(auth.currentUser?.uid!==uid||logoutInProgress)throw Error('ACCOUNT_CHANGED');
   const old=target.exists()?target.data():{};if(autoAttendanceManual(old))return;
   let status='present',reason='online_default_present',kind='online_auto';
-  if(sourceRef){const firstData=source?.exists()?source.data():null;status=firstData&&['present','late','absent','pinige'].includes(firstData.status)?firstData.status:'unknown';reason=status==='unknown'?'awaiting_first_period':'consecutive_first_period';kind='consecutive_auto';}
+  if(sourceRef){const firstData=source?.exists()?source.data():null;status=firstData&&['present','late','absent','pinige'].includes(firstData.status)?(firstData.status==='late'?'present':firstData.status):'unknown';reason=status==='unknown'?'awaiting_first_period':'consecutive_first_period';kind='consecutive_auto';}
   else if(!course.online)return;
   if(old.status===status&&old.source===kind&&(!sourceKey||old.inheritedFromKey===sourceKey))return;
   tx.set(targetRef,{classKey:key,period,status,source:kind,manualLocked:false,decisionReason:reason,inheritedFromKey:sourceKey||'',updatedAt:serverTimestamp()},{merge:true});
@@ -8942,6 +8935,22 @@ const beforeAutomaticRefresh=refreshCurrentScreen;
 refreshCurrentScreen=async function(){await fillDueAutomaticAttendance();await beforeAutomaticRefresh();};
 setInterval(()=>{if(!document.hidden)void fillDueAutomaticAttendance();},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void fillDueAutomaticAttendance();});
+
+/* v27: percentage-based credit line and compatibility for old attendance records. */
+function attendanceCreditLine(){const value=Number(academic?.attendanceThreshold??70);return Number.isFinite(value)&&value>0&&value<=100?value:70;}
+const beforePresentOnlyRead=readAttendanceDocuments;
+readAttendanceDocuments=async function(...args){const documents=await beforePresentOnlyRead(...args);return documents.map(record=>record.data.status==='late'?{...record,data:{...record.data,status:'present'}}:record);};
+const beforePresentOnlySummary=summarizeAttendance;
+summarizeAttendance=function(...args){const result=beforePresentOnlySummary(...args);for(const stats of result.values()){stats.present+=(stats.late||0);stats.late=0;}return result;};
+function percentageAttendanceRisk(stats){
+ const present=(Number(stats.present)||0)+(Number(stats.late)||0),judged=present+(Number(stats.absent)||0)+(Number(stats.pinige)||0),line=attendanceCreditLine();
+ if(!judged)return {key:'no-data',color:'#667085',message:'まだ出席データがありません'};
+ const rate=100*present/judged;
+ if(rate+1e-9<line)return {key:'failed',color:'#dc2626',message:'現在は単位取得ラインを下回っています（基準'+line+'%）'};
+ if(100*present/(judged+1)+1e-9<line)return {key:'reach',color:'#d99a00',message:'あと1回欠席すると単位取得ラインを下回ります（基準'+line+'%）'};
+ return {key:'safe',color:'#1677ff',message:Math.abs(rate-line)<1e-9?'現在は単位取得ライン上です（基準'+line+'%）':'現在は単位取得ラインを上回っています（基準'+line+'%）'};
+}
+attendanceRisk=percentageAttendanceRisk;
 
 // Recorded dates use the periods configured for that day, including manual input.
 const baseRecordPeriod=recordPeriod;
