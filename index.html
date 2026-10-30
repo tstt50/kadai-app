@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v27</title>
+<title>課題管理 v29</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1638,12 +1638,27 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 </style><style>
 #attendanceChartToggle{grid-column:3;grid-row:1;justify-self:end;background:white;border:1px solid #d5dceb;border-radius:9px;padding:8px 5px;font-size:12px;color:#234;white-space:nowrap}
 #attendanceView .academic-toolbar #dayChangeButton{font-size:11px;padding:5px;justify-self:auto}
+</style><style>
+#retryButton{display:none!important}
+#initialSettingsDialog{border:0;border-radius:20px;padding:0;width:min(92vw,440px);max-height:85dvh;overflow:auto}
+#initialSettingsDialog .dialog-content{padding:24px}
+#initialSettingsDialog button{box-sizing:border-box;display:block;width:100%;margin:14px 0;padding:14px;border:0;border-radius:11px;font-weight:700}
+#initialSettingsDialog button.cancel{color:#1677ff;background:#eee}
+</style><style>
+/* Keep the count visible; only the middle text column may shrink. */
+.future-row{grid-template-columns:clamp(62px,18vw,90px) minmax(0,1fr) max-content;column-gap:8px;min-width:0;box-sizing:border-box}
+.future-row> :nth-child(2){min-width:0;overflow:hidden}
+.future-row .future-preview,.future-row .future-subjects{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.future-row .future-right{min-width:max-content;flex-wrap:nowrap;white-space:nowrap;justify-self:end;gap:6px}
+.future-row .badge{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;white-space:nowrap;word-break:normal;overflow-wrap:normal;line-height:1.4}
+.future-row .arrow{flex:0 0 auto;white-space:nowrap}
+.future-row .future-weekday{display:inline-block;white-space:nowrap}
 </style></head>
 
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v27・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v29・2026/10/29</div>
 
 
 <header>
@@ -5282,7 +5297,7 @@ function goBackInApp() {
     const dialogs=openAppDialogs();
     if(dialogs.length){
         const dialog=dialogs[dialogs.length-1];if(dialog.id==="classTimeDialog" && classTimeSaving)return false;
-        const buttons={classTimeDialog:"classTimeCancel",taskDialog:"cancelButton",detailDialog:"detailCloseButton",settingsDialog:"settingsCloseButton",attendanceLinkDialog:"attendanceLinkClose",trashDialog:"trashCloseButton",accountInfoDialog:"accountInfoCloseButton",subjectInputDialog:"subjectCancelButton"};
+        const buttons={classTimeDialog:"classTimeCancel",taskDialog:"cancelButton",detailDialog:"detailCloseButton",settingsDialog:"settingsCloseButton",initialSettingsDialog:"initialSettingsClose",attendanceLinkDialog:"attendanceLinkClose",trashDialog:"trashCloseButton",accountInfoDialog:"accountInfoCloseButton",subjectInputDialog:"subjectCancelButton"};
         const button=document.getElementById(buttons[dialog.id] || "");
         if(button && typeof button.onclick==="function")button.click();else dialog.close();return true;
     }
@@ -8677,7 +8692,7 @@ function openDayChange(){
  async function save(remove){const user=auth.currentUser;if(!user)return;const uid=user.uid;if(!/^\d{4}-\d{2}-\d{2}$/.test(date.value)){alert('日付を選択してください');return;}const next=JSON.parse(JSON.stringify(standaloneDayChanges));next[date.value]={day:remove?'default':sel.value};try{await setDoc(doc(db,'users',uid,'settings','timetable'),{dayChangesJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;standaloneDayChanges=next;render();refreshAttendanceSubjectColors();if(attendanceManualSubject&&!attendanceSubjectView.hidden)await loadSubjectAttendance(attendanceManualSubject);d.close();}catch(e){alert('保存できませんでした：'+e.message);}}
  action(d,'保存',()=>save(false));action(d,'この日の変更を解除',()=>save(true));action(d,'閉じる',()=>d.close());d.showModal();
 }
-/* v27 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
+/* v28 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
 const pullRefresh = (()=>{
  const root=document.documentElement;
  const chrome=document.getElementById('pullRefreshChrome');
@@ -8742,7 +8757,7 @@ const pullRefresh = (()=>{
  return {start,move,end,settle,get phase(){return phase;},get offset(){return offset;},limit};
 })();
 
-/* v27: staged timetable editing and in-place refresh. */
+/* v28: staged timetable editing and in-place refresh. */
 var timetableWizard=null;
 function cloneAcademic(value){return JSON.parse(JSON.stringify(value));}
 function wizardCourseKey(c){return c.scope+'|'+c.name;}
@@ -8869,7 +8884,7 @@ async function refreshCurrentScreen(){
  const snapshot=await getDocsFromServer(userTasksCollection());if(isCurrent())applyCloudSnapshot(snapshot);
 }
 
-/* v27 course load: seven/fourteen weeks multiplied by weekly slots. */
+/* v28 course load: seven/fourteen weeks multiplied by weekly slots. */
 function courseLoad(course,model=academic){
  if(!course)return {total:0,allowed:0,weeklySlots:0};
  const count=Object.values(model?.courses?.[course.scope]||{}).filter(c=>c.name===course.name).length||1;
@@ -8936,7 +8951,7 @@ refreshCurrentScreen=async function(){await fillDueAutomaticAttendance();await b
 setInterval(()=>{if(!document.hidden)void fillDueAutomaticAttendance();},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void fillDueAutomaticAttendance();});
 
-/* v27: percentage-based credit line and compatibility for old attendance records. */
+/* v28: percentage-based credit line and compatibility for old attendance records. */
 function attendanceCreditLine(){const value=Number(academic?.attendanceThreshold??70);return Number.isFinite(value)&&value>0&&value<=100?value:70;}
 const beforePresentOnlyRead=readAttendanceDocuments;
 readAttendanceDocuments=async function(...args){const documents=await beforePresentOnlyRead(...args);return documents.map(record=>record.data.status==='late'?{...record,data:{...record.data,status:'present'}}:record);};
@@ -8951,6 +8966,37 @@ function percentageAttendanceRisk(stats){
  return {key:'safe',color:'#1677ff',message:Math.abs(rate-line)<1e-9?'現在は単位取得ライン上です（基準'+line+'%）':'現在は単位取得ラインを上回っています（基準'+line+'%）'};
 }
 attendanceRisk=percentageAttendanceRisk;
+
+/* v28 settings grouping and pull-down reconnection. */
+const chartNameButton=document.getElementById('attendanceChartToggle');chartNameButton.textContent='出席率';chartNameButton.setAttribute('aria-label','時間割と出席率の表示を切り替え');
+const initialSettingsDialog=document.createElement('dialog');initialSettingsDialog.id='initialSettingsDialog';
+const initialSettingsContent=document.createElement('div');initialSettingsContent.className='dialog-content';
+const initialSettingsHeading=document.createElement('h2');initialSettingsHeading.textContent='初期設定';initialSettingsContent.append(initialSettingsHeading);
+for(const id of ['academicSettingsButton','classTimeSettingsButton','attendanceLinkButton']){
+ const button=document.getElementById(id);const handler=button.onclick;
+ initialSettingsContent.append(button);
+ button.onclick=async event=>{initialSettingsDialog.close();await handler(event);};
+}
+const initialSettingsClose=document.createElement('button');initialSettingsClose.id='initialSettingsClose';initialSettingsClose.type='button';initialSettingsClose.className='cancel';initialSettingsClose.textContent='戻る';
+initialSettingsClose.onclick=()=>{initialSettingsDialog.close();if(auth.currentUser&&!logoutInProgress)settingsDialog.showModal();};
+initialSettingsContent.append(initialSettingsClose);initialSettingsDialog.append(initialSettingsContent);document.body.append(initialSettingsDialog);
+initialSettingsDialog.addEventListener('cancel',event=>{event.preventDefault();initialSettingsClose.click();});
+const initialSettingsButton=document.createElement('button');initialSettingsButton.id='initialSettingsButton';initialSettingsButton.type='button';initialSettingsButton.className='complete-button';initialSettingsButton.textContent='初期設定';
+initialSettingsButton.onclick=()=>{settingsDialog.close();initialSettingsDialog.showModal();};document.getElementById('trashButton').before(initialSettingsButton);
+retryButton.remove();
+async function reconnectCloudSync(){
+ const user=auth.currentUser;if(!user||logoutInProgress)return;
+ const uid=user.uid,same=()=>auth.currentUser?.uid===uid&&!logoutInProgress;
+ await startRealtimeSync();if(!same())return;
+ if(unsubscribeTimetable)unsubscribeTimetable();
+ unsubscribeTimetable=onSnapshot(doc(db,'users',uid,'settings','timetable'),snap=>{if(same())receiveTimetable(snap.exists()?snap.data():{});},error=>{if(same())setSyncStatus('error','時間割の同期に失敗しました');});
+ if(unsubscribeClassTimes)unsubscribeClassTimes();
+ unsubscribeClassTimes=onSnapshot(classTimeRef(uid),snap=>{if(same())applyClassTimes(snap.exists()?snap.data():null);},error=>{if(same())setSyncStatus('error','授業時間の同期に失敗しました');});
+ if(unsubscribeAttendanceSummary)unsubscribeAttendanceSummary();
+ if(same())startAttendanceSummarySync(user);
+}
+const beforeReconnectRefresh=refreshCurrentScreen;
+refreshCurrentScreen=async function(){const uid=auth.currentUser?.uid;await reconnectCloudSync();if(uid&&auth.currentUser?.uid===uid&&!logoutInProgress)await beforeReconnectRefresh();};
 
 // Recorded dates use the periods configured for that day, including manual input.
 const baseRecordPeriod=recordPeriod;
