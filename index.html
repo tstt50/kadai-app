@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v29</title>
+<title>課題管理 v31</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1583,6 +1583,7 @@ body.timetable-settings-open #timetableSettingsView {
 
 
 #attendanceBackButton, #attendanceSubjectBackButton { display: none !important; }
+.course-cell-name,.course-cell-room{display:block;max-width:100%;overflow-wrap:anywhere;word-break:normal}.course-cell-room{font-size:.72em;line-height:1.35;margin-top:4px;font-weight:normal}
 </style>
 <style>
 .academic-toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.attendance-header{flex-wrap:wrap;gap:8px}.academic-toolbar button,.academic-toolbar select{font-size:13px;padding:8px;border:1px solid #d5dceb;border-radius:9px;background:white;color:#234}.academic-dialog{box-sizing:border-box;width:min(94vw,460px);max-height:85dvh;overflow:auto;border:0;border-radius:16px;padding:20px}.academic-dialog label,#subjectInputDialog label{display:block;margin:12px 0}.academic-dialog input,#subjectInputDialog select,#subjectInputDialog input{box-sizing:border-box;width:100%;min-width:0;max-width:100%;padding:10px}.academic-dialog button{margin:6px;padding:10px}.academic-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;padding:12px}.academic-charts[hidden]{display:none}.academic-chart{display:flex;flex-direction:column;align-items:center;gap:10px;background:white;border:1px solid #ddd;border-radius:16px;padding:16px;overflow-wrap:anywhere}.academic-ring{width:90px;height:90px;border-radius:50%;display:grid;place-items:center}.academic-ring>span{background:white;width:66px;height:66px;display:grid;place-items:center;border-radius:50%;font-size:20px}.attendance-manual-row{display:flex!important;align-items:center!important;gap:8px}.attendance-record-label{flex:1;display:grid;grid-template-columns:minmax(90px,1.5fr) minmax(45px,0.8fr) minmax(54px,1fr);gap:6px;font-variant-numeric:tabular-nums;align-items:center;font-size:13px;min-width:0}.attendance-record-label span:last-child{text-align:center;white-space:nowrap}.pull-hint{position:fixed;top:env(safe-area-inset-top,0);left:50%;transform:translateX(-50%);z-index:10000;padding:10px;background:#1677ff;color:white;border-radius:12px;pointer-events:none}
@@ -1658,7 +1659,7 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v29・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v31・2026/10/29</div>
 
 
 <header>
@@ -2095,6 +2096,9 @@ Microsoftでログイン
             placeholder="科目名を入力"
             autocomplete="off"
         >
+
+        <label for="subjectRoomInput">教室</label>
+        <input type="text" id="subjectRoomInput" placeholder="例：4号館 301教室" autocomplete="off" maxlength="100">
 
         <div class="subject-input-actions">
 
@@ -2800,6 +2804,9 @@ Microsoftを連携
 <div id="classTimeFields"></div><p id="classTimeError" role="alert" style="color:#d70015"></p>
 <div class="dialog-buttons"><button type="button" class="cancel" id="classTimeCancel">キャンセル</button><button type="submit" class="save" id="classTimeSave">保存</button></div>
 </form></dialog><script type="module">
+const JAPAN_HOLIDAYS={"2020-01-01":"元日","2020-01-13":"成人の日","2020-02-11":"建国記念の日","2020-02-23":"天皇誕生日","2020-02-24":"休日","2020-03-20":"春分の日","2020-04-29":"昭和の日","2020-05-03":"憲法記念日","2020-05-04":"みどりの日","2020-05-05":"こどもの日","2020-05-06":"休日","2020-07-23":"海の日","2020-07-24":"スポーツの日","2020-08-10":"山の日","2020-09-21":"敬老の日","2020-09-22":"秋分の日","2020-11-03":"文化の日","2020-11-23":"勤労感謝の日","2021-01-01":"元日","2021-01-11":"成人の日","2021-02-11":"建国記念の日","2021-02-23":"天皇誕生日","2021-03-20":"春分の日","2021-04-29":"昭和の日","2021-05-03":"憲法記念日","2021-05-04":"みどりの日","2021-05-05":"こどもの日","2021-07-22":"海の日","2021-07-23":"スポーツの日","2021-08-08":"山の日","2021-08-09":"休日","2021-09-20":"敬老の日","2021-09-23":"秋分の日","2021-11-03":"文化の日","2021-11-23":"勤労感謝の日","2022-01-01":"元日","2022-01-10":"成人の日","2022-02-11":"建国記念の日","2022-02-23":"天皇誕生日","2022-03-21":"春分の日","2022-04-29":"昭和の日","2022-05-03":"憲法記念日","2022-05-04":"みどりの日","2022-05-05":"こどもの日","2022-07-18":"海の日","2022-08-11":"山の日","2022-09-19":"敬老の日","2022-09-23":"秋分の日","2022-10-10":"スポーツの日","2022-11-03":"文化の日","2022-11-23":"勤労感謝の日","2023-01-01":"元日","2023-01-02":"休日","2023-01-09":"成人の日","2023-02-11":"建国記念の日","2023-02-23":"天皇誕生日","2023-03-21":"春分の日","2023-04-29":"昭和の日","2023-05-03":"憲法記念日","2023-05-04":"みどりの日","2023-05-05":"こどもの日","2023-07-17":"海の日","2023-08-11":"山の日","2023-09-18":"敬老の日","2023-09-23":"秋分の日","2023-10-09":"スポーツの日","2023-11-03":"文化の日","2023-11-23":"勤労感謝の日","2024-01-01":"元日","2024-01-08":"成人の日","2024-02-11":"建国記念の日","2024-02-12":"休日","2024-02-23":"天皇誕生日","2024-03-20":"春分の日","2024-04-29":"昭和の日","2024-05-03":"憲法記念日","2024-05-04":"みどりの日","2024-05-05":"こどもの日","2024-05-06":"休日","2024-07-15":"海の日","2024-08-11":"山の日","2024-08-12":"休日","2024-09-16":"敬老の日","2024-09-22":"秋分の日","2024-09-23":"休日","2024-10-14":"スポーツの日","2024-11-03":"文化の日","2024-11-04":"休日","2024-11-23":"勤労感謝の日","2025-01-01":"元日","2025-01-13":"成人の日","2025-02-11":"建国記念の日","2025-02-23":"天皇誕生日","2025-02-24":"休日","2025-03-20":"春分の日","2025-04-29":"昭和の日","2025-05-03":"憲法記念日","2025-05-04":"みどりの日","2025-05-05":"こどもの日","2025-05-06":"休日","2025-07-21":"海の日","2025-08-11":"山の日","2025-09-15":"敬老の日","2025-09-23":"秋分の日","2025-10-13":"スポーツの日","2025-11-03":"文化の日","2025-11-23":"勤労感謝の日","2025-11-24":"休日","2026-01-01":"元日","2026-01-12":"成人の日","2026-02-11":"建国記念の日","2026-02-23":"天皇誕生日","2026-03-20":"春分の日","2026-04-29":"昭和の日","2026-05-03":"憲法記念日","2026-05-04":"みどりの日","2026-05-05":"こどもの日","2026-05-06":"休日","2026-07-20":"海の日","2026-08-11":"山の日","2026-09-21":"敬老の日","2026-09-22":"休日","2026-09-23":"秋分の日","2026-10-12":"スポーツの日","2026-11-03":"文化の日","2026-11-23":"勤労感謝の日","2027-01-01":"元日","2027-01-11":"成人の日","2027-02-11":"建国記念の日","2027-02-23":"天皇誕生日","2027-03-21":"春分の日","2027-03-22":"休日","2027-04-29":"昭和の日","2027-05-03":"憲法記念日","2027-05-04":"みどりの日","2027-05-05":"こどもの日","2027-07-19":"海の日","2027-08-11":"山の日","2027-09-20":"敬老の日","2027-09-23":"秋分の日","2027-10-11":"スポーツの日","2027-11-03":"文化の日","2027-11-23":"勤労感謝の日"};
+function holidayName(date){return JAPAN_HOLIDAYS[date]||'';}
+
 
 import {
     initializeApp
@@ -8630,7 +8637,7 @@ function halfOf(q){return q<=2?'H1':'H2';}
 function activeCourses(q=selectedQuarter){if(!academic)return {};return {...academic.courses[halfOf(q)],...academic.courses['Q'+q]};}
 function courseIdentity(c){return c?c.scope+'|'+c.name:'';}
 function selectedCourse(name){return Object.values(activeCourses()).find(c=>c.name===name);}
-function dateSchedule(date){const stored=standaloneDayChanges?.[date];const change=stored?.day==='default'?null:stored||academic?.changes?.[date];if(!academic)return {q:0,day:change?.day||timetableDays[new Date(date+'T12:00:00').getDay()],periods:[],closed:change?.day==='off'};const q=quarterOn(date);return {q,day:change?.day||timetableDays[new Date(date+'T12:00:00').getDay()],periods:change?.periods||classTimes,closed:change?.day==='off'};}
+function dateSchedule(date){const stored=standaloneDayChanges?.[date];const change=(stored?.day==='default'?null:stored||academic?.changes?.[date])||(holidayName(date)?{day:'off'}:null);if(!academic)return {q:0,day:change?.day||timetableDays[new Date(date+'T12:00:00').getDay()],periods:[],closed:change?.day==='off'};const q=quarterOn(date);return {q,day:change?.day||timetableDays[new Date(date+'T12:00:00').getDay()],periods:change?.periods||classTimes,closed:change?.day==='off'};}
 function courseForRecord(data,key){const [date,time]=key.split('_'),s=dateSchedule(date);if(!s.q||s.closed)return null;const n=Number(data.period)||s.periods.findIndex(p=>p.start===time)+1;return activeCourses(s.q)[s.day+'_'+n]||null;}
 function recordForSubject(data,key,name){if(!academic)return true;return courseIdentity(courseForRecord(data,key))===courseIdentity(selectedCourse(name));}
 function academicNames(date){if(!academic)return legacyTimetableSlots||userTimetableSlots;const s=dateSchedule(date);if(!s.q||s.closed)return {};const out={};for(const [slot,c] of Object.entries(activeCourses(s.q)))out[slot]=c.name;return out;}
@@ -8664,7 +8671,7 @@ function paintAcademicCharts(){
  document.querySelectorAll('#attendanceView .attendance-subject-cell').forEach(cell=>{
   const name=cell.dataset.subject??cell.textContent.trim();cell.dataset.subject=name;
   cell.replaceChildren();cell.classList.toggle('has-chart',!!name&&chartMode);if(!name)return;
-  if(!chartMode){cell.textContent=name;cell.setAttribute('aria-label',name);return;}
+  if(!chartMode){renderCourseCell(cell,{name,room:activeCourses()[cell.dataset.slot]?.room||''});cell.setAttribute('aria-label',name);return;}
   const stats=sums.get(name)||{present:0,absent:0,late:0,pinige:0,unknown:0};const total=stats.present+stats.absent+stats.late+stats.pinige;
   const rate=total?Math.round(stats.present*1000/total)/10:0;
   const circle=document.createElement('span');circle.className='slot-ring';circle.style.background='conic-gradient('+attendanceRisk(stats).color+' '+rate+'%,#e3e9f3 0)';
@@ -8688,7 +8695,7 @@ function openDayChange(){
  const label=document.createElement('label');label.textContent='何曜日課にするか';const sel=document.createElement('select');sel.id='dayChangeWeekday';
  for(const [v,t]of Object.entries({mon:'月曜日課',tue:'火曜日課',wed:'水曜日課',thu:'木曜日課',fri:'金曜日課',off:'休講日'})){const o=document.createElement('option');o.value=v;o.textContent=t;sel.append(o);}label.append(sel);d.append(label);
  const note=document.createElement('p');note.textContent='授業時刻はそのままです。この日だけ選んだ曜日の科目になり、科目別の出席データから手動登録できます。';d.append(note);
- const fill=()=>{sel.value=standaloneDayChanges[date.value]?.day||academic?.changes?.[date.value]?.day||timetableDays[new Date(date.value+'T12:00:00').getDay()]||'mon';};date.onchange=fill;fill();
+ const fill=()=>{const schedule=dateSchedule(date.value);sel.value=schedule.closed?'off':schedule.day||'mon';note.textContent=(holidayName(date.value)?'祝日：'+holidayName(date.value)+'。標準は休講です。':'')+'この日だけ選んだ曜日課になります。変更を解除すると祝日は休講に戻ります。';};date.onchange=fill;fill();
  async function save(remove){const user=auth.currentUser;if(!user)return;const uid=user.uid;if(!/^\d{4}-\d{2}-\d{2}$/.test(date.value)){alert('日付を選択してください');return;}const next=JSON.parse(JSON.stringify(standaloneDayChanges));next[date.value]={day:remove?'default':sel.value};try{await setDoc(doc(db,'users',uid,'settings','timetable'),{dayChangesJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;standaloneDayChanges=next;render();refreshAttendanceSubjectColors();if(attendanceManualSubject&&!attendanceSubjectView.hidden)await loadSubjectAttendance(attendanceManualSubject);d.close();}catch(e){alert('保存できませんでした：'+e.message);}}
  action(d,'保存',()=>save(false));action(d,'この日の変更を解除',()=>save(true));action(d,'閉じる',()=>d.close());d.showModal();
 }
@@ -8774,6 +8781,14 @@ const wizardPrevious=action(wizardActions,'前の設定へ',()=>{if(!timetableWi
 const wizardSave=action(wizardActions,'保存',()=>saveTimetableWizard());wizardSave.id='timetableWizardSave';
 const wizardClose=action(wizardActions,'閉じる',()=>timetableSettingsBackButton.click());
 timetableSettingsView.append(wizardNotice,wizardActions);
+
+function renderCourseCell(cell,course){
+ cell.replaceChildren();cell.dataset.subject=course?.name||'';
+ if(!course?.name)return;
+ const name=document.createElement('span');name.className='course-cell-name';name.textContent=course.name;cell.append(name);
+ if(course.room){const room=document.createElement('small');room.className='course-cell-room';room.textContent='（'+course.room+'）';cell.append(room);}
+}
+
 function renderTimetableWizard(){
  const w=timetableWizard;if(!w)return;
  const labels={subjects:'① 科目を入力して保存してください。',quarter:'② このQだけの7回科目をタップして緑色にしてください。選ばなかった科目は半期14回です。',online:'③ オンライン科目をタップして赤色にしてください。'};
@@ -8781,7 +8796,7 @@ function renderTimetableWizard(){
  wizardSave.disabled=w.saving;wizardPrevious.hidden=w.stage==='subjects';wizardPrevious.disabled=w.saving;wizardClose.disabled=w.saving;
  document.querySelectorAll('#timetableSettingsView .quarter-select').forEach(x=>{x.value=String(w.q);x.disabled=w.saving;});
  document.querySelectorAll('.timetable-cell').forEach(cell=>{
-  const c=w.courses[cell.dataset.slot];cell.textContent=c?.name||'';
+  const c=w.courses[cell.dataset.slot];renderCourseCell(cell,c);
   cell.classList.toggle('quarter-selected',!!c&&w.stage==='quarter'&&w.quarterChoices[cell.dataset.slot]===true);
   cell.classList.toggle('online-selected',!!c&&w.stage==='online'&&c.online===true);
   cell.setAttribute('aria-pressed',String(!!c&&(w.stage==='quarter'?w.quarterChoices[cell.dataset.slot]===true:w.stage==='online'?c.online===true:false)));
@@ -8804,6 +8819,7 @@ for(const cell of document.querySelectorAll('.timetable-cell'))cell.onclick=()=>
  const w=timetableWizard;if(!w||w.saving)return;
  if(w.stage!=='subjects'){toggleWizardCourse(cell.dataset.slot);return;}
  selectedTimetableCell=cell;subjectNameInput.value=w.courses[cell.dataset.slot]?.name||'';
+ document.getElementById('subjectRoomInput').value=w.courses[cell.dataset.slot]?.room||'';
  scopeLabel.hidden=true;totalInput.parentElement.hidden=true;allowedInput.parentElement.hidden=true;
  subjectInputDialog.showModal();subjectNameInput.focus?.();
 };
@@ -8811,7 +8827,9 @@ subjectSaveButton.onclick=()=>{
  const w=timetableWizard;if(!w||!selectedTimetableCell||w.saving)return;
  const name=subjectNameInput.value.trim();if(!name){alert('科目名を入力してください');return;}
  const slot=selectedTimetableCell.dataset.slot,old=w.courses[slot];
- w.courses[slot]=old?{...old,name}:{name,scope:halfOf(w.q),total:14,allowed:4,online:false};
+ const room=document.getElementById('subjectRoomInput').value.trim();
+ if(room.length>100){alert('教室は100文字以内で入力してください');return;}
+ w.courses[slot]=old?{...old,name,room}:{name,room,scope:halfOf(w.q),total:14,allowed:4,online:false};
  w.dirty=true;subjectInputDialog.close();renderTimetableWizard();
 };
 subjectDeleteButton.onclick=()=>{if(!timetableWizard||!selectedTimetableCell||timetableWizard.saving)return;delete timetableWizard.courses[selectedTimetableCell.dataset.slot];timetableWizard.dirty=true;subjectInputDialog.close();renderTimetableWizard();};
@@ -8820,7 +8838,7 @@ function wizardNextAcademic(w,base){
  for(const [slot,c]of Object.entries(w.original))delete next.courses[c.scope][slot];
  for(const [slot,c]of Object.entries(w.courses)){
   const scope=w.stage==='quarter'?(w.quarterChoices[slot]===true?q:half):(c.scope===q?q:half);
-  next.courses[scope][slot]={name:c.name,scope,total:scope===q?7:14,allowed:scope===q?2:4,online:!!c.online,quarterSelectionConfirmed:w.stage==='quarter'||c.quarterSelectionConfirmed===true};
+  next.courses[scope][slot]={name:c.name,room:c.room||'',scope,total:scope===q?7:14,allowed:scope===q?2:4,online:!!c.online,quarterSelectionConfirmed:w.stage==='quarter'||c.quarterSelectionConfirmed===true};
  }
  next.viewQuarter=w.q;return next;
 }
@@ -9006,6 +9024,28 @@ attendanceManualTimes.includes=t=>manualPeriods().some(p=>p.start===t);
 attendanceManualTimes.indexOf=t=>manualPeriods().findIndex(p=>p.start===t);
 attendanceManualDate.addEventListener('change',()=>{if(attendanceManualFormMode==='edit')return;const previous=attendanceManualPeriod.value;attendanceManualPeriod.replaceChildren();manualPeriods().forEach((p,i)=>{const o=document.createElement('option');o.value=p.start;o.textContent=(i+1)+'コマ（'+p.start+'）';attendanceManualPeriod.append(o);});if(manualPeriods().some(p=>p.start===previous))attendanceManualPeriod.value=previous;attendanceManualSyncForm();});
 
+
+// Dismiss only gestures that begin and end on the modal backdrop.
+// A drag starting inside a form never discards the form.
+let backdropPress=null;
+function isModalBackdrop(event){
+ const d=event.target;
+ if(d?.tagName!=='DIALOG'||!d.open)return false;
+ const r=d.getBoundingClientRect();
+ return event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom;
+}
+document.addEventListener('pointerdown',event=>{
+ backdropPress=event.isPrimary!==false&&(event.button===undefined||event.button===0)&&isModalBackdrop(event)?{dialog:event.target,id:event.pointerId,x:event.clientX,y:event.clientY}:null;
+});
+document.addEventListener('pointercancel',()=>{backdropPress=null;});
+document.addEventListener('pointerup',event=>{
+ const press=backdropPress;backdropPress=null;
+ if(!press||press.dialog!==event.target||press.id!==event.pointerId||!isModalBackdrop(event)||Math.hypot(event.clientX-press.x,event.clientY-press.y)>12)return;
+ if((event.target.id==='classTimeDialog'&&classTimeSaving)||timetableWizard?.saving)return;
+ const cancelIds={classTimeDialog:'classTimeCancel',taskDialog:'cancelButton',detailDialog:'detailCloseButton',settingsDialog:'settingsCloseButton',attendanceLinkDialog:'attendanceLinkClose',trashDialog:'trashCloseButton',accountInfoDialog:'accountInfoCloseButton',subjectInputDialog:'subjectCancelButton'};
+ const button=document.getElementById(cancelIds[event.target.id]||'');
+ if(button)button.click();else event.target.close();
+});
 </script>
 
 </body>
