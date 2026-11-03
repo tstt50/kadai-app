@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v31</title>
+<title>課題管理 v32</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1654,12 +1654,21 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 .future-row .badge{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;white-space:nowrap;word-break:normal;overflow-wrap:normal;line-height:1.4}
 .future-row .arrow{flex:0 0 auto;white-space:nowrap}
 .future-row .future-weekday{display:inline-block;white-space:nowrap}
-</style></head>
+</style><style>
+/* Stack subject and room within both timetable grids. */
+#timetableSettingsView .timetable-cell,
+#attendanceView .attendance-subject-cell:not(.has-chart){flex-direction:column;min-width:0}
+#timetableSettingsView .timetable-cell > .course-cell-name,
+#timetableSettingsView .timetable-cell > .course-cell-room,
+#attendanceView .attendance-subject-cell > .course-cell-name,
+#attendanceView .attendance-subject-cell > .course-cell-room{flex:0 0 auto;width:100%;min-width:0;box-sizing:border-box}
+</style>
+</head>
 
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v31・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v32・2026/10/29</div>
 
 
 <header>
