@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>Latica v36.1</title>
+<title>Latica v37</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./latica-apple-touch.png">
@@ -1665,12 +1665,12 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 </style>
 <style>.info-copy{font-size:14px;line-height:1.9;overflow-wrap:anywhere}.info-copy h3{font-size:16px;margin:24px 0 8px}.info-copy li{margin:8px 0}.info-copy a{color:#1764c0}.info-dialog{box-sizing:border-box;width:min(94vw,640px);max-height:85dvh;border:0;border-radius:18px;padding:24px;overflow:auto}.info-dialog h2{font-size:21px}.info-dialog .info-close{position:sticky;bottom:0;display:block;margin:20px 0 0 auto;padding:12px 22px;border:0;border-radius:10px;background:#e9edf3;color:#1764c0;font:inherit}.app-info-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:14px;font-size:12px}.app-info-links a{color:#526478}.mail-button{display:inline-block;padding:10px 14px;background:#edf4ff;border-radius:10px}</style>
 <style>#consentGate{position:fixed;inset:0;z-index:20000;overflow:auto;background:#f4f6fb;padding:32px 16px max(32px,env(safe-area-inset-bottom));box-sizing:border-box}#consentGate[hidden]{display:none!important}.consent-card{box-sizing:border-box;max-width:540px;margin:0 auto;background:white;padding:26px;border-radius:20px;box-shadow:0 8px 30px #20304915;color:#243449}.consent-card h2{font-size:23px;margin-top:0}.consent-card p{line-height:1.8}.consent-card label{display:flex;align-items:flex-start;gap:10px;line-height:1.7;margin:20px 0;cursor:pointer}.consent-card input[type=checkbox]{flex:0 0 21px;width:21px;height:21px;margin:4px 0;accent-color:#1765d2}.consent-docs{display:flex;gap:10px;flex-wrap:wrap}.consent-card button{padding:12px 16px;border-radius:10px;border:1px solid #c8d7ed;background:white;color:#175cb2;font:inherit}.consent-card #consentAccept{display:block;width:100%;background:#1765d2;color:white;border:0;margin-top:20px}.consent-card #consentAccept:disabled{opacity:.45}.consent-card #consentExit,.consent-card #consentRetry{margin:14px 8px 12px 0}.consent-card small,.consent-summary{font-size:12px;color:#596b80;line-height:1.8}.consent-card #consentStatus{font-size:14px;color:#a83636}.consent-card button:focus-visible{outline:3px solid #85b9ff;outline-offset:3px}</style>
-<link rel="icon" type="image/png" href="./latica-icon-192.png"><style>.latica-brand{display:flex;align-items:center;gap:10px}.latica-brand img{border-radius:8px;flex-shrink:0}</style></head>
+<link rel="icon" type="image/png" href="./latica-icon-192.png"><style>.latica-brand{display:flex;align-items:center;gap:10px}.latica-brand img{border-radius:8px;flex-shrink:0}</style><style>body.initial-setup #appContent>:not(#timetableSettingsView):not(dialog){display:none!important}body.initial-setup #addButton{display:none!important}#initialSetupPanel{max-width:820px;margin:16px auto;padding:18px;background:white;border-radius:14px}#initialSetupPanel button{padding:10px;margin:6px;border-radius:8px}body.initial-setup .wizard-actions button:last-child{display:none}.academic-dialog input{min-width:0;max-width:100%;width:100%;box-sizing:border-box}.academic-dialog label{display:block;min-width:0}.academic-dialog{box-sizing:border-box;max-width:calc(100vw - 32px)}</style></head>
 
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v36.1・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v37・2026/10/29</div>
 
 
 <header>
@@ -2271,7 +2271,7 @@ TOMORROW
 <div class="all-list" id="completedTasks"></div>
 
 </main>
-<section id="consentGate" hidden aria-labelledby="consentTitle"><div class="consent-card"><h2 id="consentTitle">利用開始前の確認</h2><p>利用規約とプライバシーポリシーを確認してください。</p><div class="consent-docs"><button type="button" id="consentTermsOpen">利用規約を読む</button><button type="button" id="consentPrivacyOpen">プライバシーポリシーを読む</button></div><p class="consent-summary">自動出席の位置情報連携は任意です。出席判定は大学の正式な記録とは別の目安です。情報の保存・削除依頼先はポリシーに記載しています。</p><label><input type="checkbox" id="consentTermsCheck">利用規約に同意します</label><label><input type="checkbox" id="consentPrivacyCheck">プライバシーポリシーを確認し、記載された情報の取扱いに同意します</label><p id="consentStatus" role="status" aria-live="polite"></p><button type="button" id="consentAccept" disabled>同意して利用を開始</button><button type="button" id="consentRetry" hidden>再確認する</button><button type="button" id="consentExit">同意せずログアウト</button><small>同意する版：2026-11-08<br>広告の個別同意が必要な場合は、広告導入時に別途案内します。</small></div></section>
+<section id="consentGate" hidden aria-labelledby="consentTitle"><div class="consent-card"><h2 id="consentTitle">Laticaへようこそ</h2><p>次のリンクから内容をご確認ください。</p><p><a href="./terms.html" target="_blank" rel="noopener">利用規約</a></p><p><a href="./guide.html" target="_blank" rel="noopener">利用案内</a></p><p><a href="./privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a></p><label><input type="checkbox" id="consentTermsCheck">利用規約に同意します</label><label><input type="checkbox" id="consentPrivacyCheck">利用案内・プライバシーポリシーを確認し、記載された情報の取扱いに同意します</label><p id="consentStatus" role="status"></p><button type="button" id="consentAccept" disabled>同意してログインへ</button><button type="button" id="consentRetry" hidden>再確認する</button><button type="button" id="consentExit" hidden>ログアウト</button></div></section><section id="initialSetupPanel" hidden><h2 id="initialSetupTitle">初期設定</h2><p id="initialSetupMessage" role="status"></p><button id="initialSetupResume" type="button">設定を開く</button><button id="initialSetupLogout" type="button">ログアウト</button></section>
 
 
 <button
@@ -2554,15 +2554,15 @@ TOMORROW
 <h3>出席管理</h3><p>時間割の科目を押すと出席データを確認・手動編集できます。出席率はアプリの記録から計算した目安です。単位取得や大学の正式な出席判定を保証するものではありません。実際の授業規則や大学の記録も確認してください。</p><p>祝日は標準で休講です。授業がある場合は「出席管理 → 日課変更」でその日の曜日課を指定してください。祝日データは2027年分まで対応しています。</p>
 <h3>自動出席は任意です</h3><p>「設定 → 初期設定 → 自動出席の連携」で連携情報を発行し、iPhoneのショートカットを設定して利用します。端末から送られた位置情報・時刻と、時間割などをもとに判定します。通信や位置情報の誤差、端末の実行遅延によって誤判定・未判定になることがあります。</p><p>オンライン科目には出席の初期値を自動登録し、同一科目の連続授業には最初のコマの判定を引き継ぎます。実際の受講と違う場合は手動で直してください。</p><p>停止するには、連携画面で「連携を解除」し、iPhone側の該当オートメーションもオフにしてください。オンライン科目・連続授業の自動入力は、位置情報の連携とは別の処理です。連携解除だけで既存の記録は削除されません。</p>
 <h3>端末の共有</h3><p>自分のアカウントだけを使い、共用端末ではログアウトしてください。連携用JSONファイルは本人の出席送信に使う秘密の情報なので、他人へ共有しないでください。</p></div><button type="button" class="info-close" id="guideInfoClose">閉じる</button></dialog>
-<dialog class="info-dialog" id="privacyInfoDialog" aria-labelledby="privacyInfoTitle"><h2 id="privacyInfoTitle">プライバシーポリシー</h2><div class="info-copy"><p>制定日：2026年11月4日／改定日：2026年11月8日／ポリシー版：2026-11-08</p><p>Latica（ラティカ）運営者は、本アプリの情報を次のとおり取り扱います。対象は学生用アプリと、同じデータ基盤を使う運営管理アプリです。</p>
+<dialog class="info-dialog" id="privacyInfoDialog" aria-labelledby="privacyInfoTitle"><h2 id="privacyInfoTitle">プライバシーポリシー</h2><div class="info-copy"><p>制定日：2026年11月4日／改定日：2026年11月8日／ポリシー版：2026-11-08.2</p><p>Latica（ラティカ）運営者は、本アプリの情報を次のとおり取り扱います。対象は学生用アプリと、同じデータ基盤を使う運営管理アプリです。</p>
 <h3>取得する情報と目的</h3><ul><li>ログイン情報：Google・Microsoftから提供されるユーザー識別子、メールアドレス、表示名などを、本人識別、ログイン、アカウント連携に使用します。Google・Microsoftのパスワードを本アプリが受け取ることはありません。</li><li>登録内容：課題名、科目、提出期限、提出状態、時間割、教室、学期、日課変更、授業時間、出席記録などを、表示・同期・出席率の計算に使用します。</li><li>自動出席の送信情報：連携した端末が送信する緯度・経度、計測時刻、送信種別、取得・受信時刻などを、大学付近にいるかの確認、出席判定、誤判定や遅延の調査に使用します。位置精度が送られた場合は判定に使用します。端末の所在を常時連続して追跡する仕組みではなく、設定したショートカット等が実行された際に取得・送信します。</li><li>連携情報：ユーザーID、有効期限、連携用秘密情報のハッシュなどを、本人の出席送信かの確認に使用します。ダウンロードする連携ファイルには元の秘密情報が含まれます。</li><li>問い合わせ：送信元メールアドレスと問い合わせ内容を、本人確認・回答・不具合対応に使用します。</li></ul>
-<h3>同意の記録</h3><p>利用規約と本ポリシーを確認して同意した版番号・日時を、ユーザーIDに紐付けて保存し、利用開始と改定時の確認に使用します。同意済みかを端末上にも記録し、通信できない場合の確認に使うことがあります。ログイン手続きには認証情報の取得が必要なため、認証に関する処理は同意画面の前にも行われます。</p><h3>広告の導入予定</h3><p>将来の広告掲載による運営を予定していますが、この版には広告配信・広告計測のプログラムを導入していません。導入前に配信事業者、Cookieや端末情報等の取扱い、必要な選択・停止方法を明示します。必要な広告向けの同意は別途取得します。課題・教室・出席・GPS記録を広告の対象選定のために配信事業者へ渡す機能は設けていません。</p><h3>保存と外部サービス</h3><p>認証・データ保存にはGoogleのFirebase Authentication・Cloud Firestore、位置情報の受信や集計にはGoogle Apps Scriptを使用します。Web画面はGitHub Pagesで配信します。Google・Microsoftでの認証は各社のサービス上で行います。これらの提供者が処理する情報には各社のポリシーも適用されます。</p><p>端末のブラウザにはログイン状態、課題などの表示用データ、アプリの公開ファイルが保存される場合があります。連携ファイルは利用者が指定したiCloud Drive等にも保存されます。</p>
+<h3>同意の記録</h3><p>利用規約と本ポリシーを確認して同意した版番号・日時を、ユーザーIDに紐付けて保存し、利用開始と改定時の確認に使用します。同意済みかを端末上にも記録し、通信できない場合の確認に使うことがあります。ログイン前の確認結果を端末に保存し、ログイン後にそのユーザーの同意記録を保存します。すでにログイン状態の場合は認証状態の確認が先に行われることがあります。初期設定の完了状態もユーザーIDに紐付けて保存し、設定途中の再開に使います。</p><h3>広告の導入予定</h3><p>将来の広告掲載による運営を予定していますが、この版には広告配信・広告計測のプログラムを導入していません。導入前に配信事業者、Cookieや端末情報等の取扱い、必要な選択・停止方法を明示します。必要な広告向けの同意は別途取得します。課題・教室・出席・GPS記録を広告の対象選定のために配信事業者へ渡す機能は設けていません。</p><h3>保存と外部サービス</h3><p>認証・データ保存にはGoogleのFirebase Authentication・Cloud Firestore、位置情報の受信や集計にはGoogle Apps Scriptを使用します。Web画面はGitHub Pagesで配信します。Google・Microsoftでの認証は各社のサービス上で行います。これらの提供者が処理する情報には各社のポリシーも適用されます。</p><p>端末のブラウザにはログイン状態、課題などの表示用データ、アプリの公開ファイルが保存される場合があります。連携ファイルは利用者が指定したiCloud Drive等にも保存されます。</p>
 <h3>閲覧範囲と運営者のアクセス</h3><p>通常の利用者は自分のデータだけを読み書きできるようアクセス制限しています。管理用画面には登録アカウント数や登録日別件数などの統計を表示します。</p><p>運営者はサービスの管理権限により、メールアドレス、登録内容、出席・位置情報の記録へ技術的にアクセスできます。問い合わせ対応、不具合調査、安全な運営に必要な範囲で扱います。管理ページに個々の課題や位置情報を一覧表示する機能はありません。情報の販売や、広告配信を目的とする利用は行いません。</p>
 <h3>保存期間</h3><p>課題・時間割・出席記録・位置情報ログはクラウドに保存します。現在、出席記録や位置情報ログについて一定日数で自動削除する仕組みは設けていません。利用をやめたりログアウトしたりしただけでは、クラウド上の情報は削除されません。</p><p>ゴミ箱の課題内容は原則7日後にアプリの実行時等に消去処理します。同期のため削除済みIDや削除日時などが残る場合があります。連携情報の有効期間は発行から180日です。期限切れは送信を拒否するもので、既存記録の自動消去を意味しません。個人を直接示さない登録数の推移は最大730日分を保存します。</p>
 <h3>修正・停止・削除の依頼</h3><p>登録した課題や出席記録等は、対応する画面で修正できます。位置情報送信は「設定 → 初期設定 → 自動出席の連携 → 連携を解除」と、端末側の該当オートメーションをオフにすることで停止してください。</p><p>アカウントと関連データの削除、位置情報ログの削除、情報の確認・訂正・利用停止については、下記窓口へ連絡してください。現在、アプリ内にアカウント一括削除ボタンはありません。本人確認後、対象と対応方法を案内します。Firebaseの認証アカウントの削除だけでは関連データは消えないため、関連する保存先も確認します。利用者が保存した連携ファイルや端末側のデータは、ご自身でも削除してください。</p>
 <h3 id="contact">変更と問い合わせ</h3><p>取扱いを変更するときは、このページの改定日と内容を更新し、重要な変更はアプリ等で案内します。</p><p>運営窓口：<a href="mailto:kadai.manager.app@gmail.com">kadai.manager.app@gmail.com</a></p></div><button type="button" class="info-close" id="privacyInfoClose">閉じる</button></dialog>
-<dialog class="info-dialog" id="termsInfoDialog" aria-labelledby="termsInfoTitle"><h2 id="termsInfoTitle">利用規約</h2><div class="info-copy"><p>制定日：2026年11月8日／規約版：2026-11-08</p><p>本規約は、Latica（ラティカ）運営者が提供する、学生向けの課題・時間割・出席管理アプリの利用条件です。</p>
-<h3>1. サービスについて</h3><p>本アプリは個人運営のアルファ版で、広島工業大学の公式サービスではありません。利用者は本規約を確認し、同意したうえで利用してください。未成年の方は保護者の同意を得て利用してください。</p>
+<dialog class="info-dialog" id="termsInfoDialog" aria-labelledby="termsInfoTitle"><h2 id="termsInfoTitle">利用規約</h2><div class="info-copy"><p>制定日：2026年11月8日／規約版：2026-11-08.2</p><p>本規約は、Latica（ラティカ）運営者が提供する、学生向けの課題・時間割・出席管理アプリの利用条件です。</p>
+<h3>1. サービスについて</h3><p>本アプリは個人運営のアルファ版で、広島工業大学の公式サービスではありません。利用者は本規約を確認し、同意したうえで利用してください。</p>
 <h3>2. アカウントと登録内容</h3><p>GoogleまたはMicrosoftの本人のアカウントを使用してください。ログイン情報、連携用の秘密情報、端末を適切に管理し、第三者へ貸与・共有しないでください。入力した課題や時間割・出席記録は、自分でも正確性を確認してください。</p>
 <h3>3. 出席判定・提出期限</h3><p>本アプリの出席判定と出席率は、個人の管理を助けるための目安です。位置情報の誤差、通信障害、端末の遅延、時間割の設定等で結果が異なる場合があります。オンライン科目の出席初期値や連続授業の引継ぎも、実際の受講を証明するものではありません。大学の正式な出席・成績・単位取得の判断や、課題の提出完了を保証しません。大学等が案内する情報を確認し、誤りは手動で修正してください。</p>
 <h3>4. 禁止事項</h3><p>他人のアカウントや情報への不正アクセス、他人へのなりすまし、位置・出席情報の不正送信、サービスへの攻撃や過度な負荷、第三者の権利侵害その他の不正利用を禁止します。不正利用への対応として、必要な範囲で利用を制限する場合があります。</p>
@@ -7593,7 +7593,7 @@ classTimeForm.onsubmit=async e=>{
  saved={periods,history};tx.set(ref,{...saved,updatedAt:serverTimestamp()},{merge:true});
  });
  if(logoutInProgress || auth.currentUser?.uid!==uid)return;applyClassTimes(saved);classTimeDialog.close();
- if(classTimeContinue)await showTimetableSettings();
+ if(initialSetupActive)await advanceInitialSetup('timetable');else if(classTimeContinue)await showTimetableSettings();
  }catch(error){classTimeError.textContent="保存に失敗しました。入力内容を確認して再試行してください。 "+error.message;console.error(error);}
  finally{classTimeSaving=false;document.getElementById("classTimeSave").disabled=false;}
 };
@@ -8685,9 +8685,9 @@ loadTimetable=async function(){const u=auth.currentUser;if(!u)return;const snap=
 function academicDialog(title){const d=document.createElement('dialog');d.className='academic-dialog';const h=document.createElement('h3');h.textContent=title;d.append(h);document.body.append(d);d.addEventListener('close',()=>d.remove());return d;}
 function field(d,label,type,value){const l=document.createElement('label');l.textContent=label;const i=document.createElement('input');i.type=type;i.value=value;l.append(i);d.append(l);return i;}
 function action(d,label,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;d.append(b);return b;}
-function openAcademicSettings(){const d=academicDialog('年度・学期設定');const year=Number(academic?.year)||new Date().getFullYear();const y=field(d,'年度','number',year);const starts=[0,1,2,3].map((n)=>field(d,(n+1)+'クオーター開始日','date',academic?.starts[n]||year+'-'+['04-01','06-01','10-01','12-01'][n]));const end=field(d,'4クオーター終了日の翌日','date',academic?.end||(year+1)+'-04-01');y.onchange=()=>{const saved=academic?.year===+y.value?academic:academic?.archives?.[y.value];starts.forEach((x,i)=>x.value=saved?.starts[i]||y.value+'-'+['04-01','06-01','10-01','12-01'][i]);end.value=saved?.end||(+y.value+1)+'-04-01';threshold.value=saved?.attendanceThreshold??70;};const threshold=field(d,'単位取得ライン（出席率％）','number',academic?.attendanceThreshold??70);threshold.min='1';threshold.max='100';threshold.step='0.1';
+function openAcademicSettings(){const d=academicDialog('年度・学期設定');const year=Number(academic?.year)||2026;const y=field(d,'年度','number',year);const starts=[0,1,2,3].map((n)=>field(d,(n+1)+'クオーター開始日','date',academic?.starts[n]||initialAcademicDefaults(year).starts[n]));const end=field(d,'4クオーター終了日','date',shiftAcademicDate(academic?.end||initialAcademicDefaults(year).end,-1));y.onchange=()=>{const saved=academic?.year===+y.value?academic:academic?.archives?.[y.value];starts.forEach((x,i)=>x.value=saved?.starts[i]||initialAcademicDefaults(+y.value).starts[i]);end.value=shiftAcademicDate(saved?.end||initialAcademicDefaults(+y.value).end,-1);threshold.value=saved?.attendanceThreshold??70;};const threshold=field(d,'単位取得ライン（出席率％）','number',academic?.attendanceThreshold??70);threshold.min='1';threshold.max='100';threshold.step='0.1';
 const note=document.createElement('p');note.textContent='開始日は大学の実際の日程に合わせてください。設定した日付で過去の記録も振り分けます。初回は既存の時間割を後期3Qの科目として引き継ぎます。14回科目は時間割設定で「後期を通して」に変更できます。年度を変えると年度別の時間割に切り替わります。以前の年度は同じ年度を指定すると戻せます。';d.append(note);
-action(d,'保存',async()=>{const dates=starts.map(x=>x.value);if(!Number.isFinite(+threshold.value)||+threshold.value<1||+threshold.value>100||!dates.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))||!end.value||![...dates,end.value].every((x,i,a)=>!i||x>a[i-1])||!Number.isInteger(+y.value)||+y.value<2000||+y.value>2200){alert('日付を開始順に入力してください');return;}const archives=JSON.parse(JSON.stringify(academic?.archives||{}));if(academic&&academic.year!==+y.value){const saved=JSON.parse(JSON.stringify(academic));delete saved.archives;archives[academic.year]=saved;}let next=academic&&academic.year===+y.value?JSON.parse(JSON.stringify(academic)):archives[y.value]?JSON.parse(JSON.stringify(archives[y.value])):{year:+y.value,courses:{H1:{},H2:{},Q1:{},Q2:{},Q3:{},Q4:{}},changes:{}};if(!academic)for(const [slot,name]of Object.entries(legacyTimetableSlots))if(name)next.courses["Q"+legacyQuarter][slot]={name,scope:"Q"+legacyQuarter,total:7,allowed:2};next.attendanceThreshold=+threshold.value;next.archives=archives;next.starts=dates;next.end=end.value;next.viewQuarter=selectedQuarter;try{await persistAcademic(next);d.close();}catch(e){alert('保存できませんでした：'+e.message);}});action(d,'閉じる',()=>d.close());d.showModal();}
+action(d,'保存',async()=>{const dates=starts.map(x=>x.value);if(!Number.isFinite(+threshold.value)||+threshold.value<1||+threshold.value>100||!dates.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))||!end.value||![...dates,end.value].every((x,i,a)=>!i||x>a[i-1])||!Number.isInteger(+y.value)||+y.value<2000||+y.value>2200){alert('日付を開始順に入力してください');return;}const archives=JSON.parse(JSON.stringify(academic?.archives||{}));if(academic&&academic.year!==+y.value){const saved=JSON.parse(JSON.stringify(academic));delete saved.archives;archives[academic.year]=saved;}let next=academic&&academic.year===+y.value?JSON.parse(JSON.stringify(academic)):archives[y.value]?JSON.parse(JSON.stringify(archives[y.value])):{year:+y.value,courses:{H1:{},H2:{},Q1:{},Q2:{},Q3:{},Q4:{}},changes:{}};if(!academic)for(const [slot,name]of Object.entries(legacyTimetableSlots))if(name)next.courses["Q"+legacyQuarter][slot]={name,scope:"Q"+legacyQuarter,total:7,allowed:2};next.attendanceThreshold=+threshold.value;next.archives=archives;next.starts=dates;next.end=shiftAcademicDate(end.value,1);next.viewQuarter=selectedQuarter;try{await persistAcademic(next);d.close();if(initialSetupActive)await advanceInitialSetup('times');}catch(e){alert('保存できませんでした：'+e.message);}});action(d,'閉じる',()=>d.close());d.showModal();}
 function applyLegacyQuarter(){originalApplySlots(selectedQuarter===legacyQuarter?legacyTimetableSlots:{});document.querySelectorAll('.quarter-select').forEach(x=>x.value=String(selectedQuarter));paintAcademicCharts();}
 function switchQuarter(q){if(![1,2,3,4].includes(Number(q)))return;selectedQuarter=Number(q);attendanceSubjectRequest++;attendanceSubjectView.hidden=true;if(academic){applyAcademic();}else{applyLegacyQuarter();}}
 for(const view of [attendanceView,timetableSettingsView]){
@@ -8893,7 +8893,7 @@ async function saveTimetableWizard(){
   if(auth.currentUser?.uid!==w.uid||timetableWizard!==w||logoutInProgress)return;
   academic=next;w.baseline=JSON.stringify(next);for(const slot of Object.keys(w.courses)){const scope=w.stage==='quarter'?(w.quarterChoices[slot]?'Q'+w.q:halfOf(w.q)):w.courses[slot].scope;w.courses[slot]=cloneAcademic(next.courses[scope][slot]);}w.original=cloneAcademic(w.courses);w.dirty=false;w.saving=false;
   if(w.stage==='subjects')w.stage='quarter';else if(w.stage==='quarter')w.stage='online';else{
-   timetableWizard=null;applyAcademic();timetableSettingsView.hidden=true;document.body.classList.remove('timetable-settings-open');return;
+   timetableWizard=null;applyAcademic();timetableSettingsView.hidden=true;document.body.classList.remove('timetable-settings-open');if(initialSetupActive)await finishInitialSetup();return;
   }
   applyAcademic();renderTimetableWizard();
  }catch(error){if(timetableWizard===w){w.saving=false;renderTimetableWizard();wizardNotice.textContent='保存できませんでした。'+error.message;}}
@@ -9090,52 +9090,84 @@ for(const key of ['guide','privacy','terms']){
  button.onclick=()=>{settingsDialog.close();dialog.showModal();};
  document.getElementById(key+'InfoClose').onclick=()=>dialog.close();
 }
-// Consent is scoped to the signed-in UID and exact document versions.
-const TERMS_VERSION='2026-11-08',PRIVACY_VERSION='2026-11-08';
-let consentGeneration=0,consentUser=null,consentPhase='idle';
-const consentGate=document.getElementById('consentGate');
-const consentTermsCheck=document.getElementById('consentTermsCheck'),consentPrivacyCheck=document.getElementById('consentPrivacyCheck');
-function currentConsent(data){return !!data&&data.termsVersion===TERMS_VERSION&&data.privacyVersion===PRIVACY_VERSION&&data.accepted===true;}
-function consentCacheKey(uid){return 'kadai-consent-'+uid;}
-function rememberConsent(uid){try{localStorage.setItem(consentCacheKey(uid),JSON.stringify({accepted:true,termsVersion:TERMS_VERSION,privacyVersion:PRIVACY_VERSION}));}catch(error){/* Online consent is still saved. */}}
-function rememberedConsent(uid){try{return currentConsent(JSON.parse(localStorage.getItem(consentCacheKey(uid))||'null'));}catch(error){return false;}}
-function updateConsentControls(){const waiting=consentPhase==='waiting';document.getElementById('consentAccept').disabled=!waiting||!consentTermsCheck.checked||!consentPrivacyCheck.checked;consentTermsCheck.disabled=consentPrivacyCheck.disabled=!waiting;document.getElementById('consentRetry').hidden=consentPhase!=='error';}
-function resetConsentGate(){consentGeneration++;consentUser=null;consentPhase='idle';consentGate.hidden=true;consentTermsCheck.checked=consentPrivacyCheck.checked=false;document.getElementById('consentStatus').textContent='';updateConsentControls();}
-const beforeConsentSignedOut=showSignedOutScreen;
-showSignedOutScreen=function(){resetConsentGate();beforeConsentSignedOut();};
-const beforeConsentActivate=activateUserSession;
-async function consentDeadline(operation){let timer;try{return await Promise.race([operation,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('CONSENT_TIMEOUT')),18000);})]);}finally{clearTimeout(timer);}}
-async function continueConsentedSession(user,generation){if(generation!==consentGeneration||auth.currentUser?.uid!==user.uid||logoutInProgress)return;consentPhase='accepted';consentGate.hidden=true;updateConsentControls();try{await beforeConsentActivate(user);}catch(error){if(generation!==consentGeneration||auth.currentUser?.uid!==user.uid||logoutInProgress)return;beforeConsentSignedOut();consentUser=user;consentPhase='error';authGate.hidden=true;consentGate.hidden=false;document.getElementById('consentStatus').textContent='同意は確認できましたが、アプリを読み込めませんでした。「再確認する」を押してください。';updateConsentControls();}}
+// First-use consent and setup. All cloud records remain scoped to the signed-in UID.
+const TERMS_VERSION='2026-11-08.2',PRIVACY_VERSION='2026-11-08.2';
+let entryGeneration=0,entryUser=null,entryBusy=false,initialSetupActive=false,initialSetupStep='academic';
+const consentGate=document.getElementById('consentGate'),consentTermsCheck=document.getElementById('consentTermsCheck'),consentPrivacyCheck=document.getElementById('consentPrivacyCheck');
+const initialSetupPanel=document.getElementById('initialSetupPanel');
+function initialAcademicDefaults(year){return year===2026?{starts:['2026-04-09','2026-06-10','2026-09-24','2026-11-25'],end:'2027-01-30'}:{starts:[year+'-04-01',year+'-06-01',year+'-10-01',year+'-12-01'],end:(year+1)+'-04-01'};}
+function shiftAcademicDate(value,days){const d=new Date(value+'T12:00:00');d.setDate(d.getDate()+days);return academicDate(d);}
+function currentConsent(data){return data?.accepted===true&&data.termsVersion===TERMS_VERSION&&data.privacyVersion===PRIVACY_VERSION;}
+function readEntryCache(key){try{return JSON.parse(localStorage.getItem(key)||'null');}catch(error){return null;}}
+function writeEntryCache(key,data){try{localStorage.setItem(key,JSON.stringify(data));}catch(error){}}
+function consentChoice(){return currentConsent(readEntryCache('latica-entry-consent'));}
+function updateConsentControls(){document.getElementById('consentAccept').disabled=entryBusy||!consentTermsCheck.checked||!consentPrivacyCheck.checked;consentTermsCheck.disabled=consentPrivacyCheck.disabled=entryBusy;}
+function showEntryConsent(message=''){authGate.hidden=true;appContent.hidden=true;addButton.hidden=true;consentGate.hidden=false;consentTermsCheck.checked=consentPrivacyCheck.checked=false;document.getElementById('consentStatus').textContent=message;document.getElementById('consentExit').hidden=!entryUser;document.getElementById('consentAccept').textContent=entryUser?'同意して利用開始':'同意してログインへ';updateConsentControls();}
+async function entryDeadline(operation){let timer;try{return await Promise.race([operation,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('通信がタイムアウトしました')),18000);})]);}finally{clearTimeout(timer);}}
+function entryValid(user,generation){return generation===entryGeneration&&auth.currentUser?.uid===user.uid&&!logoutInProgress;}
+const entryOriginalSignedOut=showSignedOutScreen,entryOriginalActivate=activateUserSession;
+showSignedOutScreen=function(){entryGeneration++;entryUser=null;entryBusy=false;initialSetupActive=false;initialSetupPanel.hidden=true;document.body.classList.remove('initial-setup');consentGate.hidden=true;entryOriginalSignedOut();if(!consentChoice())showEntryConsent();};
+async function storeEntryConsent(user,generation){await entryDeadline(setDoc(doc(db,'users',user.uid,'meta','termsAcceptance'),{accepted:true,termsVersion:TERMS_VERSION,privacyVersion:PRIVACY_VERSION,acceptedAt:serverTimestamp()},{merge:true}));if(!entryValid(user,generation))return false;writeEntryCache('kadai-consent-'+user.uid,{accepted:true,termsVersion:TERMS_VERSION,privacyVersion:PRIVACY_VERSION});return true;}
 activateUserSession=async function(user){
  if(!user||logoutInProgress||auth.currentUser?.uid!==user.uid)return;
- const generation=++consentGeneration;
- // Clear prior user's UI/subscriptions before reading only the consent document.
- beforeConsentSignedOut();consentUser=user;consentPhase='checking';authGate.hidden=true;appContent.hidden=true;addButton.hidden=true;consentGate.hidden=false;
- consentTermsCheck.checked=consentPrivacyCheck.checked=false;document.getElementById('consentStatus').textContent='同意状態を確認しています…';updateConsentControls();
- const valid=()=>generation===consentGeneration&&auth.currentUser?.uid===user.uid&&!logoutInProgress;
+ const generation=++entryGeneration;entryOriginalSignedOut();entryUser=user;entryBusy=true;consentGate.hidden=false;authGate.hidden=true;document.getElementById('consentStatus').textContent='利用状態を確認しています…';updateConsentControls();document.getElementById('consentRetry').hidden=true;
  try{
-  if(navigator.onLine===false){if(!rememberedConsent(user.uid))throw Error('CONSENT_OFFLINE');await continueConsentedSession(user,generation);return;}
-  const snapshot=await consentDeadline(getDocFromServer(doc(db,'users',user.uid,'meta','termsAcceptance')));if(!valid())return;
-  if(snapshot.exists()&&currentConsent(snapshot.data())){rememberConsent(user.uid);await continueConsentedSession(user,generation);return;}
-  consentPhase='waiting';document.getElementById('consentStatus').textContent='';updateConsentControls();
- }catch(error){if(!valid())return;consentPhase='error';document.getElementById('consentStatus').textContent='同意状態を確認できませんでした。通信を確認して「再確認する」を押してください。初回の同意には通信が必要です。';updateConsentControls();}
+  if(navigator.onLine===false){if(!currentConsent(readEntryCache('kadai-consent-'+user.uid))||!readEntryCache('latica-setup-'+user.uid)?.complete)throw Error('初回の確認と設定には通信が必要です');consentGate.hidden=true;await entryOriginalActivate(user);return;}
+  const record=await entryDeadline(getDocFromServer(doc(db,'users',user.uid,'meta','termsAcceptance')));if(!entryValid(user,generation))return;
+  if(record.exists()&&currentConsent(record.data()))writeEntryCache('kadai-consent-'+user.uid,record.data());
+  else if(consentChoice()){if(!await storeEntryConsent(user,generation))return;}
+  else{entryBusy=false;showEntryConsent();return;}
+  entryBusy=false;consentGate.hidden=true;await startInitialSetup(user,generation);
+ }catch(error){if(!entryValid(user,generation))return;entryBusy=false;showEntryConsent('読み込めませんでした。通信を確認して再確認してください。 '+error.message);document.getElementById('consentRetry').hidden=false;}
 };
 consentTermsCheck.onchange=consentPrivacyCheck.onchange=updateConsentControls;
-document.getElementById('consentTermsOpen').onclick=()=>document.getElementById('termsInfoDialog').showModal();
-document.getElementById('consentPrivacyOpen').onclick=()=>document.getElementById('privacyInfoDialog').showModal();
-document.getElementById('consentRetry').onclick=()=>{if(consentUser)void activateUserSession(consentUser);};
+document.getElementById('consentRetry').onclick=()=>{if(entryUser)void activateUserSession(entryUser);};
 document.getElementById('consentExit').onclick=()=>logout();
 document.getElementById('consentAccept').onclick=async()=>{
- const user=consentUser,generation=consentGeneration;
- if(!user||consentPhase!=='waiting'||!consentTermsCheck.checked||!consentPrivacyCheck.checked||auth.currentUser?.uid!==user.uid||logoutInProgress)return;
- if(navigator.onLine===false){document.getElementById('consentStatus').textContent='同意の保存にはインターネット接続が必要です。';return;}
- consentPhase='saving';document.getElementById('consentStatus').textContent='同意を保存しています…';updateConsentControls();
- const valid=()=>generation===consentGeneration&&auth.currentUser?.uid===user.uid&&!logoutInProgress;
- try{
-  await consentDeadline(setDoc(doc(db,'users',user.uid,'meta','termsAcceptance'),{accepted:true,termsVersion:TERMS_VERSION,privacyVersion:PRIVACY_VERSION,acceptedAt:serverTimestamp()},{merge:true}));
-  if(!valid())return;rememberConsent(user.uid);await continueConsentedSession(user,generation);
- }catch(error){if(!valid())return;consentPhase='waiting';document.getElementById('consentStatus').textContent='同意を保存できませんでした。通信を確認してもう一度お試しください。';updateConsentControls();}
+ if(entryBusy||!consentTermsCheck.checked||!consentPrivacyCheck.checked)return;
+ writeEntryCache('latica-entry-consent',{accepted:true,termsVersion:TERMS_VERSION,privacyVersion:PRIVACY_VERSION});
+ if(!entryUser){consentGate.hidden=true;authGate.hidden=false;return;}
+ const user=entryUser,generation=entryGeneration;entryBusy=true;updateConsentControls();
+ try{if(navigator.onLine===false)throw Error('インターネットに接続してください');if(!await storeEntryConsent(user,generation))return;entryBusy=false;consentGate.hidden=true;await startInitialSetup(user,generation);}
+ catch(error){if(!entryValid(user,generation))return;entryBusy=false;document.getElementById('consentStatus').textContent='保存できませんでした。 '+error.message;updateConsentControls();}
 };
+async function startInitialSetup(user,generation){
+ initialSetupActive=true;initialSetupPanel.hidden=false;document.body.classList.add('initial-setup');appContent.hidden=true;document.getElementById('initialSetupMessage').textContent='設定を確認しています…';
+ const state=await entryDeadline(getDocFromServer(doc(db,'users',user.uid,'meta','initialSetup')));if(!entryValid(user,generation))return;
+ await entryDeadline(loadTimetable());if(!entryValid(user,generation))return;
+ await entryDeadline(loadClassTimes());if(!entryValid(user,generation))return;
+ const progress=state.exists()?state.data():null;
+ const existing=academic?.starts?.length===4&&validClassTimes(classTimes)&&classTimesConfigured&&Object.values(academic.courses||{}).some(slots=>Object.keys(slots||{}).length>0);
+ if(progress?.complete===true||(!progress&&existing)){await finishInitialSetup();return;}
+ initialSetupStep=['academic','times','timetable','finish'].includes(progress?.step)?progress.step:'academic';
+ currentUser=user;await openInitialSetupStep();
+}
+async function advanceInitialSetup(step){
+ const user=entryUser,generation=entryGeneration;if(!user||!entryValid(user,generation))return;
+ await entryDeadline(setDoc(doc(db,'users',user.uid,'meta','initialSetup'),{complete:false,step,updatedAt:serverTimestamp()},{merge:true}));if(!entryValid(user,generation))return;
+ initialSetupStep=step;await openInitialSetupStep();
+}
+async function openInitialSetupStep(){
+ if(!initialSetupActive||!entryUser||auth.currentUser?.uid!==entryUser.uid)return;
+ const labels={academic:'1 / 3　学期・出席率の設定',times:'2 / 3　授業時間の設定',timetable:'3 / 3　時間割の設定',finish:'初期設定の完了'};
+ document.getElementById('initialSetupTitle').textContent=labels[initialSetupStep];document.getElementById('initialSetupMessage').textContent='設定を確認して保存すると、次に進みます。閉じた場合は「設定を開く」で再開できます。';
+ if(initialSetupStep==='academic'){openAcademicSettings();return;}
+ if(initialSetupStep==='times'){await openClassTimeSettings(false);document.getElementById('classTimeSave').textContent='保存して時間割設定へ';return;}
+ if(initialSetupStep==='finish'){await finishInitialSetup();return;}
+ if(!academic){initialSetupStep='academic';openAcademicSettings();return;}
+ selectedQuarter=quarterOn(academicDate(new Date()))||1;appContent.hidden=false;await showTimetableSettings();
+}
+async function finishInitialSetup(){
+ const user=entryUser,generation=entryGeneration;if(!user||!entryValid(user,generation))return;
+ initialSetupStep='finish';
+ try{await entryDeadline(setDoc(doc(db,'users',user.uid,'meta','initialSetup'),{complete:true,step:'complete',updatedAt:serverTimestamp()},{merge:true}));if(!entryValid(user,generation))return;
+ writeEntryCache('latica-setup-'+user.uid,{complete:true});await entryOriginalActivate(user);if(!entryValid(user,generation))return;initialSetupActive=false;initialSetupPanel.hidden=true;document.body.classList.remove('initial-setup');
+ }catch(error){if(!entryValid(user,generation))return;initialSetupPanel.hidden=false;document.getElementById('initialSetupMessage').textContent='完了状態を保存できませんでした。「設定を開く」で再試行してください。 '+error.message;}
+}
+document.getElementById('initialSetupResume').onclick=()=>{void openInitialSetupStep().catch(error=>{document.getElementById('initialSetupMessage').textContent='設定を開けませんでした。 '+error.message;});};
+document.getElementById('initialSetupLogout').onclick=()=>logout();
+const beforeInitialBack=timetableSettingsBackButton.onclick;
+timetableSettingsBackButton.onclick=function(){if(initialSetupActive)return;return beforeInitialBack();};
 </script>
 
 </body>
