@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>Latica v36</title>
+<title>Latica v36.1</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./latica-apple-touch.png">
@@ -1670,7 +1670,7 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v36・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v36.1・2026/10/29</div>
 
 
 <header>
@@ -2092,7 +2092,7 @@ Microsoftでログイン
     </div>
 </section>
 
-<section id="consentGate" hidden aria-labelledby="consentTitle"><div class="consent-card"><h2 id="consentTitle">利用開始前の確認</h2><p>利用規約とプライバシーポリシーを確認してください。</p><div class="consent-docs"><button type="button" id="consentTermsOpen">利用規約を読む</button><button type="button" id="consentPrivacyOpen">プライバシーポリシーを読む</button></div><p class="consent-summary">自動出席の位置情報連携は任意です。出席判定は大学の正式な記録とは別の目安です。情報の保存・削除依頼先はポリシーに記載しています。</p><label><input type="checkbox" id="consentTermsCheck">利用規約に同意します</label><label><input type="checkbox" id="consentPrivacyCheck">プライバシーポリシーを確認し、記載された情報の取扱いに同意します</label><p id="consentStatus" role="status" aria-live="polite"></p><button type="button" id="consentAccept" disabled>同意して利用を開始</button><button type="button" id="consentRetry" hidden>再確認する</button><button type="button" id="consentExit">同意せずログアウト</button><small>同意する版：2026-11-08<br>広告の個別同意が必要な場合は、広告導入時に別途案内します。</small></div></section>
+
 <dialog id="subjectInputDialog">
     <div class="dialog-content">
 
@@ -2271,6 +2271,7 @@ TOMORROW
 <div class="all-list" id="completedTasks"></div>
 
 </main>
+<section id="consentGate" hidden aria-labelledby="consentTitle"><div class="consent-card"><h2 id="consentTitle">利用開始前の確認</h2><p>利用規約とプライバシーポリシーを確認してください。</p><div class="consent-docs"><button type="button" id="consentTermsOpen">利用規約を読む</button><button type="button" id="consentPrivacyOpen">プライバシーポリシーを読む</button></div><p class="consent-summary">自動出席の位置情報連携は任意です。出席判定は大学の正式な記録とは別の目安です。情報の保存・削除依頼先はポリシーに記載しています。</p><label><input type="checkbox" id="consentTermsCheck">利用規約に同意します</label><label><input type="checkbox" id="consentPrivacyCheck">プライバシーポリシーを確認し、記載された情報の取扱いに同意します</label><p id="consentStatus" role="status" aria-live="polite"></p><button type="button" id="consentAccept" disabled>同意して利用を開始</button><button type="button" id="consentRetry" hidden>再確認する</button><button type="button" id="consentExit">同意せずログアウト</button><small>同意する版：2026-11-08<br>広告の個別同意が必要な場合は、広告導入時に別途案内します。</small></div></section>
 
 
 <button
