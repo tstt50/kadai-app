@@ -9,10 +9,10 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>課題管理 v33</title>
+<title>Latica v36</title>
 
 <link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./latica-apple-touch.png">
 
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,7 +22,7 @@
 >
 <meta
     name="apple-mobile-web-app-title"
-    content="課題管理"
+    content="Latica"
 >
 
 <style>
@@ -1663,19 +1663,21 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 #attendanceView .attendance-subject-cell > .course-cell-name,
 #attendanceView .attendance-subject-cell > .course-cell-room{flex:0 0 auto;width:100%;min-width:0;box-sizing:border-box}
 </style>
-</head>
+<style>.info-copy{font-size:14px;line-height:1.9;overflow-wrap:anywhere}.info-copy h3{font-size:16px;margin:24px 0 8px}.info-copy li{margin:8px 0}.info-copy a{color:#1764c0}.info-dialog{box-sizing:border-box;width:min(94vw,640px);max-height:85dvh;border:0;border-radius:18px;padding:24px;overflow:auto}.info-dialog h2{font-size:21px}.info-dialog .info-close{position:sticky;bottom:0;display:block;margin:20px 0 0 auto;padding:12px 22px;border:0;border-radius:10px;background:#e9edf3;color:#1764c0;font:inherit}.app-info-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:14px;font-size:12px}.app-info-links a{color:#526478}.mail-button{display:inline-block;padding:10px 14px;background:#edf4ff;border-radius:10px}</style>
+<style>#consentGate{position:fixed;inset:0;z-index:20000;overflow:auto;background:#f4f6fb;padding:32px 16px max(32px,env(safe-area-inset-bottom));box-sizing:border-box}#consentGate[hidden]{display:none!important}.consent-card{box-sizing:border-box;max-width:540px;margin:0 auto;background:white;padding:26px;border-radius:20px;box-shadow:0 8px 30px #20304915;color:#243449}.consent-card h2{font-size:23px;margin-top:0}.consent-card p{line-height:1.8}.consent-card label{display:flex;align-items:flex-start;gap:10px;line-height:1.7;margin:20px 0;cursor:pointer}.consent-card input[type=checkbox]{flex:0 0 21px;width:21px;height:21px;margin:4px 0;accent-color:#1765d2}.consent-docs{display:flex;gap:10px;flex-wrap:wrap}.consent-card button{padding:12px 16px;border-radius:10px;border:1px solid #c8d7ed;background:white;color:#175cb2;font:inherit}.consent-card #consentAccept{display:block;width:100%;background:#1765d2;color:white;border:0;margin-top:20px}.consent-card #consentAccept:disabled{opacity:.45}.consent-card #consentExit,.consent-card #consentRetry{margin:14px 8px 12px 0}.consent-card small,.consent-summary{font-size:12px;color:#596b80;line-height:1.8}.consent-card #consentStatus{font-size:14px;color:#a83636}.consent-card button:focus-visible{outline:3px solid #85b9ff;outline-offset:3px}</style>
+<link rel="icon" type="image/png" href="./latica-icon-192.png"><style>.latica-brand{display:flex;align-items:center;gap:10px}.latica-brand img{border-radius:8px;flex-shrink:0}</style></head>
 
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v33・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v36・2026/10/29</div>
 
 
 <header>
 
 <div class="header-inner">
 
-<h1>📚 課題管理</h1>
+<h1 class="latica-brand"><img src="./latica-icon-192.png" alt="" width="34" height="34">Latica</h1>
 
 <div id="nowText"></div>
 
@@ -1698,13 +1700,9 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 
 <div class="auth-card">
 
-<div class="auth-icon">
-📚
-</div>
+<div class="auth-icon"><img src="./latica-icon-192.png" alt="Latica" width="80" height="80" style="border-radius:18px"></div>
 
-<h2>
-課題管理
-</h2>
+<h2>Latica <small style="font-size:14px;color:#697586">ラティカ</small></h2>
 
 <p>
 課題を見るにはGoogleアカウントでログインしてください。<br>
@@ -2094,6 +2092,7 @@ Microsoftでログイン
     </div>
 </section>
 
+<section id="consentGate" hidden aria-labelledby="consentTitle"><div class="consent-card"><h2 id="consentTitle">利用開始前の確認</h2><p>利用規約とプライバシーポリシーを確認してください。</p><div class="consent-docs"><button type="button" id="consentTermsOpen">利用規約を読む</button><button type="button" id="consentPrivacyOpen">プライバシーポリシーを読む</button></div><p class="consent-summary">自動出席の位置情報連携は任意です。出席判定は大学の正式な記録とは別の目安です。情報の保存・削除依頼先はポリシーに記載しています。</p><label><input type="checkbox" id="consentTermsCheck">利用規約に同意します</label><label><input type="checkbox" id="consentPrivacyCheck">プライバシーポリシーを確認し、記載された情報の取扱いに同意します</label><p id="consentStatus" role="status" aria-live="polite"></p><button type="button" id="consentAccept" disabled>同意して利用を開始</button><button type="button" id="consentRetry" hidden>再確認する</button><button type="button" id="consentExit">同意せずログアウト</button><small>同意する版：2026-11-08<br>広告の個別同意が必要な場合は、広告導入時に別途案内します。</small></div></section>
 <dialog id="subjectInputDialog">
     <div class="dialog-content">
 
@@ -2287,6 +2286,7 @@ TOMORROW
      課題詳細
 ========================= -->
 
+<nav class="app-info-links" aria-label="アプリの案内"><a href="guide.html" target="_blank" rel="noopener">利用案内</a><a href="privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a><a href="terms.html" target="_blank" rel="noopener">利用規約</a></nav>
 <dialog id="detailDialog">
 
 <div class="dialog-content">
@@ -2546,6 +2546,30 @@ TOMORROW
 <button type="button" class="delete-button" id="attendanceLinkRevoke">連携を解除</button>
 <button type="button" class="cancel" id="attendanceLinkClose">閉じる</button>
 </div></dialog>
+
+<dialog class="info-dialog" id="guideInfoDialog" aria-labelledby="guideInfoTitle"><h2 id="guideInfoTitle">利用案内</h2><div class="info-copy"><p>広島工業大学の学生向けに個人で運営している課題・出席管理アプリのアルファ版です。大学の公式サービスではありません。</p>
+<h3>はじめに</h3><ol><li>GoogleまたはMicrosoftでログインします。</li><li>「設定 → 初期設定」で学期と授業時間を設定します。</li><li>「時間割設定」で科目・教室を入力し、クオーター科目、オンライン科目の選択をそれぞれ保存します。</li></ol>
+<h3>課題の登録・提出・削除</h3><p>右下の＋から課題を登録できます。授業中は登録した時間割をもとに科目と授業日時を初期入力します。内容と提出期限を確認して保存してください。</p><p>課題を右へスワイプすると提出済み、左へスワイプするとゴミ箱へ移動します。提出済みの課題は期限経過後、アプリの実行時に自動処理されます。削除した課題は原則7日間ゴミ箱から復元できます。アプリを開いていない間は処理が遅れる場合があります。</p>
+<h3>出席管理</h3><p>時間割の科目を押すと出席データを確認・手動編集できます。出席率はアプリの記録から計算した目安です。単位取得や大学の正式な出席判定を保証するものではありません。実際の授業規則や大学の記録も確認してください。</p><p>祝日は標準で休講です。授業がある場合は「出席管理 → 日課変更」でその日の曜日課を指定してください。祝日データは2027年分まで対応しています。</p>
+<h3>自動出席は任意です</h3><p>「設定 → 初期設定 → 自動出席の連携」で連携情報を発行し、iPhoneのショートカットを設定して利用します。端末から送られた位置情報・時刻と、時間割などをもとに判定します。通信や位置情報の誤差、端末の実行遅延によって誤判定・未判定になることがあります。</p><p>オンライン科目には出席の初期値を自動登録し、同一科目の連続授業には最初のコマの判定を引き継ぎます。実際の受講と違う場合は手動で直してください。</p><p>停止するには、連携画面で「連携を解除」し、iPhone側の該当オートメーションもオフにしてください。オンライン科目・連続授業の自動入力は、位置情報の連携とは別の処理です。連携解除だけで既存の記録は削除されません。</p>
+<h3>端末の共有</h3><p>自分のアカウントだけを使い、共用端末ではログアウトしてください。連携用JSONファイルは本人の出席送信に使う秘密の情報なので、他人へ共有しないでください。</p></div><button type="button" class="info-close" id="guideInfoClose">閉じる</button></dialog>
+<dialog class="info-dialog" id="privacyInfoDialog" aria-labelledby="privacyInfoTitle"><h2 id="privacyInfoTitle">プライバシーポリシー</h2><div class="info-copy"><p>制定日：2026年11月4日／改定日：2026年11月8日／ポリシー版：2026-11-08</p><p>Latica（ラティカ）運営者は、本アプリの情報を次のとおり取り扱います。対象は学生用アプリと、同じデータ基盤を使う運営管理アプリです。</p>
+<h3>取得する情報と目的</h3><ul><li>ログイン情報：Google・Microsoftから提供されるユーザー識別子、メールアドレス、表示名などを、本人識別、ログイン、アカウント連携に使用します。Google・Microsoftのパスワードを本アプリが受け取ることはありません。</li><li>登録内容：課題名、科目、提出期限、提出状態、時間割、教室、学期、日課変更、授業時間、出席記録などを、表示・同期・出席率の計算に使用します。</li><li>自動出席の送信情報：連携した端末が送信する緯度・経度、計測時刻、送信種別、取得・受信時刻などを、大学付近にいるかの確認、出席判定、誤判定や遅延の調査に使用します。位置精度が送られた場合は判定に使用します。端末の所在を常時連続して追跡する仕組みではなく、設定したショートカット等が実行された際に取得・送信します。</li><li>連携情報：ユーザーID、有効期限、連携用秘密情報のハッシュなどを、本人の出席送信かの確認に使用します。ダウンロードする連携ファイルには元の秘密情報が含まれます。</li><li>問い合わせ：送信元メールアドレスと問い合わせ内容を、本人確認・回答・不具合対応に使用します。</li></ul>
+<h3>同意の記録</h3><p>利用規約と本ポリシーを確認して同意した版番号・日時を、ユーザーIDに紐付けて保存し、利用開始と改定時の確認に使用します。同意済みかを端末上にも記録し、通信できない場合の確認に使うことがあります。ログイン手続きには認証情報の取得が必要なため、認証に関する処理は同意画面の前にも行われます。</p><h3>広告の導入予定</h3><p>将来の広告掲載による運営を予定していますが、この版には広告配信・広告計測のプログラムを導入していません。導入前に配信事業者、Cookieや端末情報等の取扱い、必要な選択・停止方法を明示します。必要な広告向けの同意は別途取得します。課題・教室・出席・GPS記録を広告の対象選定のために配信事業者へ渡す機能は設けていません。</p><h3>保存と外部サービス</h3><p>認証・データ保存にはGoogleのFirebase Authentication・Cloud Firestore、位置情報の受信や集計にはGoogle Apps Scriptを使用します。Web画面はGitHub Pagesで配信します。Google・Microsoftでの認証は各社のサービス上で行います。これらの提供者が処理する情報には各社のポリシーも適用されます。</p><p>端末のブラウザにはログイン状態、課題などの表示用データ、アプリの公開ファイルが保存される場合があります。連携ファイルは利用者が指定したiCloud Drive等にも保存されます。</p>
+<h3>閲覧範囲と運営者のアクセス</h3><p>通常の利用者は自分のデータだけを読み書きできるようアクセス制限しています。管理用画面には登録アカウント数や登録日別件数などの統計を表示します。</p><p>運営者はサービスの管理権限により、メールアドレス、登録内容、出席・位置情報の記録へ技術的にアクセスできます。問い合わせ対応、不具合調査、安全な運営に必要な範囲で扱います。管理ページに個々の課題や位置情報を一覧表示する機能はありません。情報の販売や、広告配信を目的とする利用は行いません。</p>
+<h3>保存期間</h3><p>課題・時間割・出席記録・位置情報ログはクラウドに保存します。現在、出席記録や位置情報ログについて一定日数で自動削除する仕組みは設けていません。利用をやめたりログアウトしたりしただけでは、クラウド上の情報は削除されません。</p><p>ゴミ箱の課題内容は原則7日後にアプリの実行時等に消去処理します。同期のため削除済みIDや削除日時などが残る場合があります。連携情報の有効期間は発行から180日です。期限切れは送信を拒否するもので、既存記録の自動消去を意味しません。個人を直接示さない登録数の推移は最大730日分を保存します。</p>
+<h3>修正・停止・削除の依頼</h3><p>登録した課題や出席記録等は、対応する画面で修正できます。位置情報送信は「設定 → 初期設定 → 自動出席の連携 → 連携を解除」と、端末側の該当オートメーションをオフにすることで停止してください。</p><p>アカウントと関連データの削除、位置情報ログの削除、情報の確認・訂正・利用停止については、下記窓口へ連絡してください。現在、アプリ内にアカウント一括削除ボタンはありません。本人確認後、対象と対応方法を案内します。Firebaseの認証アカウントの削除だけでは関連データは消えないため、関連する保存先も確認します。利用者が保存した連携ファイルや端末側のデータは、ご自身でも削除してください。</p>
+<h3 id="contact">変更と問い合わせ</h3><p>取扱いを変更するときは、このページの改定日と内容を更新し、重要な変更はアプリ等で案内します。</p><p>運営窓口：<a href="mailto:kadai.manager.app@gmail.com">kadai.manager.app@gmail.com</a></p></div><button type="button" class="info-close" id="privacyInfoClose">閉じる</button></dialog>
+<dialog class="info-dialog" id="termsInfoDialog" aria-labelledby="termsInfoTitle"><h2 id="termsInfoTitle">利用規約</h2><div class="info-copy"><p>制定日：2026年11月8日／規約版：2026-11-08</p><p>本規約は、Latica（ラティカ）運営者が提供する、学生向けの課題・時間割・出席管理アプリの利用条件です。</p>
+<h3>1. サービスについて</h3><p>本アプリは個人運営のアルファ版で、広島工業大学の公式サービスではありません。利用者は本規約を確認し、同意したうえで利用してください。未成年の方は保護者の同意を得て利用してください。</p>
+<h3>2. アカウントと登録内容</h3><p>GoogleまたはMicrosoftの本人のアカウントを使用してください。ログイン情報、連携用の秘密情報、端末を適切に管理し、第三者へ貸与・共有しないでください。入力した課題や時間割・出席記録は、自分でも正確性を確認してください。</p>
+<h3>3. 出席判定・提出期限</h3><p>本アプリの出席判定と出席率は、個人の管理を助けるための目安です。位置情報の誤差、通信障害、端末の遅延、時間割の設定等で結果が異なる場合があります。オンライン科目の出席初期値や連続授業の引継ぎも、実際の受講を証明するものではありません。大学の正式な出席・成績・単位取得の判断や、課題の提出完了を保証しません。大学等が案内する情報を確認し、誤りは手動で修正してください。</p>
+<h3>4. 禁止事項</h3><p>他人のアカウントや情報への不正アクセス、他人へのなりすまし、位置・出席情報の不正送信、サービスへの攻撃や過度な負荷、第三者の権利侵害その他の不正利用を禁止します。不正利用への対応として、必要な範囲で利用を制限する場合があります。</p>
+<h3>5. 費用と広告</h3><p>現在、基本機能は無料です。通信費等は利用者の負担です。運営費をまかなうため、将来広告を掲載する予定があります。この版では広告配信のプログラムは導入していません。広告導入前に、利用する配信事業者、情報の取扱い、必要な選択方法等をプライバシーポリシーで案内します。規約への同意は、個別に必要となる広告用Cookie等への同意の代わりにはなりません。有料機能を設ける場合は事前に条件を案内します。</p>
+<h3>6. データの取扱いと利用終了</h3><p>情報の利用目的、保存、削除依頼先はプライバシーポリシーをご確認ください。自動出席の連携は任意です。ログアウトや利用の中止だけではクラウドのデータは消えません。削除を希望する場合は同ポリシーの窓口へ連絡してください。</p>
+<h3>7. 変更・停止と責任</h3><p>機能の改善、保守、安全な運営等のため、内容の変更や一時停止をする場合があります。可能な範囲で事前に案内しますが、緊急対応等では事前案内できない場合があります。継続提供、常時利用、データの完全な保存を保証するものではありません。ただし、運営者の故意・重過失その他法令上免責できない責任を免れるものではありません。</p>
+<h3>8. 規約の変更</h3><p>規約を変更する場合は内容・効力発生日を案内し、必要に応じて改めて同意を求めます。重要な取扱いの変更を、旧版への同意だけで済ませることはしません。</p>
+<h3>9. 窓口</h3><p>問い合わせとデータ削除依頼の連絡先は、プライバシーポリシーの「変更と問い合わせ」に記載しています。</p></div><button type="button" class="info-close" id="termsInfoClose">閉じる</button></dialog>
 <dialog id="settingsDialog">
 
 <div class="dialog-content">
@@ -2727,7 +2751,7 @@ Google / Microsoftアカウント側で管理
         line-height:1.5;
     "
 >
-課題管理アプリはログイン用パスワードを取得・保存しません。
+Latica（ラティカ）はログイン用パスワードを取得・保存しません。
 </div>
 
 </div>
@@ -4818,7 +4842,7 @@ async function revealEmailWithDeviceAuth() {
                         rp: {
 
                             name:
-                                "課題管理"
+                                "Latica"
 
                         },
 
@@ -9055,6 +9079,62 @@ document.addEventListener('pointerup',event=>{
  const button=document.getElementById(cancelIds[event.target.id]||'');
  if(button)button.click();else event.target.close();
 });
+
+// Information screens use trusted bundled text and never read account data.
+for(const key of ['guide','privacy','terms']){
+ const dialog=document.getElementById(key+'InfoDialog');
+ const button=document.createElement('button');button.id=key+'InfoButton';button.type='button';button.className='complete-button';
+ button.textContent={guide:'利用案内',privacy:'プライバシーポリシー',terms:'利用規約'}[key];
+ document.getElementById('logoutButton').before(button);
+ button.onclick=()=>{settingsDialog.close();dialog.showModal();};
+ document.getElementById(key+'InfoClose').onclick=()=>dialog.close();
+}
+// Consent is scoped to the signed-in UID and exact document versions.
+const TERMS_VERSION='2026-11-08',PRIVACY_VERSION='2026-11-08';
+let consentGeneration=0,consentUser=null,consentPhase='idle';
+const consentGate=document.getElementById('consentGate');
+const consentTermsCheck=document.getElementById('consentTermsCheck'),consentPrivacyCheck=document.getElementById('consentPrivacyCheck');
+function currentConsent(data){return !!data&&data.termsVersion===TERMS_VERSION&&data.privacyVersion===PRIVACY_VERSION&&data.accepted===true;}
+function consentCacheKey(uid){return 'kadai-consent-'+uid;}
+function rememberConsent(uid){try{localStorage.setItem(consentCacheKey(uid),JSON.stringify({accepted:true,termsVersion:TERMS_VERSION,privacyVersion:PRIVACY_VERSION}));}catch(error){/* Online consent is still saved. */}}
+function rememberedConsent(uid){try{return currentConsent(JSON.parse(localStorage.getItem(consentCacheKey(uid))||'null'));}catch(error){return false;}}
+function updateConsentControls(){const waiting=consentPhase==='waiting';document.getElementById('consentAccept').disabled=!waiting||!consentTermsCheck.checked||!consentPrivacyCheck.checked;consentTermsCheck.disabled=consentPrivacyCheck.disabled=!waiting;document.getElementById('consentRetry').hidden=consentPhase!=='error';}
+function resetConsentGate(){consentGeneration++;consentUser=null;consentPhase='idle';consentGate.hidden=true;consentTermsCheck.checked=consentPrivacyCheck.checked=false;document.getElementById('consentStatus').textContent='';updateConsentControls();}
+const beforeConsentSignedOut=showSignedOutScreen;
+showSignedOutScreen=function(){resetConsentGate();beforeConsentSignedOut();};
+const beforeConsentActivate=activateUserSession;
+async function consentDeadline(operation){let timer;try{return await Promise.race([operation,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('CONSENT_TIMEOUT')),18000);})]);}finally{clearTimeout(timer);}}
+async function continueConsentedSession(user,generation){if(generation!==consentGeneration||auth.currentUser?.uid!==user.uid||logoutInProgress)return;consentPhase='accepted';consentGate.hidden=true;updateConsentControls();try{await beforeConsentActivate(user);}catch(error){if(generation!==consentGeneration||auth.currentUser?.uid!==user.uid||logoutInProgress)return;beforeConsentSignedOut();consentUser=user;consentPhase='error';authGate.hidden=true;consentGate.hidden=false;document.getElementById('consentStatus').textContent='同意は確認できましたが、アプリを読み込めませんでした。「再確認する」を押してください。';updateConsentControls();}}
+activateUserSession=async function(user){
+ if(!user||logoutInProgress||auth.currentUser?.uid!==user.uid)return;
+ const generation=++consentGeneration;
+ // Clear prior user's UI/subscriptions before reading only the consent document.
+ beforeConsentSignedOut();consentUser=user;consentPhase='checking';authGate.hidden=true;appContent.hidden=true;addButton.hidden=true;consentGate.hidden=false;
+ consentTermsCheck.checked=consentPrivacyCheck.checked=false;document.getElementById('consentStatus').textContent='同意状態を確認しています…';updateConsentControls();
+ const valid=()=>generation===consentGeneration&&auth.currentUser?.uid===user.uid&&!logoutInProgress;
+ try{
+  if(navigator.onLine===false){if(!rememberedConsent(user.uid))throw Error('CONSENT_OFFLINE');await continueConsentedSession(user,generation);return;}
+  const snapshot=await consentDeadline(getDocFromServer(doc(db,'users',user.uid,'meta','termsAcceptance')));if(!valid())return;
+  if(snapshot.exists()&&currentConsent(snapshot.data())){rememberConsent(user.uid);await continueConsentedSession(user,generation);return;}
+  consentPhase='waiting';document.getElementById('consentStatus').textContent='';updateConsentControls();
+ }catch(error){if(!valid())return;consentPhase='error';document.getElementById('consentStatus').textContent='同意状態を確認できませんでした。通信を確認して「再確認する」を押してください。初回の同意には通信が必要です。';updateConsentControls();}
+};
+consentTermsCheck.onchange=consentPrivacyCheck.onchange=updateConsentControls;
+document.getElementById('consentTermsOpen').onclick=()=>document.getElementById('termsInfoDialog').showModal();
+document.getElementById('consentPrivacyOpen').onclick=()=>document.getElementById('privacyInfoDialog').showModal();
+document.getElementById('consentRetry').onclick=()=>{if(consentUser)void activateUserSession(consentUser);};
+document.getElementById('consentExit').onclick=()=>logout();
+document.getElementById('consentAccept').onclick=async()=>{
+ const user=consentUser,generation=consentGeneration;
+ if(!user||consentPhase!=='waiting'||!consentTermsCheck.checked||!consentPrivacyCheck.checked||auth.currentUser?.uid!==user.uid||logoutInProgress)return;
+ if(navigator.onLine===false){document.getElementById('consentStatus').textContent='同意の保存にはインターネット接続が必要です。';return;}
+ consentPhase='saving';document.getElementById('consentStatus').textContent='同意を保存しています…';updateConsentControls();
+ const valid=()=>generation===consentGeneration&&auth.currentUser?.uid===user.uid&&!logoutInProgress;
+ try{
+  await consentDeadline(setDoc(doc(db,'users',user.uid,'meta','termsAcceptance'),{accepted:true,termsVersion:TERMS_VERSION,privacyVersion:PRIVACY_VERSION,acceptedAt:serverTimestamp()},{merge:true}));
+  if(!valid())return;rememberConsent(user.uid);await continueConsentedSession(user,generation);
+ }catch(error){if(!valid())return;consentPhase='waiting';document.getElementById('consentStatus').textContent='同意を保存できませんでした。通信を確認してもう一度お試しください。';updateConsentControls();}
+};
 </script>
 
 </body>

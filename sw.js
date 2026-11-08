@@ -1,5 +1,5 @@
-const CACHE_NAME="kadai-manager-v33";
-const PUBLIC_PATHS=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
+const CACHE_NAME="kadai-manager-v36";
+const PUBLIC_PATHS=["./","./index.html","./manifest.json","./latica-apple-touch.png","./latica-icon-192.png","./latica-icon-512.png"];
 self.addEventListener("install",event=>{event.waitUntil(self.skipWaiting());});
 self.addEventListener("activate",event=>{event.waitUntil((async()=>{
  const names=await caches.keys();
