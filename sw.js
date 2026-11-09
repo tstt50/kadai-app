@@ -1,4 +1,4 @@
-const CACHE_NAME="kadai-manager-v42";
+const CACHE_NAME="kadai-manager-v43";
 const PUBLIC_PATHS=["./","./index.html","./manifest.json","./latica-apple-touch.png","./latica-icon-192.png","./latica-icon-512.png"];
 self.addEventListener("install",event=>{event.waitUntil(self.skipWaiting());});
 self.addEventListener("activate",event=>{event.waitUntil((async()=>{
@@ -13,6 +13,10 @@ self.addEventListener("fetch",event=>{
  if(!allowed.includes(url.pathname))return;
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE_NAME);
+  if(request.mode==="navigate"&&!url.search){
+   const saved=await cache.match(request);
+   if(saved)return saved;
+  }
   try{
    const response=await fetch(request,{cache:"no-store"});
    if(response.ok&&response.type==="basic"&&!url.search)await cache.put(request,response.clone()).catch(()=>{});
