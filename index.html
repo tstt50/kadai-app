@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>Latica v41</title>
+<title>Latica v42</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./latica-apple-touch.png">
@@ -1677,7 +1677,7 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v41・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v42・2026/10/29</div>
 
 
 <header>
@@ -1693,7 +1693,7 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 </header>
 
 
-<section id="authLoading" class="auth-loading" role="status" aria-live="polite">
+<section id="authLoading" hidden class="auth-loading" role="status" aria-live="polite">
     <div class="auth-loading-spinner" aria-hidden="true"></div>
     <p id="authLoadingMessage">読み込み中…</p>
     <button type="button" id="authStartupRetry" class="tool-button" hidden>再読み込み</button>
@@ -7489,6 +7489,7 @@ function finishAuthStartup() {
 function showAuthStartupError(error) {
     window.__finishPullRefresh?.();
     if(authInitialized)return;
+    document.getElementById("authLoading").hidden=false;
     console.error("ログイン状態の確認に失敗",error);
     document.getElementById("authLoadingMessage").textContent="ログイン状態を確認できませんでした。通信状態を確認し、再読み込みしてください。";
     document.getElementById("authStartupRetry").hidden=false;
@@ -9125,8 +9126,16 @@ activateUserSession=async function(user){
  if(!user||logoutInProgress||auth.currentUser?.uid!==user.uid)return;
  const generation=++entryGeneration;entryUser=user;entryBusy=true;consentGate.hidden=true;authGate.hidden=true;document.getElementById('consentStatus').textContent='利用状態を確認しています…';updateConsentControls();document.getElementById('consentRetry').hidden=true;
  try{
-  entryOriginalSignedOut();entryUser=user;authGate.hidden=true;consentGate.hidden=true;document.getElementById('authLoading').hidden=false;
-  if(navigator.onLine===false){if(!currentConsent(readEntryCache('kadai-consent-'+user.uid))||!readEntryCache('latica-setup-'+user.uid)?.complete)throw Error('初回の確認と設定には通信が必要です');consentGate.hidden=true;await entryOriginalActivate(user);return;}
+  entryOriginalSignedOut();entryUser=user;authGate.hidden=true;consentGate.hidden=true;
+  const acceptedOnDevice = currentConsent(readEntryCache('kadai-consent-'+user.uid));
+  const setupCompleteOnDevice = readEntryCache('latica-setup-'+user.uid)?.complete === true;
+  if(acceptedOnDevice && setupCompleteOnDevice){
+   entryBusy=false;
+   await entryOriginalActivate(user);
+   return;
+  }
+  if(navigator.onLine===false)throw Error('初回の確認と設定には通信が必要です');
+  document.getElementById('authLoading').hidden=false;
   const record=await entryDeadline(getDocFromServer(doc(db,'users',user.uid,'meta','termsAcceptance')));if(!entryValid(user,generation))return;
   if(record.exists()&&currentConsent(record.data()))writeEntryCache('kadai-consent-'+user.uid,record.data());
   else if(consentChoice()){if(!await storeEntryConsent(user,generation))return;}
