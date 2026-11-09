@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>Latica v38</title>
+<title>Latica v39</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./latica-apple-touch.png">
@@ -1670,7 +1670,7 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v38・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v39・2026/10/29</div>
 
 
 <header>
@@ -9135,13 +9135,15 @@ document.getElementById('consentAccept').onclick=async()=>{
  catch(error){if(!entryValid(user,generation))return;entryBusy=false;document.getElementById('consentStatus').textContent='保存できませんでした。 '+error.message;updateConsentControls();}
 };
 async function startInitialSetup(user,generation){
- initialSetupActive=true;initialSetupPanel.hidden=false;document.body.classList.add('initial-setup');appContent.hidden=true;document.getElementById('initialSetupMessage').textContent='設定を確認しています…';
  const state=await entryDeadline(getDocFromServer(doc(db,'users',user.uid,'meta','initialSetup')));if(!entryValid(user,generation))return;
+ const progress=state.exists()?state.data():null;
+ if(progress?.complete===true){writeEntryCache('latica-setup-'+user.uid,{complete:true});await entryOriginalActivate(user);return;}
  await entryDeadline(loadTimetable());if(!entryValid(user,generation))return;
  await entryDeadline(loadClassTimes());if(!entryValid(user,generation))return;
- const progress=state.exists()?state.data():null;document.getElementById('initialSetupAccount').textContent='ログイン中：'+(user.email||user.displayName||user.uid);
  const existing=academic?.starts?.length===4&&validClassTimes(classTimes)&&classTimesConfigured&&Object.values(academic.courses||{}).some(slots=>Object.keys(slots||{}).length>0);
- if(progress?.complete===true||(!progress&&existing)){await finishInitialSetup();return;}
+ if(!progress&&existing){await finishInitialSetup();return;}
+ initialSetupActive=true;initialSetupPanel.hidden=false;document.body.classList.add('initial-setup');appContent.hidden=true;
+ document.getElementById('initialSetupAccount').textContent='ログイン中：'+(user.email||user.displayName||user.uid);
  initialSetupStep=['academic','times','timetable','finish'].includes(progress?.step)?progress.step:'academic';
  currentUser=user;await openInitialSetupStep();
 }
