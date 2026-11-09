@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>Latica v39</title>
+<title>Latica v41</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./latica-apple-touch.png">
@@ -1665,12 +1665,19 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 </style>
 <style>.info-copy{font-size:14px;line-height:1.9;overflow-wrap:anywhere}.info-copy h3{font-size:16px;margin:24px 0 8px}.info-copy li{margin:8px 0}.info-copy a{color:#1764c0}.info-dialog{box-sizing:border-box;width:min(94vw,640px);max-height:85dvh;border:0;border-radius:18px;padding:24px;overflow:auto}.info-dialog h2{font-size:21px}.info-dialog .info-close{position:sticky;bottom:0;display:block;margin:20px 0 0 auto;padding:12px 22px;border:0;border-radius:10px;background:#e9edf3;color:#1764c0;font:inherit}.app-info-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:14px;font-size:12px}.app-info-links a{color:#526478}.mail-button{display:inline-block;padding:10px 14px;background:#edf4ff;border-radius:10px}</style>
 <style>#consentGate{position:fixed;inset:0;z-index:20000;overflow:auto;background:#f4f6fb;padding:32px 16px max(32px,env(safe-area-inset-bottom));box-sizing:border-box}#consentGate[hidden]{display:none!important}.consent-card{box-sizing:border-box;max-width:540px;margin:0 auto;background:white;padding:26px;border-radius:20px;box-shadow:0 8px 30px #20304915;color:#243449}.consent-card h2{font-size:23px;margin-top:0}.consent-card p{line-height:1.8}.consent-card label{display:flex;align-items:flex-start;gap:10px;line-height:1.7;margin:20px 0;cursor:pointer}.consent-card input[type=checkbox]{flex:0 0 21px;width:21px;height:21px;margin:4px 0;accent-color:#1765d2}.consent-docs{display:flex;gap:10px;flex-wrap:wrap}.consent-card button{padding:12px 16px;border-radius:10px;border:1px solid #c8d7ed;background:white;color:#175cb2;font:inherit}.consent-card #consentAccept{display:block;width:100%;background:#1765d2;color:white;border:0;margin-top:20px}.consent-card #consentAccept:disabled{opacity:.45}.consent-card #consentExit,.consent-card #consentRetry{margin:14px 8px 12px 0}.consent-card small,.consent-summary{font-size:12px;color:#596b80;line-height:1.8}.consent-card #consentStatus{font-size:14px;color:#a83636}.consent-card button:focus-visible{outline:3px solid #85b9ff;outline-offset:3px}</style>
-<link rel="icon" type="image/png" href="./latica-icon-192.png"><style>.latica-brand{display:flex;align-items:center;gap:10px}.latica-brand img{border-radius:8px;flex-shrink:0}</style><style>body.initial-setup #appContent>:not(#timetableSettingsView):not(dialog){display:none!important}body.initial-setup #addButton{display:none!important}#initialSetupPanel{max-width:820px;margin:16px auto;padding:18px;background:white;border-radius:14px}#initialSetupPanel button{padding:10px;margin:6px;border-radius:8px}body.initial-setup .wizard-actions button:last-child{display:none}.academic-dialog input{min-width:0;max-width:100%;width:100%;box-sizing:border-box}.academic-dialog label{display:block;min-width:0}.academic-dialog{box-sizing:border-box;max-width:calc(100vw - 32px)}</style></head>
+<link rel="icon" type="image/png" href="./latica-icon-192.png"><style>.latica-brand{display:flex;align-items:center;gap:10px}.latica-brand img{border-radius:8px;flex-shrink:0}</style><style>body.initial-setup #appContent>:not(#timetableSettingsView):not(dialog){display:none!important}body.initial-setup #addButton{display:none!important}#initialSetupPanel{max-width:820px;margin:16px auto;padding:18px;background:white;border-radius:14px}#initialSetupPanel button{padding:10px;margin:6px;border-radius:8px}body.initial-setup #timetableWizardCancel{display:none}.academic-dialog input{min-width:0;max-width:100%;width:100%;box-sizing:border-box}.academic-dialog label{display:block;min-width:0}.academic-dialog{box-sizing:border-box;max-width:calc(100vw - 32px)}</style><style>
+.settings-save-row{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.settings-save-row button,.wizard-actions button,#subjectCancelButton,#classTimeCancel,#attendanceManualCancel{border:1px solid #d5dceb;border-radius:10px;padding:12px 14px;background:#fff;color:#344054}
+.settings-save-row button:last-child,#timetableWizardSave,#subjectSaveButton,#classTimeSave,#attendanceManualSave{background:#1765d2;color:#fff;border:1px solid #1765d2;border-radius:10px;padding:12px 14px}
+#timetableWizardCancel{order:1}
+#timetableWizardSave{order:2}
+</style>
+</head>
 
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v39・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v41・2026/10/29</div>
 
 
 <header>
@@ -1978,8 +1985,8 @@ Microsoftでログイン
                 </div>
             </div>
             <div class="attendance-manual-actions">
-                <button type="button" id="attendanceManualSave">保存</button>
                 <button type="button" id="attendanceManualCancel">キャンセル</button>
+                <button type="button" id="attendanceManualSave">保存</button>
             </div>
             <div class="attendance-manual-actions">
                 <button type="button" id="attendanceManualDelete" hidden>この記録を削除</button>
@@ -8689,7 +8696,8 @@ function field(d,label,type,value){const l=document.createElement('label');l.tex
 function action(d,label,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;d.append(b);return b;}
 function openAcademicSettings(){const d=academicDialog('年度・学期設定');const year=Number(academic?.year)||2026;const y=field(d,'年度','number',year);const starts=[0,1,2,3].map((n)=>field(d,(n+1)+'クオーター開始日','date',academic?.starts[n]||initialAcademicDefaults(year).starts[n]));const end=field(d,'4クオーター終了日','date',shiftAcademicDate(academic?.end||initialAcademicDefaults(year).end,-1));y.onchange=()=>{const saved=academic?.year===+y.value?academic:academic?.archives?.[y.value];starts.forEach((x,i)=>x.value=saved?.starts[i]||initialAcademicDefaults(+y.value).starts[i]);end.value=shiftAcademicDate(saved?.end||initialAcademicDefaults(+y.value).end,-1);threshold.value=saved?.attendanceThreshold??70;};const threshold=field(d,'単位取得ライン（出席率％）','number',academic?.attendanceThreshold??70);threshold.min='1';threshold.max='100';threshold.step='0.1';
 const note=document.createElement('p');note.textContent='開始日は大学の実際の日程に合わせてください。設定した日付で過去の記録も振り分けます。初回は既存の時間割を後期3Qの科目として引き継ぎます。14回科目は時間割設定で「後期を通して」に変更できます。年度を変えると年度別の時間割に切り替わります。以前の年度は同じ年度を指定すると戻せます。';d.append(note);
-action(d,'保存',async()=>{const dates=starts.map(x=>x.value);if(!Number.isFinite(+threshold.value)||+threshold.value<1||+threshold.value>100||!dates.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))||!end.value||![...dates,end.value].every((x,i,a)=>!i||x>a[i-1])||!Number.isInteger(+y.value)||+y.value<2000||+y.value>2200){alert('日付を開始順に入力してください');return;}const archives=JSON.parse(JSON.stringify(academic?.archives||{}));if(academic&&academic.year!==+y.value){const saved=JSON.parse(JSON.stringify(academic));delete saved.archives;archives[academic.year]=saved;}let next=academic&&academic.year===+y.value?JSON.parse(JSON.stringify(academic)):archives[y.value]?JSON.parse(JSON.stringify(archives[y.value])):{year:+y.value,courses:{H1:{},H2:{},Q1:{},Q2:{},Q3:{},Q4:{}},changes:{}};if(!academic&&!initialSetupActive)for(const [slot,name]of Object.entries(legacyTimetableSlots))if(name)next.courses["Q"+legacyQuarter][slot]={name,scope:"Q"+legacyQuarter,total:7,allowed:2};next.attendanceThreshold=+threshold.value;next.archives=archives;next.starts=dates;next.end=shiftAcademicDate(end.value,1);next.viewQuarter=selectedQuarter;try{await persistAcademic(next);d.close();if(initialSetupActive)await advanceInitialSetup('times');}catch(e){alert('保存できませんでした：'+e.message);}});action(d,'閉じる',()=>d.close());d.showModal();}
+const buttons=document.createElement('div');buttons.className='settings-save-row';d.append(buttons);
+action(buttons,'キャンセル',()=>d.close());action(buttons,'保存',async()=>{const dates=starts.map(x=>x.value);if(!Number.isFinite(+threshold.value)||+threshold.value<1||+threshold.value>100||!dates.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))||!end.value||![...dates,end.value].every((x,i,a)=>!i||x>a[i-1])||!Number.isInteger(+y.value)||+y.value<2000||+y.value>2200){alert('日付を開始順に入力してください');return;}const archives=JSON.parse(JSON.stringify(academic?.archives||{}));if(academic&&academic.year!==+y.value){const saved=JSON.parse(JSON.stringify(academic));delete saved.archives;archives[academic.year]=saved;}let next=academic&&academic.year===+y.value?JSON.parse(JSON.stringify(academic)):archives[y.value]?JSON.parse(JSON.stringify(archives[y.value])):{year:+y.value,courses:{H1:{},H2:{},Q1:{},Q2:{},Q3:{},Q4:{}},changes:{}};if(!academic&&!initialSetupActive)for(const [slot,name]of Object.entries(legacyTimetableSlots))if(name)next.courses["Q"+legacyQuarter][slot]={name,scope:"Q"+legacyQuarter,total:7,allowed:2};next.attendanceThreshold=+threshold.value;next.archives=archives;next.starts=dates;next.end=shiftAcademicDate(end.value,1);next.viewQuarter=selectedQuarter;try{await persistAcademic(next);d.close();if(initialSetupActive)await advanceInitialSetup('times');}catch(e){alert('保存できませんでした：'+e.message);}});d.showModal();}
 function applyLegacyQuarter(){originalApplySlots(selectedQuarter===legacyQuarter?legacyTimetableSlots:{});document.querySelectorAll('.quarter-select').forEach(x=>x.value=String(selectedQuarter));paintAcademicCharts();}
 function switchQuarter(q){if(![1,2,3,4].includes(Number(q)))return;selectedQuarter=Number(q);attendanceSubjectRequest++;attendanceSubjectView.hidden=true;if(academic){applyAcademic();}else{applyLegacyQuarter();}}
 for(const view of [attendanceView,timetableSettingsView]){
@@ -8733,7 +8741,9 @@ function openDayChange(){
  const note=document.createElement('p');note.textContent='授業時刻はそのままです。この日だけ選んだ曜日の科目になり、科目別の出席データから手動登録できます。';d.append(note);
  const fill=()=>{const schedule=dateSchedule(date.value);sel.value=schedule.closed?'off':schedule.day||'mon';note.textContent=(holidayName(date.value)?'祝日：'+holidayName(date.value)+'。標準は休講です。':'')+'この日だけ選んだ曜日課になります。変更を解除すると祝日は休講に戻ります。';};date.onchange=fill;fill();
  async function save(remove){const user=auth.currentUser;if(!user)return;const uid=user.uid;if(!/^\d{4}-\d{2}-\d{2}$/.test(date.value)){alert('日付を選択してください');return;}const next=JSON.parse(JSON.stringify(standaloneDayChanges));next[date.value]={day:remove?'default':sel.value};try{await setDoc(doc(db,'users',uid,'settings','timetable'),{dayChangesJson:JSON.stringify(next)},{merge:true});if(auth.currentUser?.uid!==uid||logoutInProgress)return;standaloneDayChanges=next;render();refreshAttendanceSubjectColors();if(attendanceManualSubject&&!attendanceSubjectView.hidden)await loadSubjectAttendance(attendanceManualSubject);d.close();}catch(e){alert('保存できませんでした：'+e.message);}}
- action(d,'保存',()=>save(false));action(d,'この日の変更を解除',()=>save(true));action(d,'閉じる',()=>d.close());d.showModal();
+ action(d,'この日の変更を解除',()=>save(true));
+ const buttons=document.createElement('div');buttons.className='settings-save-row';d.append(buttons);
+ action(buttons,'キャンセル',()=>d.close());action(buttons,'保存',()=>save(false));d.showModal();
 }
 /* v28 pull-to-refresh: one-third viewport reveal, then hold through navigation. */
 const pullRefresh = (()=>{
@@ -8815,7 +8825,8 @@ const wizardNotice=document.createElement('p');wizardNotice.id='timetableWizardN
 const wizardActions=document.createElement('div');wizardActions.className='wizard-actions';
 const wizardPrevious=action(wizardActions,'前の設定へ',()=>{if(!timetableWizard||timetableWizard.saving)return;timetableWizard.stage=timetableWizard.stage==='online'?'quarter':'subjects';renderTimetableWizard();});
 const wizardSave=action(wizardActions,'保存',()=>saveTimetableWizard());wizardSave.id='timetableWizardSave';
-const wizardClose=action(wizardActions,'閉じる',()=>timetableSettingsBackButton.click());
+const wizardClose=action(wizardActions,'キャンセル',()=>timetableSettingsBackButton.click());
+wizardClose.id='timetableWizardCancel';
 timetableSettingsView.append(wizardNotice,wizardActions);
 
 function renderCourseCell(cell,course){
@@ -9104,7 +9115,7 @@ function readEntryCache(key){try{return JSON.parse(localStorage.getItem(key)||'n
 function writeEntryCache(key,data){try{localStorage.setItem(key,JSON.stringify(data));}catch(error){}}
 function consentChoice(){return currentConsent(readEntryCache('latica-entry-consent'));}
 function updateConsentControls(){document.getElementById('consentAccept').disabled=entryBusy||!consentTermsCheck.checked||!consentPrivacyCheck.checked;consentTermsCheck.disabled=consentPrivacyCheck.disabled=entryBusy;}
-function showEntryConsent(message=''){authGate.hidden=true;appContent.hidden=true;addButton.hidden=true;consentGate.hidden=false;consentTermsCheck.checked=consentPrivacyCheck.checked=false;document.getElementById('consentStatus').textContent=message;document.getElementById('consentExit').hidden=!entryUser;document.getElementById('consentAccept').textContent=entryUser?'同意して利用開始':'同意してログインへ';updateConsentControls();}
+function showEntryConsent(message=''){document.getElementById('authLoading').hidden=true;authGate.hidden=true;appContent.hidden=true;addButton.hidden=true;consentGate.hidden=false;consentTermsCheck.checked=consentPrivacyCheck.checked=false;document.getElementById('consentStatus').textContent=message;document.getElementById('consentExit').hidden=!entryUser;document.getElementById('consentAccept').textContent=entryUser?'同意して利用開始':'同意してログインへ';updateConsentControls();}
 async function entryDeadline(operation){let timer;try{return await Promise.race([operation,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('通信がタイムアウトしました')),18000);})]);}finally{clearTimeout(timer);}}
 function entryValid(user,generation){return generation===entryGeneration&&auth.currentUser?.uid===user.uid&&!logoutInProgress;}
 const entryOriginalSignedOut=showSignedOutScreen,entryOriginalActivate=activateUserSession;
@@ -9112,9 +9123,9 @@ showSignedOutScreen=function(){entryGeneration++;entryUser=null;entryBusy=false;
 async function storeEntryConsent(user,generation){await entryDeadline(setDoc(doc(db,'users',user.uid,'meta','termsAcceptance'),{accepted:true,termsVersion:TERMS_VERSION,privacyVersion:PRIVACY_VERSION,acceptedAt:serverTimestamp()},{merge:true}));if(!entryValid(user,generation))return false;writeEntryCache('kadai-consent-'+user.uid,{accepted:true,termsVersion:TERMS_VERSION,privacyVersion:PRIVACY_VERSION});return true;}
 activateUserSession=async function(user){
  if(!user||logoutInProgress||auth.currentUser?.uid!==user.uid)return;
- const generation=++entryGeneration;entryUser=user;entryBusy=true;consentGate.hidden=false;authGate.hidden=true;document.getElementById('consentStatus').textContent='利用状態を確認しています…';updateConsentControls();document.getElementById('consentRetry').hidden=true;
+ const generation=++entryGeneration;entryUser=user;entryBusy=true;consentGate.hidden=true;authGate.hidden=true;document.getElementById('consentStatus').textContent='利用状態を確認しています…';updateConsentControls();document.getElementById('consentRetry').hidden=true;
  try{
-  entryOriginalSignedOut();entryUser=user;authGate.hidden=true;consentGate.hidden=false;
+  entryOriginalSignedOut();entryUser=user;authGate.hidden=true;consentGate.hidden=true;document.getElementById('authLoading').hidden=false;
   if(navigator.onLine===false){if(!currentConsent(readEntryCache('kadai-consent-'+user.uid))||!readEntryCache('latica-setup-'+user.uid)?.complete)throw Error('初回の確認と設定には通信が必要です');consentGate.hidden=true;await entryOriginalActivate(user);return;}
   const record=await entryDeadline(getDocFromServer(doc(db,'users',user.uid,'meta','termsAcceptance')));if(!entryValid(user,generation))return;
   if(record.exists()&&currentConsent(record.data()))writeEntryCache('kadai-consent-'+user.uid,record.data());
@@ -9142,6 +9153,7 @@ async function startInitialSetup(user,generation){
  await entryDeadline(loadClassTimes());if(!entryValid(user,generation))return;
  const existing=academic?.starts?.length===4&&validClassTimes(classTimes)&&classTimesConfigured&&Object.values(academic.courses||{}).some(slots=>Object.keys(slots||{}).length>0);
  if(!progress&&existing){await finishInitialSetup();return;}
+ document.getElementById('authLoading').hidden=true;
  initialSetupActive=true;initialSetupPanel.hidden=false;document.body.classList.add('initial-setup');appContent.hidden=true;
  document.getElementById('initialSetupAccount').textContent='ログイン中：'+(user.email||user.displayName||user.uid);
  initialSetupStep=['academic','times','timetable','finish'].includes(progress?.step)?progress.step:'academic';
@@ -9167,7 +9179,7 @@ async function finishInitialSetup(){
  initialSetupStep='finish';
  try{await entryDeadline(setDoc(doc(db,'users',user.uid,'meta','initialSetup'),{complete:true,step:'complete',updatedAt:serverTimestamp()},{merge:true}));if(!entryValid(user,generation))return;
  writeEntryCache('latica-setup-'+user.uid,{complete:true});await entryOriginalActivate(user);if(!entryValid(user,generation))return;initialSetupActive=false;initialSetupPanel.hidden=true;document.body.classList.remove('initial-setup');
- }catch(error){if(!entryValid(user,generation))return;initialSetupPanel.hidden=false;document.getElementById('initialSetupMessage').textContent='完了状態を保存できませんでした。「設定を開く」で再試行してください。 '+error.message;}
+ }catch(error){if(!entryValid(user,generation))return;document.getElementById('authLoading').hidden=true;initialSetupPanel.hidden=false;document.getElementById('initialSetupMessage').textContent='完了状態を保存できませんでした。「設定を開く」で再試行してください。 '+error.message;}
 }
 document.getElementById('initialSetupResume').onclick=()=>{void openInitialSetupStep().catch(error=>{document.getElementById('initialSetupMessage').textContent='設定を開けませんでした。 '+error.message;});};
 document.getElementById('initialSetupLogout').onclick=()=>logout();
