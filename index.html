@@ -12,7 +12,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>Latica v45</title>
+<title>Latica v46</title>
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./latica-apple-touch.png">
@@ -1680,7 +1680,7 @@ html[data-pull-phase="returning"] #pullRefreshChrome{transition:height 300ms cub
 
 <body>
 <div id="pullRefreshChrome" role="status" aria-live="polite" aria-hidden="true"><span id="pullRefreshSpinner" aria-hidden="true"></span><span id="pullRefreshLabel">読み込み中</span></div>
-<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v45・2026/10/29</div>
+<div id="appBuildVersion" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));z-index:99999;background:#fff;color:#526070;border:1px solid #dde3eb;border-radius:6px;padding:3px 7px;font-size:11px;pointer-events:none">v46・2026/11/10</div>
 
 
 <header>
@@ -2559,7 +2559,17 @@ TOMORROW
 
 <dialog id="trashDialog"><div class="dialog-content"><h2>🗑️ ゴミ箱</h2><p>削除した課題は７日間復元できます。復元後は未提出に戻ります。</p><p id="trashStatus" role="status"></p><div id="trashList"></div><button type="button" class="cancel" id="trashCloseButton">閉じる</button></div></dialog>
 <dialog id="attendanceLinkDialog"><div class="dialog-content">
-<h2>自動出席の連携</h2><p>連携情報を自分のショートカットに設定します。再発行すると以前の連携は無効になります。</p>
+<h2>自動出席の連携</h2>
+<p>iPhoneで初回だけ設定します。共通ショートカットを使えば、IDやトークンの入力は不要です。</p>
+<details id="attendanceShortcutGuide" style="margin-bottom:1rem">
+<summary>iPhoneでの設定手順</summary>
+<ol>
+<li><strong>ショートカットを追加</strong><p>共通ショートカットの配布リンクは準備中です。すでに動作しているショートカットがある場合は、そのまま使えます。</p></li>
+<li><strong>本人用ファイルを保存</strong><p>下のボタンで発行し、「連携ファイルを保存」から iCloud Drive → Shortcuts に <code>kadai-attendance-link.json</code> として保存します。再発行すると以前のファイルは無効になるので、同じ名前で置き換えてください。</p></li>
+<li><strong>位置情報の利用を許可</strong><p>ショートカットを一度開き、iPhoneに許可を求められたら確認します。</p></li>
+</ol>
+<p>現在の自動実行は、iPhoneの「オートメーション」で設定します。到着・出発の2件で済む方式は実機検証後に案内します。</p>
+</details>
 <p id="attendanceLinkStatus" role="status"></p>
 <button type="button" class="complete-button" id="attendanceLinkCreate">連携情報を発行・再発行</button>
 <textarea id="attendanceLinkSecret" readonly hidden aria-label="ショートカット用連携情報" style="box-sizing:border-box;width:100%;height:140px;font-size:14px"></textarea>
@@ -5398,7 +5408,7 @@ async function updateAttendanceLink(revoke=false){
  finally{attendanceLinkBusy=false;create.disabled=false;disable.disabled=false;}
 }
 document.getElementById("attendanceLinkButton").onclick=async()=>{
- const uid=currentUser?.uid;if(!sameAttendanceUser(uid))return;clearAttendanceLinkSecret();settingsDialog.close();document.getElementById("attendanceLinkDialog").showModal();
+ const uid=currentUser?.uid;if(!sameAttendanceUser(uid))return;clearAttendanceLinkSecret();settingsDialog.close();document.getElementById("attendanceShortcutGuide").open=true;document.getElementById("attendanceLinkDialog").showModal();
  try{const snap=await getDocFromServer(attendanceLinkRef(uid));if(!sameAttendanceUser(uid))return;const data=snap.exists()?snap.data():null;document.getElementById("attendanceLinkStatus").textContent=data?.enabled && data.expiresAt>Date.now() ? "連携は有効です。有効期限："+new Date(data.expiresAt).toLocaleDateString("ja-JP") : "連携されていません。";}catch(error){if(sameAttendanceUser(uid))document.getElementById("attendanceLinkStatus").textContent="連携状態を取得できませんでした。";}
 };
 document.getElementById("attendanceLinkDownload").onclick=()=>{
